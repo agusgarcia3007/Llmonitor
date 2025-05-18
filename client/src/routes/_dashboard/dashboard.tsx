@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/form";
 import { useTranslation } from "react-i18next";
 
-export const Route = createFileRoute("/_dashboardLayout/dashboard")({
+export const Route = createFileRoute("/_dashboard/dashboard")({
   component: Dashboard,
 });
 

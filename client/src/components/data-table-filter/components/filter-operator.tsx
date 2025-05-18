@@ -28,7 +28,8 @@ import type {
   FilterModel,
   FilterOperators,
 } from "../core/types";
-import { type Locale, t } from "../lib/i18n";
+import type { Locale } from "@/types";
+import { useTranslation } from "react-i18next";
 
 interface FilterOperatorProps<TData, TType extends ColumnDataType> {
   column: Column<TData, TType>;
@@ -47,7 +48,7 @@ export function FilterOperator<TData, TType extends ColumnDataType>({
   locale = "en",
 }: FilterOperatorProps<TData, TType>) {
   const [open, setOpen] = useState<boolean>(false);
-
+  const { t } = useTranslation("filters");
   const close = () => setOpen(false);
 
   return (
@@ -69,8 +70,8 @@ export function FilterOperator<TData, TType extends ColumnDataType>({
         className="w-fit p-0 origin-(--radix-popover-content-transform-origin)"
       >
         <Command loop>
-          <CommandInput placeholder={t("search", locale)} />
-          <CommandEmpty>{t("noresults", locale)}</CommandEmpty>
+          <CommandInput placeholder={t("search", { lng: locale })} />
+          <CommandEmpty>{t("noresults", { lng: locale })}</CommandEmpty>
           <CommandList className="max-h-fit">
             <FilterOperatorController
               filter={filter}
@@ -97,8 +98,9 @@ export function FilterOperatorDisplay<TType extends ColumnDataType>({
   columnType,
   locale = "en",
 }: FilterOperatorDisplayProps<TType>) {
+  const { t } = useTranslation("filters");
   const operator = filterTypeOperatorDetails[columnType][filter.operator];
-  const label = t(operator.key, locale);
+  const label = t(operator.key, { lng: locale });
 
   return <span className="text-muted-foreground">{label}</span>;
 }
@@ -186,6 +188,7 @@ function FilterOperatorOptionController<TData>({
   closeController,
   locale = "en",
 }: FilterOperatorControllerProps<TData, "option">) {
+  const { t } = useTranslation("filters");
   const filterDetails = optionFilterOperators[filter.operator];
 
   const relatedFilters = Object.values(optionFilterOperators).filter(
@@ -198,11 +201,11 @@ function FilterOperatorOptionController<TData>({
   };
 
   return (
-    <CommandGroup heading={t("operators", locale)}>
+    <CommandGroup heading={t("operators", { lng: locale })}>
       {relatedFilters.map((r) => {
         return (
           <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
-            {t(r.key, locale)}
+            {t(r.key, { lng: locale })}
           </CommandItem>
         );
       })}
@@ -217,12 +220,11 @@ function FilterOperatorMultiOptionController<TData>({
   closeController,
   locale = "en",
 }: FilterOperatorControllerProps<TData, "multiOption">) {
+  const { t } = useTranslation("filters");
   const filterDetails = multiOptionFilterOperators[filter.operator];
-
   const relatedFilters = Object.values(multiOptionFilterOperators).filter(
     (o) => o.target === filterDetails.target
   );
-
   const changeOperator = (value: string) => {
     actions?.setFilterOperator(
       column.id,
@@ -230,13 +232,12 @@ function FilterOperatorMultiOptionController<TData>({
     );
     closeController();
   };
-
   return (
-    <CommandGroup heading={t("operators", locale)}>
+    <CommandGroup heading={t("operators", { lng: locale })}>
       {relatedFilters.map((r) => {
         return (
           <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
-            {t(r.key, locale)}
+            {t(r.key, { lng: locale })}
           </CommandItem>
         );
       })}
@@ -251,23 +252,21 @@ function FilterOperatorDateController<TData>({
   closeController,
   locale = "en",
 }: FilterOperatorControllerProps<TData, "date">) {
+  const { t } = useTranslation("filters");
   const filterDetails = dateFilterOperators[filter.operator];
-
   const relatedFilters = Object.values(dateFilterOperators).filter(
     (o) => o.target === filterDetails.target
   );
-
   const changeOperator = (value: string) => {
     actions?.setFilterOperator(column.id, value as FilterOperators["date"]);
     closeController();
   };
-
   return (
-    <CommandGroup>
+    <CommandGroup heading={t("operators", { lng: locale })}>
       {relatedFilters.map((r) => {
         return (
           <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
-            {t(r.key, locale)}
+            {t(r.key, { lng: locale })}
           </CommandItem>
         );
       })}
@@ -282,23 +281,21 @@ export function FilterOperatorTextController<TData>({
   closeController,
   locale = "en",
 }: FilterOperatorControllerProps<TData, "text">) {
+  const { t } = useTranslation("filters");
   const filterDetails = textFilterOperators[filter.operator];
-
   const relatedFilters = Object.values(textFilterOperators).filter(
     (o) => o.target === filterDetails.target
   );
-
   const changeOperator = (value: string) => {
     actions?.setFilterOperator(column.id, value as FilterOperators["text"]);
     closeController();
   };
-
   return (
-    <CommandGroup heading={t("operators", locale)}>
+    <CommandGroup heading={t("operators", { lng: locale })}>
       {relatedFilters.map((r) => {
         return (
           <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
-            {t(r.key, locale)}
+            {t(r.key, { lng: locale })}
           </CommandItem>
         );
       })}
@@ -313,30 +310,24 @@ function FilterOperatorNumberController<TData>({
   closeController,
   locale = "en",
 }: FilterOperatorControllerProps<TData, "number">) {
+  const { t } = useTranslation("filters");
   const filterDetails = numberFilterOperators[filter.operator];
-
   const relatedFilters = Object.values(numberFilterOperators).filter(
     (o) => o.target === filterDetails.target
   );
-
   const changeOperator = (value: string) => {
     actions?.setFilterOperator(column.id, value as FilterOperators["number"]);
     closeController();
   };
-
   return (
-    <div>
-      <CommandGroup heading={t("operators", locale)}>
-        {relatedFilters.map((r) => (
-          <CommandItem
-            onSelect={() => changeOperator(r.value)}
-            value={r.value}
-            key={r.value}
-          >
-            {t(r.key, locale)}
+    <CommandGroup heading={t("operators", { lng: locale })}>
+      {relatedFilters.map((r) => {
+        return (
+          <CommandItem onSelect={changeOperator} value={r.value} key={r.value}>
+            {t(r.key, { lng: locale })}
           </CommandItem>
-        ))}
-      </CommandGroup>
-    </div>
+        );
+      })}
+    </CommandGroup>
   );
 }

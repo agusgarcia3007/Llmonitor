@@ -3,7 +3,8 @@ import { cn } from "@/lib/utils";
 import { FilterXIcon } from "lucide-react";
 import { memo } from "react";
 import type { DataTableFilterActions } from "../core/types";
-import { type Locale, t } from "../lib/i18n";
+import type { Locale } from "@/types";
+import { useTranslation } from "react-i18next";
 
 interface FilterActionsProps {
   hasFilters: boolean;
@@ -11,12 +12,12 @@ interface FilterActionsProps {
   locale?: Locale;
 }
 
-export const FilterActions = memo(__FilterActions);
-function __FilterActions({
+function FilterActionsInner({
   hasFilters,
   actions,
   locale = "en",
 }: FilterActionsProps) {
+  const { t } = useTranslation("filters");
   return (
     <Button
       className={cn("h-7 !px-2", !hasFilters && "hidden")}
@@ -24,7 +25,11 @@ function __FilterActions({
       onClick={actions?.removeAllFilters}
     >
       <FilterXIcon />
-      <span className="hidden md:block">{t("clear", locale)}</span>
+      <span className="hidden md:block">{t("clear", { lng: locale })}</span>
     </Button>
   );
 }
+
+export const FilterActions = memo(
+  FilterActionsInner
+) as typeof FilterActionsInner;

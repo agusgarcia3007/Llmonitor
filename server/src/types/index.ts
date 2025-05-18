@@ -6,3 +6,5 @@ export interface HonoApp {
     session: typeof auth.$Infer.Session.session | null;
   };
 }
+
+export type SessionType = Awaited<ReturnType<typeof auth.api.getSession>>;

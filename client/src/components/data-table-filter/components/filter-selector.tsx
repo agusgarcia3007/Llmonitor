@@ -35,8 +35,8 @@ import type {
 import { isAnyOf } from "../lib/array";
 import { getColumn } from "../lib/helpers";
 import { FilterValueController } from "./filter-value";
-import { Locale } from "@/types";
-import { useTranslations } from "next-intl";
+import type { Locale } from "@/types";
+import { useTranslation } from "react-i18next";
 
 interface FilterSelectorProps<TData> {
   filters: FiltersState;
@@ -46,16 +46,14 @@ interface FilterSelectorProps<TData> {
   locale?: Locale;
 }
 
-export const FilterSelector = memo(__FilterSelector) as typeof __FilterSelector;
-
-function __FilterSelector<TData>({
+function FilterSelectorInner<TData>({
   filters,
   columns,
   actions,
   strategy,
   locale = "en",
 }: FilterSelectorProps<TData>) {
-  const t = useTranslations("filters");
+  const { t } = useTranslation("filters");
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [property, setProperty] = useState<string | undefined>(undefined);
@@ -121,8 +119,6 @@ function __FilterSelector<TData>({
                 filters={filters}
                 columns={columns}
                 actions={actions}
-                strategy={strategy}
-                locale={locale}
               />
             </CommandGroup>
           </CommandList>
@@ -158,6 +154,10 @@ function __FilterSelector<TData>({
     </Popover>
   );
 }
+
+export const FilterSelector = memo(
+  FilterSelectorInner
+) as typeof FilterSelectorInner;
 
 export function FilterableColumn<TData, TType extends ColumnDataType, TVal>({
   column,
@@ -225,24 +225,14 @@ interface QuickSearchFiltersProps<TData> {
   filters: FiltersState;
   columns: Column<TData>[];
   actions: DataTableFilterActions;
-  strategy: FilterStrategy;
-  locale?: Locale;
 }
 
-export const QuickSearchFilters = memo(
-  __QuickSearchFilters
-) as typeof __QuickSearchFilters;
-
-function __QuickSearchFilters<TData>({
+function QuickSearchFiltersInner<TData>({
   search,
   filters,
   columns,
   actions,
-  strategy,
-  locale = "en",
-}: QuickSearchFiltersProps<TData>) {
-  if (!search || search.trim().length < 2) return null;
-
+}: Omit<QuickSearchFiltersProps<TData>, "strategy" | "locale">) {
   const cols = useMemo(
     () =>
       columns.filter((c) =>
@@ -250,6 +240,8 @@ function __QuickSearchFilters<TData>({
       ),
     [columns]
   );
+
+  if (!search || search.trim().length < 2) return null;
 
   return (
     <>
@@ -320,3 +312,7 @@ function __QuickSearchFilters<TData>({
     </>
   );
 }
+
+export const QuickSearchFilters = memo(
+  QuickSearchFiltersInner
+) as typeof QuickSearchFiltersInner;
