@@ -1,0 +1,70 @@
+{
+  "header": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "about": "About",
+    "login": "Login",
+    "signup": "Sign Up",
+    "getStarted": "Get Started",
+    "docs": "Documentation"
+  },
+  "hero": {
+    "title": {
+      "default": "Centralize and Automate Your Orders <highlight>from Every Channel</highlight>"
+    },
+    "subtitle": "Headless OMS for companies selling on Tiendanube and Mercado Libre. Centralize, manage, and automate your orders in one place, connected to your ERP and logistics.",
+    "cta": "Join the waitlist",
+    "demo": "See demo",
+    "trustedBy": "Trusted by companies like :",
+    "waitlistTitle": "Early access OMS",
+    "waitlistSubtitle": "Join and be among the first to try the multichannel OMS for e-commerce.",
+    "badge": "Multichannel Order Management",
+    "techBadge": "Enterprise Technology",
+    "feature1": {
+      "title": "Orders from all your channels",
+      "description": "Receive and manage orders from Tiendanube and Mercado Libre in a single dashboard"
+    },
+    "feature2": {
+      "title": "Automate your operation",
+      "description": "Status updates, history, and automatic notifications to your internal systems"
+    },
+    "feature3": {
+      "title": "Multi-tenant and roles",
+      "description": "Secure access for your team, with permissions and company separation"
+    },
+    "feature4": {
+      "title": "API & Webhooks",
+      "description": "Easily integrate with your ERP, WMS, or logistics via configurable API and webhooks"
+    },
+    "techTitle": "Connected and scalable",
+    "tech1": "Next.js",
+    "tech2": "PostgreSQL",
+    "tech3": "Hono API",
+    "tech4": "Webhooks"
+  },
+  "auth": {
+    "signin": {
+      "title": "Login to your account",
+      "description": "Enter your email below to login to your account",
+      "email": "Email",
+      "password": "Password",
+      "forgot": "Forgot your password?",
+      "submit": "Login",
+      "google": "Login with Google",
+      "noAccount": "Don't have an account?",
+      "signup": "Sign up"
+    },
+    "signup": {
+      "title": "Create an account",
+      "description": "Enter your email below to create an account",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "forgot": "Forgot your password?",
+      "submit": "Sign up",
+      "google": "Sign up with Google",
+      "hasAccount": "Already have an account?",
+      "signin": "Sign in"
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "header": {
+    "features": "Características",
+    "pricing": "Precios",
+    "about": "Acerca de",
+    "login": "Iniciar sesión",
+    "signup": "Registrarse",
+    "getStarted": "Comenzar",
+    "docs": "Documentación"
+  },
+  "hero": {
+    "title": {
+      "default": "Centralizá y Automatizá tus Órdenes <highlight>de Todos tus Canales</highlight>"
+    },
+    "subtitle": "Headless OMS para empresas que venden en Tiendanube y Mercado Libre. Centralizá, gestioná y automatizá tus órdenes en un solo lugar, conectado a tu ERP y logística.",
+    "cta": "Unite a la lista de espera",
+    "demo": "Ver demo",
+    "trustedBy": "Confiado por empresas como :",
+    "waitlistTitle": "Acceso anticipado OMS",
+    "waitlistSubtitle": "Sumate y sé de los primeros en probar el OMS multicanal para e-commerce.",
+    "badge": "Gestión de Órdenes Multicanal",
+    "techBadge": "Tecnología Empresarial",
+    "feature1": {
+      "title": "Órdenes de todos tus canales",
+      "description": "Recibí y gestioná órdenes de Tiendanube y Mercado Libre en un solo panel"
+    },
+    "feature2": {
+      "title": "Automatizá tu operación",
+      "description": "Actualización de estados, historial y notificaciones automáticas a tus sistemas internos"
+    },
+    "feature3": {
+      "title": "Multi-tenant y roles",
+      "description": "Acceso seguro para tu equipo, con permisos y separación por empresa"
+    },
+    "feature4": {
+      "title": "API y Webhooks",
+      "description": "Integrá fácilmente con tu ERP, WMS o logística mediante API y webhooks configurables"
+    },
+    "techTitle": "Conectado y escalable",
+    "tech1": "Next.js",
+    "tech2": "PostgreSQL",
+    "tech3": "Hono API",
+    "tech4": "Webhooks"
+  },
+  "auth": {
+    "signin": {
+      "title": "Inicia sesión en tu cuenta",
+      "description": "Ingresa tu email para iniciar sesión en tu cuenta",
+      "email": "Email",
+      "password": "Contraseña",
+      "forgot": "¿Olvidaste tu contraseña?",
+      "submit": "Iniciar sesión",
+      "google": "Iniciar sesión con Google",
+      "noAccount": "¿No tienes una cuenta?",
+      "signup": "Regístrate"
+    },
+    "signup": {
+      "title": "Crea una cuenta",
+      "description": "Ingresa tu email para crear una cuenta",
+      "name": "Nombre",
+      "email": "Email",
+      "password": "Contraseña",
+      "forgot": "¿Olvidaste tu contraseña?",
+      "submit": "Registrarse",
+      "google": "Registrarse con Google",
+      "hasAccount": "¿Ya tienes una cuenta?",
+      "signin": "Iniciar sesión"
+    }
+  }
+}
