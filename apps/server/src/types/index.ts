@@ -8,3 +8,9 @@ export interface HonoApp {
 }
 
 export type SessionType = Awaited<ReturnType<typeof auth.api.getSession>>;
+
+declare module "better-auth" {
+  interface Session {
+    activeOrganizationId?: string | null;
+  }
+}

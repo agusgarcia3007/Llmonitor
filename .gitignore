@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+.env*
+.pnpm-debug.log*
+pnpm-lock.yaml
+.DS_Store
+*.local
+coverage/
+*.log
+.idea/
+.vscode/
+*.swp
+*.swo
+npm-debug.log*
+yarn.lock 
