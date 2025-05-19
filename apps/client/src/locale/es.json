@@ -145,13 +145,17 @@
   },
   "landing": {
     "badge": "Plataforma de Observabilidad para IA",
-    "title": "Transforma las Cajas Negras de IA en Insights Claros",
-    "subtitle": "Obtén visibilidad profunda en cada interacción con LLMs en tu stack. Monitorea, optimiza y depura tus aplicaciones de IA con precisión—a través de todos los proveedores principales.",
+    "title": {
+      "highlight": "Perspectivas Claras",
+      "suffix": "para tus Modelos de IA"
+    },
+    "subtitle": "Herramientas completas para entender, optimizar y depurar tus interacciones con LLM",
     "ecosystem": "Integrado en todo el ecosistema de IA: OpenAI, Claude, Gemini, Mistral, modelos open-source y más",
 
     "features": {
       "badge": "Capacidades Potentes",
       "title": "Visibilidad completa de tus operaciones de IA",
+      "subtitle": "Herramientas completas para entender, optimizar y depurar tus interacciones con LLM",
       "analytics": {
         "title": "Analítica Avanzada de Prompts",
         "description": "Captura el contexto completo de cada solicitud LLM con métricas detalladas sobre entradas, salidas, latencia, códigos de estado y consumo de tokens."
@@ -175,7 +179,14 @@
       "alerts": {
         "title": "Sistema Inteligente de Alertas",
         "description": "Recibe notificaciones específicas vía Slack o webhooks cuando se superan umbrales críticos de rendimiento, costo o fiabilidad."
-      }
+      },
+      "subtitle": "Herramientas completas para entender, optimizar y depurar tus interacciones con LLM"
+    },
+
+    "dashboard": {
+      "title": "Panel Centralizado de Monitoreo de IA",
+      "description": "Nuestro panel intuitivo brinda métricas en tiempo real sobre prompts, completions, uso de tokens, costos, latencia y más — permitiendo optimizar tu inversión en IA con datos.",
+      "cta": "Explora nuestras capacidades de analítica"
     },
 
     "developers": {
@@ -184,7 +195,12 @@
       "integration": "Integración SDK en una sola línea",
       "api": "API intuitiva para registros",
       "noLockIn": "Arquitectura agnóstica de proveedores",
-      "frameworks": "Soporte nativo para LangChain, LlamaIndex y APIs directas"
+      "frameworks": "Soporte nativo para LangChain, LlamaIndex y APIs directas",
+      "subtitle": "Hecho por desarrolladores, para desarrolladores — integración mínima, máximo insight",
+      "integrationDesc": "Solo una línea de código para empezar a obtener insights",
+      "apiDesc": "Pensado para la mejor experiencia de desarrollo",
+      "noLockInDesc": "Libertad para cambiar de modelo y proveedor cuando quieras",
+      "frameworksDesc": "Integración perfecta con tu stack existente"
     },
 
     "audience": {
@@ -201,9 +217,13 @@
     },
 
     "waitlist": {
-      "badge": "Acceso Anticipado Limitado",
-      "title": "Únete a la revolución de observabilidad en IA",
-      "subtitle": "Estamos incorporando a un grupo selecto de usuarios iniciales. Regístrate para obtener acceso prioritario y dar forma al futuro de LLMFlow."
+      "badge": "Lista de Espera",
+      "title": "Únete a la Lista de Espera",
+      "subtitle": "Regístrate para obtener acceso anticipado y novedades"
+    },
+
+    "footer": {
+      "copyright": "© {{year}} LLMonitor."
     }
   }
 }

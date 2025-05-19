@@ -145,13 +145,17 @@
   },
   "landing": {
     "badge": "AI Observability Platform",
-    "title": "Turn AI Black Boxes into Clear Insights",
-    "subtitle": "Get deep visibility into every LLM interaction across your stack. Monitor, optimize, and debug your AI applications with precision—across all major providers.",
+    "title": {
+      "highlight": "Clear Insights",
+      "suffix": "for Your AI Models"
+    },
+    "subtitle": "Comprehensive tools to understand, optimize, and troubleshoot your LLM interactions",
     "ecosystem": "Integrated across the AI ecosystem: OpenAI, Claude, Gemini, Mistral, open-source models & more",
 
     "features": {
       "badge": "Powerful Capabilities",
       "title": "Full-spectrum visibility into your AI operations",
+      "subtitle": "Comprehensive tools to understand, optimize, and troubleshoot your LLM interactions",
       "analytics": {
         "title": "Advanced Prompt Analytics",
         "description": "Capture the full context of every LLM request with detailed metrics on inputs, outputs, latency, status codes, and token consumption."
@@ -184,7 +188,12 @@
       "integration": "Single-line SDK integration",
       "api": "Intuitive logging API",
       "noLockIn": "Provider-agnostic architecture",
-      "frameworks": "Native support for LangChain, LlamaIndex, and direct APIs"
+      "frameworks": "Native support for LangChain, LlamaIndex, and direct APIs",
+      "subtitle": "Built by developers, for developers — minimal integration effort, maximum insight",
+      "integrationDesc": "Just one line of code to start getting insights",
+      "apiDesc": "Designed with developer experience in mind",
+      "noLockInDesc": "Freedom to switch models and providers anytime",
+      "frameworksDesc": "Seamless integration with your existing stack"
     },
 
     "audience": {
@@ -200,10 +209,20 @@
       "anyoneDesc": "Replace blind debugging with comprehensive visibility into your entire LLM operation stack from prompts to completions."
     },
 
+    "dashboard": {
+      "title": "Centralized AI Monitoring Dashboard",
+      "description": "Our intuitive dashboard provides real-time metrics on prompts, completions, token usage, costs, latency, and more — enabling data-driven optimization of your AI investments.",
+      "cta": "Explore our analytics capabilities"
+    },
+
     "waitlist": {
-      "badge": "Limited Early Access",
-      "title": "Join the AI observability revolution",
-      "subtitle": "We're onboarding a select group of early users. Sign up to get priority access and shape the future of LLMFlow."
+      "badge": "Waitlist",
+      "title": "Join the Waitlist",
+      "subtitle": "Sign up to get early access and updates"
+    },
+
+    "footer": {
+      "copyright": "© {{year}} LLMonitor."
     }
   }
 }

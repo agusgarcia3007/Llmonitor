@@ -19,7 +19,6 @@ import {
   IconSearch,
   IconTool,
   IconUsers,
-  IconSparkles,
 } from "@tabler/icons-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
@@ -88,20 +87,20 @@ function FeatureCard({
 function Index() {
   const { t } = useTranslation();
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background p-4 to-background/95">
+    <div className="min-h-screen bg-gradient-to-b from-background p-4 to-background/95 flex flex-col justify-start">
       <div className="absolute top-4 right-4 z-10">
         <LanguageSwitch />
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 py-12 md:py-24 flex flex-col gap-20">
+      <div className="max-w-5xl mx-auto px-4 pt-10 md:pt-20 flex flex-col gap-12 items-center w-full">
         <motion.section
-          className="flex flex-col items-center gap-8 text-center relative"
+          className="flex flex-col items-center gap-5 text-center relative w-full"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
           <motion.div
-            className="absolute w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] -z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            className="absolute w-[400px] h-[400px] bg-primary/5 rounded-full blur-[80px] -z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.8 }}
             transition={{ duration: 1.5 }}
@@ -109,22 +108,25 @@ function Index() {
 
           <Badge
             variant="outline"
-            className="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide"
+            className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold tracking-wide mb-2"
           >
             {t("landing.badge")}
           </Badge>
 
           <motion.h1
-            className="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight max-w-2xl text-secondary-foreground"
+            className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight max-w-xl mx-auto text-secondary-foreground mb-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            {t("landing.title")}
+            <span className="text-primary font-black">
+              {t("landing.title.highlight")}
+            </span>{" "}
+            {t("landing.title.suffix")}
           </motion.h1>
 
           <motion.p
-            className="text-xl text-muted-foreground max-w-2xl leading-relaxed"
+            className="text-base md:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed mb-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
@@ -132,17 +134,10 @@ function Index() {
             {t("landing.subtitle")}
           </motion.p>
 
-          <motion.div
-            className="flex items-center gap-2 text-primary/80 font-medium"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.5 }}
-          >
-            <IconSparkles size={18} stroke={1.5} />
-            <span>{t("landing.ecosystem")}</span>
-          </motion.div>
-          <div className="flex items-center gap-2">
-            <Waitlist />
+          <div className="flex flex-col items-center gap-1 w-full">
+            <div className="w-full max-w-xs">
+              <Waitlist />
+            </div>
           </div>
         </motion.section>
 
@@ -166,8 +161,7 @@ function Index() {
                 {t("landing.features.title")}
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Comprehensive tools to understand, optimize, and troubleshoot
-                your LLM interactions
+                {t("landing.features.subtitle")}
               </p>
             </motion.div>
           </div>
@@ -222,15 +216,13 @@ function Index() {
           <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-8 md:p-12">
             <div className="max-w-3xl">
               <h3 className="text-2xl font-bold mb-4">
-                Centralized AI Monitoring Dashboard
+                {t("landing.dashboard.title")}
               </h3>
               <p className="text-muted-foreground mb-6">
-                Our intuitive dashboard provides real-time metrics on prompts,
-                completions, token usage, costs, latency, and more — enabling
-                data-driven optimization of your AI investments.
+                {t("landing.dashboard.description")}
               </p>
               <div className="flex items-center gap-2 text-primary font-medium">
-                <span>Explore our analytics capabilities</span>
+                <span>{t("landing.dashboard.cta")}</span>
                 <IconChevronRight size={18} stroke={1.5} />
               </div>
             </div>
@@ -257,8 +249,7 @@ function Index() {
                 {t("landing.developers.title")}
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Built by developers, for developers — minimal integration
-                effort, maximum insight
+                {t("landing.developers.subtitle")}
               </p>
             </motion.div>
           </div>
@@ -283,7 +274,7 @@ function Index() {
                   {t("landing.developers.integration")}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Just one line of code to start getting insights
+                  {t("landing.developers.integrationDesc")}
                 </p>
               </Card>
             </motion.div>
@@ -300,7 +291,7 @@ function Index() {
                   {t("landing.developers.api")}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Designed with developer experience in mind
+                  {t("landing.developers.apiDesc")}
                 </p>
               </Card>
             </motion.div>
@@ -317,7 +308,7 @@ function Index() {
                   {t("landing.developers.noLockIn")}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Freedom to switch models and providers anytime
+                  {t("landing.developers.noLockInDesc")}
                 </p>
               </Card>
             </motion.div>
@@ -334,7 +325,7 @@ function Index() {
                   {t("landing.developers.frameworks")}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Seamless integration with your existing stack
+                  {t("landing.developers.frameworksDesc")}
                 </p>
               </Card>
             </motion.div>
@@ -361,8 +352,7 @@ function Index() {
                 {t("landing.audience.title")}
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Whether you're building your first AI feature or scaling
-                enterprise AI systems
+                {t("landing.ecosystem")}
               </p>
             </motion.div>
           </div>
@@ -378,7 +368,7 @@ function Index() {
               <Card className="p-6 border border-border/50 bg-card/30 backdrop-blur-sm hover:border-primary/20 transition-all duration-300 h-full hover:shadow-lg group">
                 <div className="flex gap-4 items-start mb-4">
                   <div className="p-3 bg-primary/10 rounded-lg text-primary group-hover:bg-primary/15 transition-colors">
-                    <IconUsers size={22} stroke={1.5} />
+                    <IconUsers stroke={1.5} />
                   </div>
                   <div>
                     <p className="font-medium text-lg mb-1 group-hover:text-primary/90 transition-colors">
@@ -395,7 +385,7 @@ function Index() {
               <Card className="p-6 border border-border/50 bg-card/30 backdrop-blur-sm hover:border-primary/20 transition-all duration-300 h-full hover:shadow-lg group">
                 <div className="flex gap-4 items-start mb-4">
                   <div className="p-3 bg-primary/10 rounded-lg text-primary group-hover:bg-primary/15 transition-colors">
-                    <IconRocket size={22} stroke={1.5} />
+                    <IconRocket stroke={1.5} />
                   </div>
                   <div>
                     <p className="font-medium text-lg mb-1 group-hover:text-primary/90 transition-colors">
@@ -412,7 +402,7 @@ function Index() {
               <Card className="p-6 border border-border/50 bg-card/30 backdrop-blur-sm hover:border-primary/20 transition-all duration-300 h-full hover:shadow-lg group">
                 <div className="flex gap-4 items-start mb-4">
                   <div className="p-3 bg-primary/10 rounded-lg text-primary group-hover:bg-primary/15 transition-colors">
-                    <IconTool size={22} stroke={1.5} />
+                    <IconTool stroke={1.5} />
                   </div>
                   <div>
                     <p className="font-medium text-lg mb-1 group-hover:text-primary/90 transition-colors">
@@ -429,7 +419,7 @@ function Index() {
               <Card className="p-6 border border-border/50 bg-card/30 backdrop-blur-sm hover:border-primary/20 transition-all duration-300 h-full hover:shadow-lg group">
                 <div className="flex gap-4 items-start mb-4">
                   <div className="p-3 bg-primary/10 rounded-lg text-primary group-hover:bg-primary/15 transition-colors">
-                    <IconBulb size={22} stroke={1.5} />
+                    <IconBulb stroke={1.5} />
                   </div>
                   <div>
                     <p className="font-medium text-lg mb-1 group-hover:text-primary/90 transition-colors">
@@ -455,7 +445,6 @@ function Index() {
           transition={{ duration: 0.6 }}
         >
           <motion.div
-            className="absolute w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.6 }}
             transition={{ duration: 1.5 }}
@@ -476,13 +465,15 @@ function Index() {
             </p>
           </div>
 
-          <div className="w-full max-w-md">
+          <div className="w-full">
             <Waitlist />
           </div>
         </motion.section>
 
         <footer className="text-center text-sm text-muted-foreground pt-4">
-          <p>© {new Date().getFullYear()} LLMonitor.</p>
+          <p>
+            {t("landing.footer.copyright", { year: new Date().getFullYear() })}
+          </p>
         </footer>
       </div>
     </div>
