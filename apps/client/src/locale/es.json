@@ -108,5 +108,102 @@
     "filters.number.lessThanOrEqual": "menor o igual que",
     "filters.number.isBetween": "está entre",
     "filters.number.isNotBetween": "no está entre"
+  },
+  "common": {
+    "welcome": "Bienvenido a LLMFlow",
+    "comingSoon": "Próximamente",
+    "notFound": "No Encontrado",
+    "settings": "Configuración",
+    "account": "Cuenta",
+    "profile": "Perfil",
+    "billing": "Facturación",
+    "logout": "Cerrar Sesión",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "forgotPassword": "Olvidé mi Contraseña",
+    "resetPassword": "Restablecer Contraseña",
+    "error": "Error",
+    "success": "Éxito",
+    "loading": "Cargando",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "submit": "Enviar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "page": "Página",
+    "of": "de",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "first": "Primera",
+    "last": "Última",
+    "show": "Mostrar",
+    "entries": "Entradas"
+  },
+  "landing": {
+    "badge": "Plataforma de Observabilidad para IA",
+    "title": "Transforma las Cajas Negras de IA en Insights Claros",
+    "subtitle": "Obtén visibilidad profunda en cada interacción con LLMs en tu stack. Monitorea, optimiza y depura tus aplicaciones de IA con precisión—a través de todos los proveedores principales.",
+    "ecosystem": "Integrado en todo el ecosistema de IA: OpenAI, Claude, Gemini, Mistral, modelos open-source y más",
+
+    "features": {
+      "badge": "Capacidades Potentes",
+      "title": "Visibilidad completa de tus operaciones de IA",
+      "analytics": {
+        "title": "Analítica Avanzada de Prompts",
+        "description": "Captura el contexto completo de cada solicitud LLM con métricas detalladas sobre entradas, salidas, latencia, códigos de estado y consumo de tokens."
+      },
+      "multiModel": {
+        "title": "Soporte Universal de Proveedores",
+        "description": "Monitorea sin problemas OpenAI, Claude, Gemini, Mistral, Grok, Llama y modelos personalizados—todos con las mismas potentes herramientas."
+      },
+      "cost": {
+        "title": "Inteligencia de Costos y Rendimiento",
+        "description": "Identifica ineficiencias costosas, cuellos de botella de rendimiento y fallos silenciosos antes de que impacten a tus usuarios o a tu balance financiero."
+      },
+      "drift": {
+        "title": "Detección de Desviación Conductual",
+        "description": "Detecta automáticamente cambios sutiles en las salidas del modelo a lo largo del tiempo o entre diferentes proveedores para mantener experiencias de usuario consistentes."
+      },
+      "testing": {
+        "title": "Motor de Pruebas A/B en Producción",
+        "description": "Prueba estrategias de prompts competitivas, configuraciones de modelos y opciones de proveedores con usuarios reales para optimizar tanto la calidad como el costo."
+      },
+      "alerts": {
+        "title": "Sistema Inteligente de Alertas",
+        "description": "Recibe notificaciones específicas vía Slack o webhooks cuando se superan umbrales críticos de rendimiento, costo o fiabilidad."
+      }
+    },
+
+    "developers": {
+      "badge": "Diseñado para Desarrolladores",
+      "title": "Integración sin esfuerzo, insights completos",
+      "integration": "Integración SDK en una sola línea",
+      "api": "API intuitiva para registros",
+      "noLockIn": "Arquitectura agnóstica de proveedores",
+      "frameworks": "Soporte nativo para LangChain, LlamaIndex y APIs directas"
+    },
+
+    "audience": {
+      "badge": "Creado Para Constructores de IA",
+      "title": "Para todos los que navegan por la curva de complejidad de la IA",
+      "teams": "Equipos de Productos de IA",
+      "teamsDesc": "Obtén visibilidad completa sobre el rendimiento del modelo, estructuras de costos e interacciones de usuarios para crear productos de IA superiores.",
+      "startups": "Startups Impulsadas por LLM",
+      "startupsDesc": "Optimiza tu infraestructura de IA desde el principio con información detallada sobre patrones de uso, factores de costo y cuellos de botella de rendimiento.",
+      "builders": "Desarrolladores de Herramientas y Agentes",
+      "buildersDesc": "Afina tus herramientas basadas en IA con depuración precisa y monitoreo de comportamiento a través de cadenas de interacción complejas.",
+      "anyone": "Ingenieros ML y Desarrolladores",
+      "anyoneDesc": "Reemplaza la depuración a ciegas con visibilidad completa en toda tu pila de operaciones LLM, desde prompts hasta las respuestas finales."
+    },
+
+    "waitlist": {
+      "badge": "Acceso Anticipado Limitado",
+      "title": "Únete a la revolución de observabilidad en IA",
+      "subtitle": "Estamos incorporando a un grupo selecto de usuarios iniciales. Regístrate para obtener acceso prioritario y dar forma al futuro de LLMFlow."
+    }
   }
 }

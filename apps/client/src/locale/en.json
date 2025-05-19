@@ -108,5 +108,102 @@
     "filters.number.lessThanOrEqual": "less than or equal",
     "filters.number.isBetween": "is between",
     "filters.number.isNotBetween": "is not between"
+  },
+  "common": {
+    "welcome": "Welcome to LLMFlow",
+    "comingSoon": "Coming Soon",
+    "notFound": "Not Found",
+    "settings": "Settings",
+    "account": "Account",
+    "profile": "Profile",
+    "billing": "Billing",
+    "logout": "Logout",
+    "login": "Login",
+    "register": "Register",
+    "forgotPassword": "Forgot Password",
+    "resetPassword": "Reset Password",
+    "error": "Error",
+    "success": "Success",
+    "loading": "Loading",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "page": "Page",
+    "of": "of",
+    "next": "Next",
+    "previous": "Previous",
+    "first": "First",
+    "last": "Last",
+    "show": "Show",
+    "entries": "Entries"
+  },
+  "landing": {
+    "badge": "AI Observability Platform",
+    "title": "Turn AI Black Boxes into Clear Insights",
+    "subtitle": "Get deep visibility into every LLM interaction across your stack. Monitor, optimize, and debug your AI applications with precision—across all major providers.",
+    "ecosystem": "Integrated across the AI ecosystem: OpenAI, Claude, Gemini, Mistral, open-source models & more",
+
+    "features": {
+      "badge": "Powerful Capabilities",
+      "title": "Full-spectrum visibility into your AI operations",
+      "analytics": {
+        "title": "Advanced Prompt Analytics",
+        "description": "Capture the full context of every LLM request with detailed metrics on inputs, outputs, latency, status codes, and token consumption."
+      },
+      "multiModel": {
+        "title": "Universal Provider Support",
+        "description": "Seamlessly monitor OpenAI, Claude, Gemini, Mistral, Grok, Llama, and custom deployed models—all with the same powerful tooling."
+      },
+      "cost": {
+        "title": "Cost & Performance Intelligence",
+        "description": "Identify costly inefficiencies, performance bottlenecks, and silent failures before they impact your users or your bottom line."
+      },
+      "drift": {
+        "title": "Behavioral Drift Detection",
+        "description": "Automatically detect subtle changes in model outputs over time or across different providers to maintain consistent user experiences."
+      },
+      "testing": {
+        "title": "Production A/B Testing Engine",
+        "description": "Test competing prompt strategies, model configurations, and provider options with real users to optimize for both quality and cost."
+      },
+      "alerts": {
+        "title": "Intelligent Alert System",
+        "description": "Receive targeted notifications via Slack or webhooks when crucial thresholds are breached for performance, cost, or reliability."
+      }
+    },
+
+    "developers": {
+      "badge": "Developer-First Design",
+      "title": "Effortless integration, comprehensive insights",
+      "integration": "Single-line SDK integration",
+      "api": "Intuitive logging API",
+      "noLockIn": "Provider-agnostic architecture",
+      "frameworks": "Native support for LangChain, LlamaIndex, and direct APIs"
+    },
+
+    "audience": {
+      "badge": "Built For AI Builders",
+      "title": "For everyone navigating the AI complexity curve",
+      "teams": "AI Product Teams",
+      "teamsDesc": "Gain comprehensive visibility into model performance, cost structures, and user interactions to build superior AI products.",
+      "startups": "LLM-Powered Startups",
+      "startupsDesc": "Optimize your AI infrastructure early with detailed insights into usage patterns, cost drivers, and performance bottlenecks.",
+      "builders": "Tool & Agent Developers",
+      "buildersDesc": "Fine-tune your AI-powered tools with precision debugging and behavior monitoring across complex interaction chains.",
+      "anyone": "ML Engineers & Developers",
+      "anyoneDesc": "Replace blind debugging with comprehensive visibility into your entire LLM operation stack from prompts to completions."
+    },
+
+    "waitlist": {
+      "badge": "Limited Early Access",
+      "title": "Join the AI observability revolution",
+      "subtitle": "We're onboarding a select group of early users. Sign up to get priority access and shape the future of LLMFlow."
+    }
   }
 }
