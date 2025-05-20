@@ -1,30 +1,20 @@
-# Etapa base
-FROM oven/bun:1.1.4 as base
+# Imagen base con Bun
+FROM oven/bun:1.1.4
 
-# Establecer el directorio de trabajo
+# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiar archivos del monorepo al contenedor
-COPY ../../pnpm-workspace.yaml ./
-COPY ../../package.json ./
-COPY ../../pnpm-lock.yaml ./
-COPY ../../apps/server ./apps/server
-COPY ../../packages ./packages
+# Copiamos todo el contenido local de apps/server al contenedor
+COPY . .
 
-# Instalar pnpm
+# Instala pnpm de forma global
 RUN bun add -g pnpm
 
-# Instalar dependencias del workspace
+# Instala las dependencias usando pnpm
 RUN pnpm install --frozen-lockfile
 
-# Entrar al server
-WORKDIR /app/apps/server
-
-# (opcional) build si tu app lo necesita
-# RUN bun run build
-
-# Puerto expuesto (opcional si usás Docker standalone)
+# Expone el puerto (Railway va a mapear su propio $PORT a este)
 EXPOSE 3000
 
-# Comando de inicio
+# Comando para iniciar la app
 CMD ["bun", "run", "src/index.ts"]
