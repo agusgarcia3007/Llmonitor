@@ -4,12 +4,12 @@ FROM oven/bun:1 AS builder
 WORKDIR /app
 
 # Copy package files first for better caching
-COPY ../../pnpm-lock.yaml ./pnpm-lock.yaml
-COPY package.json ./
+COPY pnpm-lock.yaml ./pnpm-lock.yaml
+COPY apps/server/package.json ./
 RUN pnpm install --frozen-lockfile
 
 # Copy rest of the files
-COPY . ./
+COPY apps/server ./
 
 # Build the binary
 RUN pnpm build
