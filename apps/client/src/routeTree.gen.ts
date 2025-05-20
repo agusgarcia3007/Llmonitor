@@ -14,7 +14,6 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/_dashboard/route'
 import { Route as AuthRouteImport } from './routes/_auth/route'
 import { Route as IndexImport } from './routes/index'
-import { Route as DashboardOrdersImport } from './routes/_dashboard/orders'
 import { Route as DashboardDashboardImport } from './routes/_dashboard/dashboard'
 import { Route as AuthSignupImport } from './routes/_auth/signup'
 import { Route as AuthLoginImport } from './routes/_auth/login'
@@ -35,12 +34,6 @@ const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
-} as any)
-
-const DashboardOrdersRoute = DashboardOrdersImport.update({
-  id: '/orders',
-  path: '/orders',
-  getParentRoute: () => DashboardRouteRoute,
 } as any)
 
 const DashboardDashboardRoute = DashboardDashboardImport.update({
@@ -107,13 +100,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardDashboardImport
       parentRoute: typeof DashboardRouteImport
     }
-    '/_dashboard/orders': {
-      id: '/_dashboard/orders'
-      path: '/orders'
-      fullPath: '/orders'
-      preLoaderRoute: typeof DashboardOrdersImport
-      parentRoute: typeof DashboardRouteImport
-    }
   }
 }
 
@@ -135,12 +121,10 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 
 interface DashboardRouteRouteChildren {
   DashboardDashboardRoute: typeof DashboardDashboardRoute
-  DashboardOrdersRoute: typeof DashboardOrdersRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardDashboardRoute: DashboardDashboardRoute,
-  DashboardOrdersRoute: DashboardOrdersRoute,
 }
 
 const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
@@ -153,7 +137,6 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
   '/dashboard': typeof DashboardDashboardRoute
-  '/orders': typeof DashboardOrdersRoute
 }
 
 export interface FileRoutesByTo {
@@ -162,7 +145,6 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
   '/dashboard': typeof DashboardDashboardRoute
-  '/orders': typeof DashboardOrdersRoute
 }
 
 export interface FileRoutesById {
@@ -173,14 +155,13 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/signup': typeof AuthSignupRoute
   '/_dashboard/dashboard': typeof DashboardDashboardRoute
-  '/_dashboard/orders': typeof DashboardOrdersRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '' | '/login' | '/signup' | '/dashboard' | '/orders'
+  fullPaths: '/' | '' | '/login' | '/signup' | '/dashboard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/login' | '/signup' | '/dashboard' | '/orders'
+  to: '/' | '' | '/login' | '/signup' | '/dashboard'
   id:
     | '__root__'
     | '/'
@@ -189,7 +170,6 @@ export interface FileRouteTypes {
     | '/_auth/login'
     | '/_auth/signup'
     | '/_dashboard/dashboard'
-    | '/_dashboard/orders'
   fileRoutesById: FileRoutesById
 }
 
@@ -233,8 +213,7 @@ export const routeTree = rootRoute
     "/_dashboard": {
       "filePath": "_dashboard/route.tsx",
       "children": [
-        "/_dashboard/dashboard",
-        "/_dashboard/orders"
+        "/_dashboard/dashboard"
       ]
     },
     "/_auth/login": {
@@ -247,10 +226,6 @@ export const routeTree = rootRoute
     },
     "/_dashboard/dashboard": {
       "filePath": "_dashboard/dashboard.tsx",
-      "parent": "/_dashboard"
-    },
-    "/_dashboard/orders": {
-      "filePath": "_dashboard/orders.tsx",
       "parent": "/_dashboard"
     }
   }
