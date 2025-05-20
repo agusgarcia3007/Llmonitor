@@ -1,20 +1,25 @@
-# Imagen base con Bun
-FROM oven/bun:1.1.4
+# Build stage
+FROM oven/bun:1 AS builder
 
-# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiamos todo el contenido local de apps/server al contenedor
-COPY . .
+# Copy package files first for better caching
+COPY package.json ./
+RUN bun install
 
-# Instala pnpm de forma global
-RUN bun add -g pnpm
+# Copy rest of the files
+COPY . ./
 
-# Instala las dependencias usando pnpm
-RUN pnpm install --frozen-lockfile
+# Build the binary
+RUN bun build src/index.ts --compile --outfile server
 
-# Expone el puerto (Railway va a mapear su propio $PORT a este)
-EXPOSE 3000
+# Final stage
+FROM debian:bookworm-slim
 
-# Comando para iniciar la app
-CMD ["bun", "run", "src/index.ts"]
+WORKDIR /app
+
+# Copy only the compiled binary
+COPY --from=builder /app/server ./server
+
+# Run the binary
+CMD ["./server"]
