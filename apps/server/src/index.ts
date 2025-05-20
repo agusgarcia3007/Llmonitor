@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { CORS_OPTIONS } from "@/lib/constants";
 import { sessionMiddleware } from "@/middleware/auth";
-import { ROUTES } from "@/routes";
+// import { ROUTES } from "@/routes";
 import { HonoApp } from "@/types";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -21,9 +21,9 @@ app.get("/", (c) => {
   return c.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-ROUTES.forEach((route) => {
-  app.route(route.path, route.handler);
-});
+// ROUTES.forEach((route) => {
+//   app.route(route.path, route.handler);
+// });
 
 app.onError((err, c) => {
   console.error(err);
