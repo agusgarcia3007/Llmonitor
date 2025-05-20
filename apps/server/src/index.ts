@@ -3,6 +3,7 @@ import { CORS_OPTIONS } from "@/lib/constants";
 import { sessionMiddleware } from "@/middleware/auth";
 import { ROUTES } from "@/routes";
 import { HonoApp } from "@/types";
+import { serve } from "bun";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
@@ -29,7 +30,10 @@ app.onError((err, c) => {
   return c.text("Internal Server Error", 500);
 });
 
-export default {
-  port: Bun.env.PORT || 4444,
+const port = parseInt(Bun.env.PORT || "3000", 10);
+console.log(`🚀 Server running at http://localhost:${port}`);
+
+serve({
   fetch: app.fetch,
-};
+  port,
+});
