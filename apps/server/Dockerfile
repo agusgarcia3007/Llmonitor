@@ -12,7 +12,7 @@ RUN pnpm install --frozen-lockfile
 COPY apps/server ./
 
 # Build the binary
-RUN pnpm build
+RUN bun build ./src/index.ts --compile --outfile server
 
 # Final stage
 FROM debian:bookworm-slim
