@@ -5,6 +5,7 @@ WORKDIR /app
 
 # Copy package files first for better caching
 COPY package.json ./
+RUN apt-get update -y && apt-get install -y openssl
 RUN bun install
 
 # Copy rest of the files
