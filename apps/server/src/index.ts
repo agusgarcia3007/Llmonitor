@@ -3,11 +3,11 @@ import { CORS_OPTIONS } from "@/lib/constants";
 import { sessionMiddleware } from "@/middleware/auth";
 import { ROUTES } from "@/routes";
 import { HonoApp } from "@/types";
-import { serve } from "bun";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
+import { serve } from "bun";
 
 const app = new Hono<HonoApp>()
   .use(cors(CORS_OPTIONS))
@@ -30,7 +30,7 @@ app.onError((err, c) => {
   return c.text("Internal Server Error", 500);
 });
 
-const port = parseInt(Bun.env.PORT || "3000", 10);
+const port = parseInt(Bun.env.PORT || "4444", 10);
 console.log(`🚀 Server running at http://localhost:${port}`);
 
 serve({
