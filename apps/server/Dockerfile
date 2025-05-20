@@ -3,24 +3,24 @@ FROM oven/bun:1 AS builder
 
 WORKDIR /app
 
-# Copy package files first for better caching
 COPY pnpm-lock.yaml ./
-COPY apps/server/package.json ./
-RUN pnpm install --frozen-lockfile
+COPY package.json ./
+COPY apps/server/package.json ./apps/server/
+COPY apps/server/tsconfig.json ./apps/server/
+COPY apps/server/prisma ./apps/server/prisma
+COPY apps/server/src ./apps/server/src
+COPY apps/server/generated ./apps/server/generated
 
-# Copy rest of the files
-COPY apps/server ./
-
-# Build the binary
-RUN bun build ./src/index.ts --compile --outfile server
+RUN cd apps/server && bun install --frozen-lockfile
+RUN cd apps/server && bun build ./src/index.ts --compile --outfile server
 
 # Final stage
 FROM debian:bookworm-slim
 
 WORKDIR /app
 
-# Copy only the compiled binary
-COPY --from=builder /app/server ./server
+COPY --from=builder /app/apps/server/server ./server
+COPY --from=builder /app/apps/server/generated ./generated
+COPY --from=builder /app/apps/server/prisma ./prisma
 
-# Run the binary
 CMD ["./server"]%
