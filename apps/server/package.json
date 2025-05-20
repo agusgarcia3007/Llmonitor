@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "bun run src/index.ts",
     "start": "bun run src/index.ts",
-    "build": "bun build ./src/index.ts --compile --outfile server"
+    "build": "bun build ./src/index.ts --compile --outfile server",
+    "postinstall": "bun prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
@@ -19,5 +20,6 @@
   },
   "engines": {
     "bun": "1.1.4"
-  }
+  },
+  "packageManager": "pnpm@10.11.0"
 }
