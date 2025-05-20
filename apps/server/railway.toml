@@ -1,3 +1,0 @@
-[deploy]
-preDeployCommand = ["bunx prisma migrate deploy"]
-startCommand = "./server" 

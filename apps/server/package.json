@@ -1,8 +1,10 @@
 {
   "name": "server",
+  "private": true,
+  "version": "1.0.0",
   "scripts": {
-    "dev": "pnpm run --hot src/index.ts",
-    "start": "pnpm run src/index.ts",
+    "dev": "bun run src/index.ts",
+    "start": "bun run src/index.ts",
     "build": "bun build ./src/index.ts --compile --outfile server"
   },
   "dependencies": {
@@ -14,5 +16,8 @@
   },
   "devDependencies": {
     "@types/bun": "latest"
+  },
+  "engines": {
+    "bun": "1.1.4"
   }
 }
