@@ -1,9 +1,9 @@
 {
   "name": "server",
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
-    "start": "bun run src/index.ts",
-    "build": "bun build ./src/index.ts --compile --outfile server"
+    "dev": "pnpm run --hot src/index.ts",
+    "start": "pnpm run src/index.ts",
+    "build": "pnpm build ./src/index.ts --compile --outfile server"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
