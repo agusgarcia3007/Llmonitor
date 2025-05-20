@@ -5,8 +5,7 @@ WORKDIR /app
 
 # Copy package files first for better caching
 COPY package.json ./
-RUN apt-get update -y && apt-get install -y openssl
-RUN bun install
+RUN bun install 
 
 # Copy rest of the files
 COPY . ./
@@ -21,7 +20,6 @@ WORKDIR /app
 
 # Copy only the compiled binary
 COPY --from=builder /app/server ./server
-COPY --from=builder /app/prisma ./prisma
 
 # Run the binary
 CMD ["./server"]
