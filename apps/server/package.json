@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "pnpm run --hot src/index.ts",
     "start": "pnpm run src/index.ts",
-    "build": "pnpm build ./src/index.ts --compile --outfile server"
+    "build": "bun build ./src/index.ts --compile --outfile server"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
