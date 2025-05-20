@@ -21,6 +21,7 @@ WORKDIR /app
 
 # Copy only the compiled binary
 COPY --from=builder /app/server ./server
+COPY --from=builder /app/prisma ./prisma
 
 # Run the binary
 CMD ["./server"]
