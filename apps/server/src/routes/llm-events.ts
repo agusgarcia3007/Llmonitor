@@ -1,4 +1,4 @@
-import { logEvent } from "@/controllers/llm-events";
+import { logEvent, getEvents } from "@/controllers/llm-events";
 import { endpointBuilder, HttpMethod } from "@/lib/endpoint-builder";
 import { HonoApp } from "@/types";
 import { Hono } from "hono";
@@ -9,6 +9,13 @@ endpointBuilder({
   path: "/",
   method: HttpMethod.POST,
   body: logEvent,
+  isPrivate: true,
+})(llmEventsRouter);
+
+endpointBuilder({
+  path: "/",
+  method: HttpMethod.GET,
+  body: getEvents,
   isPrivate: true,
 })(llmEventsRouter);
 

@@ -11,6 +11,11 @@ export enum HttpMethod {
   PATCH = "PATCH",
 }
 
+export enum SORT_ORDER {
+  ASC = "asc",
+  DESC = "desc",
+}
+
 interface EndpointBuilderParams {
   path: string;
   method: HttpMethod;
