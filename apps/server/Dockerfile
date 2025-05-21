@@ -3,7 +3,7 @@ FROM oven/bun:1 AS builder
 
 WORKDIR /app
 
-RUN npm install -g pnpm
+RUN bun install -g pnpm
 
 # Copy package files first for better caching
 COPY package.json ./
