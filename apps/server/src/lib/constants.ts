@@ -11,18 +11,3 @@ export const CORS_OPTIONS = {
   maxAge: 600,
   credentials: true,
 };
-
-// Order status values
-export const ORDER_STATUSES = [
-  "pending",
-  "processing",
-  "shipped",
-  "delivered",
-  "cancelled",
-] as const;
-
-export type OrderStatus = (typeof ORDER_STATUSES)[number];
-
-export const ORDER_CHANNELS = ["tiendanube", "mercadolibre"] as const;
-
-export type OrderChannel = (typeof ORDER_CHANNELS)[number];
