@@ -52,6 +52,7 @@ export const auth = betterAuth({
             .select()
             .from(schema.member)
             .where(eq(schema.member.userId, user.id));
+          console.log({ orgs });
           if (orgs.length === 0) {
             const orgName = `${user.email.split("@")[0]}-${randomUUID().slice(
               0,
