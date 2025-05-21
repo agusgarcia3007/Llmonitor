@@ -4,6 +4,10 @@ import {
   timestamp,
   boolean,
   integer,
+  serial,
+  uuid,
+  real,
+  json,
 } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
@@ -24,6 +28,7 @@ export const user = pgTable("user", {
   banned: boolean("banned"),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
+  lastActiveOrganizationId: text("last_active_organization_id"),
 });
 
 export const session = pgTable("session", {
@@ -105,4 +110,33 @@ export const invitation = pgTable("invitation", {
   inviterId: text("inviter_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
+});
+
+export const llm_event = pgTable("llm_event", {
+  id: serial("id").primaryKey(),
+  organization_id: text("organization_id")
+    .notNull()
+    .references(() => organization.id, { onDelete: "cascade" }),
+  session_id: text("session_id"),
+  request_id: text("request_id"),
+  provider: text("provider").notNull(),
+  model: text("model").notNull(),
+  temperature: real("temperature"),
+  max_tokens: integer("max_tokens"),
+  prompt: text("prompt").notNull(),
+  prompt_tokens: integer("prompt_tokens"),
+  completion: text("completion").notNull(),
+  completion_tokens: integer("completion_tokens"),
+  latency_ms: integer("latency_ms"),
+  status: integer("status"),
+  cost_usd: real("cost_usd"),
+  score: integer("score"),
+  version_tag: text("version_tag"),
+  metadata: json("metadata"),
+  created_at: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updated_at: timestamp("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
 });

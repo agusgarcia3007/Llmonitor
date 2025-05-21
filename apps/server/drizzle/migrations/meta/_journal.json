@@ -15,6 +15,20 @@
       "when": 1747773159609,
       "tag": "0001_living_mongu",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1747847424022,
+      "tag": "0002_heavy_lord_hawal",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1747849794445,
+      "tag": "0003_numerous_hitman",
+      "breakpoints": true
     }
   ]
 }

@@ -33,7 +33,7 @@ app.onError((err, c) => {
 const port = parseInt(Bun.env.PORT || "4444", 10);
 console.log(`🚀 Server running at http://localhost:${port}`);
 
-serve({
+export default {
   fetch: app.fetch,
   port,
-});
+};

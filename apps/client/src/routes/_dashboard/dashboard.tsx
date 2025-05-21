@@ -1,8 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { authClient } from "@/lib/auth-client";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,109 +9,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  CardContent,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
-import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_dashboard/dashboard")({
   component: Dashboard,
 });
 
 export function Dashboard() {
-  const { t } = useTranslation("onboarding");
-  const [showOnboarding, setShowOnboarding] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const form = useForm({
-    defaultValues: {
-      name: "",
-      slug: "",
-    },
-  });
-
-  useEffect(() => {
-    let mounted = true;
-    authClient.organization.list().then((res) => {
-      if (mounted) setShowOnboarding(!res.data || res.data.length === 0);
-    });
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  const onSubmit = async (values: { name: string; slug: string }) => {
-    setLoading(true);
-
-    await authClient.organization.create({
-      name: values.name,
-      slug: values.slug,
-    });
-    setShowOnboarding(false);
-    window.location.reload();
-
-    setLoading(false);
-  };
-
-  if (showOnboarding) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <Card className="max-w-md w-full">
-          <CardHeader>
-            <CardTitle>{t("welcomeTitle")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">{t("welcomeDescription")}</p>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="flex flex-col gap-4"
-              >
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("orgNamePlaceholder")}</FormLabel>
-                      <FormControl>
-                        <Input {...field} required />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="slug"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("orgSlugPlaceholder")}</FormLabel>
-                      <FormControl>
-                        <Input {...field} required />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" isLoading={loading} className="w-full">
-                  {t("createOrgButton")}
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card">
