@@ -8,6 +8,7 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { serve } from "bun";
+import { ROUTES } from "./routes";
 
 const app = new Hono<HonoApp>()
   .use(cors(CORS_OPTIONS))
@@ -21,9 +22,9 @@ app.get("/", (c) => {
   return c.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// ROUTES.forEach((route) => {
-//   app.route(route.path, route.handler);
-// });
+ROUTES.forEach((route) => {
+  app.route(route.path, route.handler);
+});
 
 app.onError((err, c) => {
   console.error(err);
@@ -31,7 +32,6 @@ app.onError((err, c) => {
 });
 
 const port = parseInt(Bun.env.PORT || "4444", 10);
-console.log(`🚀 Server running at http://localhost:${port}`);
 
 export default {
   fetch: app.fetch,

@@ -46,6 +46,11 @@ const data = {
       url: "/orders",
       icon: IconListDetails,
     },
+    {
+      title: "Logs",
+      url: "/logs",
+      icon: IconReport,
+    },
   ],
   navClouds: [
     {

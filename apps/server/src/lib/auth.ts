@@ -48,34 +48,36 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (user, request) => {
-          const orgs = await db
-            .select()
-            .from(schema.member)
-            .where(eq(schema.member.userId, user.id));
-          console.log({ orgs });
-          if (orgs.length === 0) {
-            const orgName = `${user.email.split("@")[0]}-${randomUUID().slice(
-              0,
-              4
-            )}`;
-            const orgId = randomUUID();
-            await db.insert(schema.organization).values({
-              id: orgId,
-              name: orgName,
-              createdAt: new Date(),
-            });
-            await db.insert(schema.member).values({
-              id: randomUUID(),
-              userId: user.id,
-              organizationId: orgId,
-              role: "owner",
-              createdAt: new Date(),
-            });
-            // Persiste la organización activa en el usuario
-            await db
-              .update(schema.user)
-              .set({ lastActiveOrganizationId: orgId })
-              .where(eq(schema.user.id, user.id));
+          try {
+            const orgs = await db
+              .select()
+              .from(schema.member)
+              .where(eq(schema.member.userId, user.id));
+            if (orgs.length === 0) {
+              const orgName = `${user.email.split("@")[0]}-${randomUUID().slice(
+                0,
+                4
+              )}`;
+              const orgId = randomUUID();
+              await db.insert(schema.organization).values({
+                id: orgId,
+                name: orgName,
+                createdAt: new Date(),
+              });
+              await db.insert(schema.member).values({
+                id: randomUUID(),
+                userId: user.id,
+                organizationId: orgId,
+                role: "owner",
+                createdAt: new Date(),
+              });
+              await db
+                .update(schema.user)
+                .set({ lastActiveOrganizationId: orgId })
+                .where(eq(schema.user.id, user.id));
+            }
+          } catch (error) {
+            console.error(error);
           }
         },
       },
