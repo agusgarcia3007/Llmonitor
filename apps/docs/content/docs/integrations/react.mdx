@@ -1,0 +1,739 @@
+---
+title: React Integration
+description: React hooks and components for LLMonitor
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+The **@llmonitor/react** package provides React-specific hooks and components for seamless LLM monitoring in React applications.
+
+## Quick Setup
+
+<Steps>
+
+<Step>
+
+### Install Dependencies
+
+<Tabs items={['npm', 'yarn', 'pnpm']}>
+
+<Tab value="npm">```bash npm install @llmonitor/react @llmonitor/sdk ```</Tab>
+
+<Tab value="yarn">```bash yarn add @llmonitor/react @llmonitor/sdk ```</Tab>
+
+<Tab value="pnpm">```bash pnpm add @llmonitor/react @llmonitor/sdk ```</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step>
+
+### Wrap Your App
+
+```jsx
+import { LLMonitorProvider } from "@llmonitor/react";
+
+function App() {
+  return (
+    <LLMonitorProvider
+      config={{
+        apiKey: "your-llmonitor-key",
+        sessionId: "user-session-123",
+        versionTag: "v1.0.0",
+      }}
+    >
+      <YourApp />
+    </LLMonitorProvider>
+  );
+}
+```
+
+</Step>
+
+<Step>
+
+### Use in Components
+
+```jsx
+import { useLLMonitor } from "@llmonitor/react";
+
+function ChatComponent() {
+  const { track, logEvent, sessionId, setSessionId } = useLLMonitor();
+
+  const handleAICall = async () => {
+    await track('chat-completion', async () => {
+      // Your LLM logic here
+      return await openai.chat.completions.create({...});
+    });
+  };
+
+  return (
+    <button onClick={handleAICall}>
+      Send Message
+    </button>
+  );
+}
+```
+
+</Step>
+
+</Steps>
+
+## Core Components
+
+### LLMonitorProvider
+
+The root provider that manages LLMonitor configuration and state.
+
+```jsx
+import { LLMonitorProvider } from "@llmonitor/react";
+
+function App() {
+  return (
+    <LLMonitorProvider
+      config={{
+        apiKey: process.env.REACT_APP_LLMONITOR_API_KEY,
+        baseURL: "https://api.llmonitor.com",
+        debug: process.env.NODE_ENV === "development",
+        sessionId: getCurrentUser()?.id,
+        versionTag: "v2.1.0",
+        metadata: {
+          environment: process.env.NODE_ENV,
+          appVersion: "1.0.0",
+        },
+      }}
+    >
+      <Router>
+        <Routes>{/* Your app routes */}</Routes>
+      </Router>
+    </LLMonitorProvider>
+  );
+}
+```
+
+## Available Hooks
+
+### useLLMonitor
+
+Primary hook for LLM tracking and logging.
+
+```jsx
+import { useLLMonitor } from "@llmonitor/react";
+
+function AIComponent() {
+  const {
+    track, // Track operations with automatic error handling
+    logEvent, // Manually log events
+    isLoading, // Loading state
+    sessionId, // Current session ID
+    setSessionId, // Update session ID
+    monitor, // Direct access to LLMonitor instance
+  } = useLLMonitor();
+
+  const generateText = async () => {
+    const result = await track("text-generation", async () => {
+      const response = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [{ role: "user", content: "Hello!" }],
+      });
+      return response.choices[0].message.content;
+    });
+
+    return result;
+  };
+
+  return (
+    <div>
+      <button onClick={generateText} disabled={isLoading}>
+        {isLoading ? "Generating..." : "Generate Text"}
+      </button>
+    </div>
+  );
+}
+```
+
+### useLLMTracking
+
+Specialized hook for tracking LLM operations with additional metadata.
+
+```jsx
+import { useLLMTracking } from "@llmonitor/react";
+
+function ChatInterface() {
+  const { track, isLoading, error, lastEvent } = useLLMTracking({
+    sessionId: "chat-session-123",
+    versionTag: "chat-v1",
+    metadata: {
+      feature: "customer-support",
+      userId: user.id,
+    },
+  });
+
+  const sendMessage = async (message) => {
+    const response = await track("chat-message", async () => {
+      return await anthropic.messages.create({
+        model: "claude-3-sonnet-20240229",
+        messages: [{ role: "user", content: message }],
+        max_tokens: 300,
+      });
+    });
+
+    return response;
+  };
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  return (
+    <div>
+      <ChatMessages />
+      <MessageInput onSend={sendMessage} disabled={isLoading} />
+      {lastEvent && <div>Last operation: {lastEvent.latency_ms}ms</div>}
+    </div>
+  );
+}
+```
+
+## Higher-Order Component
+
+### withLLMonitor
+
+HOC for class components or when you need to inject LLMonitor props.
+
+```jsx
+import { withLLMonitor } from "@llmonitor/react";
+
+class LegacyChatComponent extends React.Component {
+  handleAICall = async () => {
+    const { llmonitor } = this.props;
+
+    await llmonitor.logEvent({
+      provider: "openai",
+      model: "gpt-3.5-turbo",
+      prompt: "Hello!",
+      completion: "Hi there!",
+      status: 200,
+    });
+  };
+
+  render() {
+    const { llmonitor } = this.props;
+
+    return (
+      <div>
+        <button onClick={this.handleAICall}>Send Message</button>
+        <div>Session: {llmonitor.sessionId}</div>
+      </div>
+    );
+  }
+}
+
+export default withLLMonitor(LegacyChatComponent);
+```
+
+## Real-World Examples
+
+### Chat Application
+
+```jsx
+import { useLLMonitor } from "@llmonitor/react";
+import { useState } from "react";
+
+function ChatApp() {
+  const { track, sessionId, setSessionId } = useLLMonitor();
+  const [messages, setMessages] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
+
+  const sendMessage = async (userMessage) => {
+    // Add user message immediately
+    setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
+    setIsTyping(true);
+
+    try {
+      const aiResponse = await track("chat-completion", async () => {
+        const response = await openai.chat.completions.create({
+          model: "gpt-4",
+          messages: [...messages, { role: "user", content: userMessage }],
+          temperature: 0.7,
+        });
+
+        return response.choices[0].message.content;
+      });
+
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: aiResponse },
+      ]);
+    } catch (error) {
+      console.error("Chat error:", error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "Sorry, I encountered an error.",
+        },
+      ]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  const startNewSession = () => {
+    setSessionId(`chat-${Date.now()}`);
+    setMessages([]);
+  };
+
+  return (
+    <div className="chat-container">
+      <div className="chat-header">
+        <span>Session: {sessionId}</span>
+        <button onClick={startNewSession}>New Chat</button>
+      </div>
+
+      <div className="messages">
+        {messages.map((msg, i) => (
+          <div key={i} className={`message ${msg.role}`}>
+            {msg.content}
+          </div>
+        ))}
+        {isTyping && <div className="typing">AI is typing...</div>}
+      </div>
+
+      <MessageInput onSend={sendMessage} disabled={isTyping} />
+    </div>
+  );
+}
+```
+
+### Document Analysis
+
+```jsx
+import { useLLMTracking } from "@llmonitor/react";
+
+function DocumentAnalyzer() {
+  const [document, setDocument] = useState(null);
+  const [analysis, setAnalysis] = useState(null);
+
+  const { track, isLoading, error } = useLLMTracking({
+    metadata: { feature: "document-analysis" },
+  });
+
+  const analyzeDocument = async (file) => {
+    const documentText = await file.text();
+
+    const result = await track("document-analysis", async () => {
+      const response = await anthropic.messages.create({
+        model: "claude-3-sonnet-20240229",
+        messages: [
+          {
+            role: "user",
+            content: `Analyze this document and provide:
+          1. Main topics
+          2. Key insights
+          3. Summary
+          
+          Document: ${documentText}`,
+          },
+        ],
+        max_tokens: 1000,
+      });
+
+      return response.content[0].text;
+    });
+
+    setAnalysis(result);
+  };
+
+  return (
+    <div>
+      <input
+        type="file"
+        accept=".txt,.md,.pdf"
+        onChange={(e) => analyzeDocument(e.target.files[0])}
+        disabled={isLoading}
+      />
+
+      {isLoading && <div>Analyzing document...</div>}
+      {error && <div>Error: {error.message}</div>}
+      {analysis && (
+        <div className="analysis-result">
+          <h3>Analysis Result</h3>
+          <pre>{analysis}</pre>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+### A/B Testing
+
+```jsx
+import { useLLMonitor } from "@llmonitor/react";
+import { useEffect, useState } from "react";
+
+function ABTestingChat() {
+  const { track, setSessionId } = useLLMonitor();
+  const [variant, setVariant] = useState(null);
+
+  useEffect(() => {
+    // Randomly assign A/B test variant
+    const testVariant = Math.random() > 0.5 ? "prompt-v1" : "prompt-v2";
+    setVariant(testVariant);
+    setSessionId(`ab-test-${testVariant}-${Date.now()}`);
+  }, [setSessionId]);
+
+  const generateResponse = async (userInput) => {
+    const systemPrompts = {
+      "prompt-v1": "You are a helpful assistant. Be concise and direct.",
+      "prompt-v2":
+        "You are a friendly assistant. Be warm and detailed in your responses.",
+    };
+
+    return await track(
+      "ab-test-completion",
+      async () => {
+        const response = await openai.chat.completions.create({
+          model: "gpt-4",
+          messages: [
+            { role: "system", content: systemPrompts[variant] },
+            { role: "user", content: userInput },
+          ],
+        });
+
+        return response.choices[0].message.content;
+      },
+      {
+        versionTag: variant,
+        metadata: {
+          experimentName: "system-prompt-test",
+          variant,
+        },
+      }
+    );
+  };
+
+  if (!variant) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <div>Testing variant: {variant}</div>
+      <ChatInterface onSubmit={generateResponse} />
+    </div>
+  );
+}
+```
+
+## Advanced Patterns
+
+### Custom Hooks
+
+```jsx
+// useAICompletion.js
+import { useLLMonitor } from "@llmonitor/react";
+import { useState, useCallback } from "react";
+
+export function useAICompletion(provider = "openai") {
+  const { track } = useLLMonitor();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState(null);
+
+  const complete = useCallback(
+    async (prompt, options = {}) => {
+      setIsGenerating(true);
+      setError(null);
+
+      try {
+        const result = await track(
+          `${provider}-completion`,
+          async () => {
+            switch (provider) {
+              case "openai":
+                return await openaiCompletion(prompt, options);
+              case "anthropic":
+                return await anthropicCompletion(prompt, options);
+              case "google":
+                return await googleCompletion(prompt, options);
+              default:
+                throw new Error(`Unsupported provider: ${provider}`);
+            }
+          },
+          {
+            metadata: { provider, ...options.metadata },
+          }
+        );
+
+        return result;
+      } catch (err) {
+        setError(err);
+        throw err;
+      } finally {
+        setIsGenerating(false);
+      }
+    },
+    [track, provider]
+  );
+
+  return {
+    complete,
+    isGenerating,
+    error,
+  };
+}
+
+// Usage
+function MyComponent() {
+  const { complete, isGenerating, error } = useAICompletion("anthropic");
+
+  const handleGenerate = async () => {
+    try {
+      const result = await complete("Write a haiku about React");
+      console.log(result);
+    } catch (error) {
+      console.error("Generation failed:", error);
+    }
+  };
+
+  return (
+    <button onClick={handleGenerate} disabled={isGenerating}>
+      {isGenerating ? "Generating..." : "Generate Haiku"}
+    </button>
+  );
+}
+```
+
+### Context-Aware Components
+
+```jsx
+// UserContext integration
+function UserAwareChat() {
+  const { user } = useContext(UserContext);
+  const { track, setSessionId } = useLLMonitor();
+
+  useEffect(() => {
+    if (user) {
+      setSessionId(`user-${user.id}-${Date.now()}`);
+    }
+  }, [user, setSessionId]);
+
+  const personalizedChat = async (message) => {
+    return await track(
+      "personalized-chat",
+      async () => {
+        const response = await openai.chat.completions.create({
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content: `You are chatting with ${user.name}, a ${user.role} at ${user.company}. Tailor your responses accordingly.`,
+            },
+            { role: "user", content: message },
+          ],
+        });
+
+        return response.choices[0].message.content;
+      },
+      {
+        metadata: {
+          userId: user.id,
+          userRole: user.role,
+          company: user.company,
+        },
+      }
+    );
+  };
+
+  return <ChatInterface onMessage={personalizedChat} />;
+}
+```
+
+## Performance Optimization
+
+### Memoization
+
+```jsx
+import { useLLMonitor } from "@llmonitor/react";
+import { useMemo, useCallback } from "react";
+
+function OptimizedAIComponent({ config, user }) {
+  const { track } = useLLMonitor();
+
+  // Memoize expensive operations
+  const memoizedPrompt = useMemo(() => {
+    return generatePromptTemplate(config, user);
+  }, [config.templateId, user.preferences]);
+
+  const optimizedTrack = useCallback(
+    async (operation) => {
+      return await track("ai-operation", operation, {
+        metadata: {
+          userId: user.id,
+          configId: config.id,
+        },
+      });
+    },
+    [track, user.id, config.id]
+  );
+
+  return <div>{/* Component content */}</div>;
+}
+```
+
+### Batch Operations
+
+```jsx
+function BatchProcessor() {
+  const { track } = useLLMonitor();
+  const [queue, setQueue] = useState([]);
+  const [processing, setProcessing] = useState(false);
+
+  const processBatch = useCallback(async () => {
+    if (queue.length === 0 || processing) return;
+
+    setProcessing(true);
+
+    await track(
+      "batch-processing",
+      async () => {
+        const results = [];
+        for (const item of queue) {
+          const result = await processItem(item);
+          results.push(result);
+        }
+        return results;
+      },
+      {
+        metadata: {
+          batchSize: queue.length,
+          timestamp: Date.now(),
+        },
+      }
+    );
+
+    setQueue([]);
+    setProcessing(false);
+  }, [queue, processing, track]);
+
+  const addToQueue = (item) => {
+    setQueue((prev) => [...prev, item]);
+  };
+
+  return (
+    <div>
+      <button onClick={addToQueue}>Add Item</button>
+      <button onClick={processBatch} disabled={processing}>
+        Process Batch ({queue.length})
+      </button>
+    </div>
+  );
+}
+```
+
+## Error Handling
+
+```jsx
+import { useLLMonitor } from "@llmonitor/react";
+import { ErrorBoundary } from "react-error-boundary";
+
+function ErrorFallback({ error, resetErrorBoundary }) {
+  const { logEvent } = useLLMonitor();
+
+  useEffect(() => {
+    logEvent({
+      provider: "react",
+      model: "error-boundary",
+      prompt: "Component error",
+      completion: error.message,
+      status: 500,
+      metadata: {
+        error: error.message,
+        stack: error.stack,
+      },
+    });
+  }, [error, logEvent]);
+
+  return (
+    <div>
+      <h2>Something went wrong:</h2>
+      <pre>{error.message}</pre>
+      <button onClick={resetErrorBoundary}>Try again</button>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <LLMonitorProvider config={{ apiKey: "your-key" }}>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <AIComponents />
+      </ErrorBoundary>
+    </LLMonitorProvider>
+  );
+}
+```
+
+## TypeScript Support
+
+```tsx
+import { useLLMonitor, LLMEvent } from "@llmonitor/react";
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
+}
+
+interface ChatMetadata {
+  userId: string;
+  conversationId: string;
+  messageCount: number;
+}
+
+function TypedChatComponent() {
+  const { track, logEvent } = useLLMonitor();
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  const sendTypedMessage = async (content: string): Promise<string> => {
+    const response = await track<string>(
+      "chat-completion",
+      async () => {
+        const result = await openai.chat.completions.create({
+          model: "gpt-4",
+          messages: messages.map((m) => ({ role: m.role, content: m.content })),
+        });
+
+        return result.choices[0].message.content || "";
+      },
+      {
+        metadata: {
+          messageCount: messages.length,
+          inputLength: content.length,
+        } as Partial<ChatMetadata>,
+      }
+    );
+
+    return response;
+  };
+
+  const logCustomEvent = async (event: Partial<LLMEvent>) => {
+    await logEvent({
+      provider: "custom",
+      model: "chat-app",
+      status: 200,
+      ...event,
+    });
+  };
+
+  return <div>{/* Chat UI */}</div>;
+}
+```
+
+## Next Steps
+
+- [SDK Integration](/sdk) - Use with the core SDK
+- [Express Middleware](/integrations/express) - Backend integration
+- [Cost Optimization](/guides/cost-optimization) - Reduce LLM costs
+- [A/B Testing Guide](/guides/ab-testing) - Test prompt variants

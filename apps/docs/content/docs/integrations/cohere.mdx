@@ -1,0 +1,577 @@
+---
+title: Cohere Integration
+description: Monitor Command models with LLMonitor
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+LLMonitor provides complete observability for Cohere's Command models. Monitor costs, performance, and usage across all Command variants.
+
+## Quick Setup
+
+<Steps>
+
+<Step>
+
+### Install Dependencies
+
+<Tabs items={['npm', 'yarn', 'pnpm']}>
+
+<Tab value="npm">```bash npm install @llmonitor/sdk cohere-ai ```</Tab>
+
+<Tab value="yarn">```bash yarn add @llmonitor/sdk cohere-ai ```</Tab>
+
+<Tab value="pnpm">```bash pnpm add @llmonitor/sdk cohere-ai ```</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step>
+
+### Basic Integration
+
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+import { CohereClient } from "cohere-ai";
+
+const monitor = new LLMonitor({
+  apiKey: "your-llmonitor-key",
+});
+
+const cohere = monitor.cohere(
+  new CohereClient({
+    token: "your-cohere-api-key",
+  })
+);
+
+// Use exactly like the regular Cohere client
+const response = await cohere.generate({
+  prompt: "Hello Cohere!",
+  model: "command",
+  max_tokens: 100,
+});
+
+console.log(response.generations[0].text);
+```
+
+</Step>
+
+</Steps>
+
+## Supported Models
+
+| Model               | Model ID          | Input Cost (1M tokens) | Output Cost (1M tokens) |
+| ------------------- | ----------------- | ---------------------- | ----------------------- |
+| **Command R+**      | `command-r-plus`  | $3.00                  | $15.00                  |
+| **Command R**       | `command-r`       | $0.50                  | $1.50                   |
+| **Command**         | `command`         | $15.00                 | $15.00                  |
+| **Command Light**   | `command-light`   | $3.00                  | $6.00                   |
+| **Command Nightly** | `command-nightly` | $15.00                 | $15.00                  |
+
+## Usage Examples
+
+### Text Generation
+
+```typescript
+const response = await cohere.generate({
+  prompt: "Write a haiku about programming:",
+  model: "command",
+  max_tokens: 50,
+  temperature: 0.7,
+});
+
+console.log(response.generations[0].text);
+// Code flows like stream
+// Logic branching through the night
+// Bugs become features
+```
+
+### Chat Completions
+
+```typescript
+const response = await cohere.chat({
+  message: "What are the benefits of renewable energy?",
+  model: "command-r",
+  temperature: 0.3,
+  max_tokens: 200,
+});
+
+console.log(response.text);
+```
+
+### Multi-turn Conversation
+
+```typescript
+const chatHistory = [
+  { role: "USER", message: "Hello! I'm interested in machine learning." },
+  {
+    role: "CHATBOT",
+    message:
+      "That's great! Machine learning is a fascinating field. What specific area interests you?",
+  },
+  {
+    role: "USER",
+    message: "I want to learn about natural language processing.",
+  },
+];
+
+const response = await cohere.chat({
+  message: "Can you recommend some beginner resources?",
+  chat_history: chatHistory,
+  model: "command-r",
+  max_tokens: 300,
+});
+
+console.log(response.text);
+```
+
+### Advanced Text Generation
+
+```typescript
+const response = await cohere.generate({
+  prompt: "Write a technical blog post introduction about:",
+  model: "command-r-plus",
+  max_tokens: 200,
+  temperature: 0.8,
+  p: 0.75, // Nucleus sampling
+  k: 40, // Top-k sampling
+  frequency_penalty: 0.2,
+  presence_penalty: 0.1,
+  stop_sequences: ["\n\n", "---"],
+  return_likelihoods: "GENERATION",
+});
+
+console.log(response.generations[0].text);
+console.log("Likelihood:", response.generations[0].likelihood);
+```
+
+## Monitoring Features
+
+### Automatic Tracking
+
+All Cohere API calls are automatically logged with:
+
+- **Costs**: Calculated using official Cohere pricing
+- **Token Usage**: Input and output tokens
+- **Latency**: Request duration in milliseconds
+- **Model Info**: Model name and parameters
+- **Error Handling**: Failed requests with error details
+- **Generation Quality**: Likelihood scores for generated text
+
+### Custom Metadata
+
+Add custom metadata to track specific use cases:
+
+```typescript
+const response = await cohere.generate(
+  {
+    prompt: "Summarize this research paper:",
+    model: "command-r",
+    max_tokens: 300,
+  },
+  {
+    // LLMonitor options
+    sessionId: "research-summary-session",
+    versionTag: "v1.3.0",
+    metadata: {
+      paperType: "scientific",
+      userId: "researcher-789",
+      feature: "paper-summarization",
+    },
+  }
+);
+```
+
+## Error Handling
+
+The wrapper preserves all original Cohere errors:
+
+```typescript
+try {
+  const response = await cohere.generate({
+    prompt: "Hello!",
+    model: "command",
+    max_tokens: 100,
+  });
+
+  console.log(response.generations[0].text);
+} catch (error) {
+  console.error("Cohere API Error:", error.message);
+
+  if (error.statusCode === 401) {
+    console.error("Check your Cohere API key");
+  } else if (error.statusCode === 429) {
+    console.error("Rate limit exceeded");
+  } else if (error.statusCode === 400) {
+    console.error("Invalid request parameters");
+  }
+}
+```
+
+## Performance Optimization
+
+### Cost Optimization
+
+1. **Choose the right model for your task**:
+
+   - Command Light for simple classification and basic generation
+   - Command R for balanced performance and cost
+   - Command R+ for complex reasoning and high-quality output
+   - Command for general-purpose tasks
+
+2. **Optimize token usage**:
+   ```typescript
+   // Monitor token usage in LLMonitor dashboard
+   const response = await cohere.generate({
+     prompt: "Brief summary:", // Concise prompts
+     model: "command-light", // Cheapest option for simple tasks
+     max_tokens: 50, // Limit output tokens
+     temperature: 0.1, // Lower temperature for focused responses
+   });
+   ```
+
+### Prompt Engineering
+
+```typescript
+// Good: Clear, structured prompts
+const prompt = `
+Task: Extract key information from the following text
+Format: Return as bullet points
+Text: [document content here]
+Key Information:
+`;
+
+const response = await cohere.generate({
+  prompt,
+  model: "command-r",
+  max_tokens: 150,
+  temperature: 0.2,
+});
+
+// Track prompt performance with version tags
+const response = await cohere.generate(
+  {
+    prompt: optimizedPrompt,
+    model: "command-r",
+    max_tokens: 200,
+  },
+  {
+    versionTag: "prompt-v5",
+    metadata: { promptType: "information-extraction" },
+  }
+);
+```
+
+## Production Configuration
+
+### Environment Setup
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY!,
+  enabled: process.env.NODE_ENV === "production",
+  debug: process.env.NODE_ENV === "development",
+});
+
+const cohere = monitor.cohere(
+  new CohereClient({
+    token: process.env.COHERE_API_KEY!,
+  })
+);
+```
+
+### Batch Processing
+
+```typescript
+async function processBatch(prompts: string[]) {
+  const results = [];
+
+  for (const prompt of prompts) {
+    try {
+      const response = await cohere.generate({
+        prompt,
+        model: "command-r",
+        max_tokens: 150,
+      });
+
+      results.push({
+        input: prompt,
+        output: response.generations[0].text,
+        likelihood: response.generations[0].likelihood,
+        success: true,
+      });
+    } catch (error) {
+      results.push({
+        input: prompt,
+        error: error.message,
+        success: false,
+      });
+    }
+
+    // Rate limiting - Cohere allows higher throughput
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+
+  return results;
+}
+```
+
+### Rate Limiting and Retry Logic
+
+```typescript
+class RateLimitedCohere {
+  private requestQueue: Promise<any>[] = [];
+  private maxConcurrent = 5;
+
+  async generate(params: any, retries = 3): Promise<any> {
+    if (this.requestQueue.length >= this.maxConcurrent) {
+      await Promise.race(this.requestQueue);
+    }
+
+    const request = this.executeWithRetry(params, retries);
+    this.requestQueue.push(request);
+
+    request.finally(() => {
+      const index = this.requestQueue.indexOf(request);
+      if (index > -1) this.requestQueue.splice(index, 1);
+    });
+
+    return request;
+  }
+
+  private async executeWithRetry(params: any, retries: number): Promise<any> {
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await cohere.generate(params);
+      } catch (error) {
+        if (error.statusCode === 429 && i < retries - 1) {
+          const delay = Math.pow(2, i) * 1000; // Exponential backoff
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          continue;
+        }
+        throw error;
+      }
+    }
+  }
+}
+```
+
+## React Integration
+
+Use with the React package for component-level tracking:
+
+```jsx
+import { useLLMonitor } from "@llmonitor/react";
+import { CohereClient } from "cohere-ai";
+
+function TextGenerator() {
+  const { track } = useLLMonitor();
+  const [generatedText, setGeneratedText] = useState("");
+
+  const generateText = async (prompt) => {
+    const result = await track("cohere-generation", async () => {
+      const cohere = new CohereClient({ token: process.env.COHERE_API_KEY });
+
+      const response = await cohere.generate({
+        prompt,
+        model: "command-r",
+        max_tokens: 200,
+        temperature: 0.7,
+      });
+
+      return response.generations[0].text;
+    });
+
+    setGeneratedText(result);
+  };
+
+  return (
+    <div>
+      <button onClick={() => generateText("Write a creative story about:")}>
+        Generate Story
+      </button>
+      <p>{generatedText}</p>
+    </div>
+  );
+}
+```
+
+## Chat Applications
+
+```jsx
+function CohereChat() {
+  const [messages, setMessages] = useState([]);
+  const [chatHistory, setChatHistory] = useState([]);
+
+  const sendMessage = async (userMessage) => {
+    // Add user message
+    setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
+
+    // Prepare chat history for Cohere
+    const cohereHistory = chatHistory.map((msg) => ({
+      role: msg.role === "user" ? "USER" : "CHATBOT",
+      message: msg.content,
+    }));
+
+    try {
+      const response = await cohere.chat({
+        message: userMessage,
+        chat_history: cohereHistory,
+        model: "command-r",
+        max_tokens: 300,
+      });
+
+      const assistantMessage = { role: "assistant", content: response.text };
+      setMessages((prev) => [...prev, assistantMessage]);
+      setChatHistory((prev) => [
+        ...prev,
+        { role: "user", content: userMessage },
+        assistantMessage,
+      ]);
+    } catch (error) {
+      console.error("Chat error:", error);
+    }
+  };
+
+  return (
+    <div>
+      {messages.map((msg, i) => (
+        <div key={i} className={`message ${msg.role}`}>
+          <strong>{msg.role}:</strong> {msg.content}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Advanced Features
+
+### Classification
+
+```typescript
+// Cohere excels at text classification
+const classificationPrompt = `
+Classify the following text into one of these categories:
+- Technical
+- Marketing
+- Support
+- Sales
+
+Text: "${inputText}"
+Category:`;
+
+const response = await cohere.generate({
+  prompt: classificationPrompt,
+  model: "command-light", // Fast and cost-effective for classification
+  max_tokens: 10,
+  temperature: 0.1,
+});
+
+const category = response.generations[0].text.trim();
+```
+
+### Summarization
+
+```typescript
+const summarizationPrompt = `
+Summarize the following article in 3 key points:
+
+Article: ${articleText}
+
+Summary:
+1.`;
+
+const response = await cohere.generate({
+  prompt: summarizationPrompt,
+  model: "command-r",
+  max_tokens: 200,
+  temperature: 0.3,
+});
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **API Key Issues**
+
+   ```typescript
+   // Verify your Cohere API key
+   const cohere = new CohereClient({ token: "your-api-key" });
+   try {
+     await cohere.generate({
+       prompt: "test",
+       model: "command",
+       max_tokens: 10,
+     });
+   } catch (error) {
+     console.error("API Key issue:", error.message);
+   }
+   ```
+
+2. **Model Selection**
+
+   ```typescript
+   // Test different models for your use case
+   const models = ["command-light", "command", "command-r", "command-r-plus"];
+
+   for (const model of models) {
+     try {
+       const response = await cohere.generate({
+         prompt: "test prompt",
+         model,
+         max_tokens: 20,
+       });
+       console.log(`${model}: ${response.generations[0].text}`);
+     } catch (error) {
+       console.log(`${model} error: ${error.message}`);
+     }
+   }
+   ```
+
+3. **Token Limits**
+
+   ```typescript
+   // Monitor token usage to optimize costs
+   const response = await cohere.generate({
+     prompt: longPrompt,
+     model: "command-r",
+     max_tokens: 500,
+     truncate: "END", // Truncate from the end if prompt is too long
+   });
+
+   // Check actual token usage in LLMonitor dashboard
+   console.log("Generated tokens:", response.meta?.billed_units?.output_tokens);
+   ```
+
+4. **Quality vs Speed Trade-offs**
+
+   ```typescript
+   // For quick responses
+   const quickResponse = await cohere.generate({
+     prompt,
+     model: "command-light",
+     max_tokens: 100,
+     temperature: 0.1,
+   });
+
+   // For high-quality responses
+   const qualityResponse = await cohere.generate({
+     prompt,
+     model: "command-r-plus",
+     max_tokens: 300,
+     temperature: 0.7,
+     p: 0.8,
+     k: 40,
+   });
+   ```
+
+## Next Steps
+
+- [Cost Optimization Guide](/guides/cost-optimization)
+- [Prompt Engineering Best Practices](/guides/prompt-engineering)
+- [React Integration](/integrations/react)
+- [Classification Examples](/examples/classification)

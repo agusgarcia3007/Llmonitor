@@ -6,9 +6,39 @@ description: Model-agnostic LLM Observability & Cost Intelligence
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import { Step, Steps } from "fumadocs-ui/components/steps";
 
-LLMonitor gives AI builders a **single pane of glass** to see **how every prompt behaves, how much it costs, and when it breaks**—across any model provider (OpenAI, Anthropic, Google, etc.).
+LLMonitor gives AI builders a **single pane of glass** to see **how every prompt behaves, how much it costs, and when it breaks**—across any model provider (OpenAI, Anthropic, Google, Cohere).
 
 Replace home-grown logs, scattered dashboards and blind-spot debugging with an **actionable, dev-friendly analytics layer** that pays for itself by cutting token spend and downtime.
+
+## 📦 Available Packages
+
+LLMonitor offers three packages to fit your development needs:
+
+### @llmonitor/sdk
+
+**Core SDK** - Works in any JavaScript/TypeScript environment
+
+- ✅ Universal LLM provider wrappers (OpenAI, Anthropic, Google AI, Cohere)
+- ✅ Automatic cost calculation and metrics tracking
+- ✅ Express.js middleware
+- ✅ Node.js, browser, and edge runtime support
+
+### @llmonitor/react
+
+**React Integration** - Hooks and components for React applications
+
+- ✅ Context Provider for app-wide configuration
+- ✅ `useLLMonitor` and `useLLMTracking` hooks
+- ✅ `withLLMonitor` HOC for class components
+- ✅ Reactive state management and session tracking
+
+### @llmonitor/langchain (Coming Soon)
+
+**LangChain Integration** - Native LangChain callback handlers
+
+- ✅ Automatic chain, agent, and tool tracking
+- ✅ LangChain Expression Language (LCEL) support
+- ✅ Multi-step workflow observability
 
 ## Quick Start
 
@@ -16,15 +46,17 @@ Replace home-grown logs, scattered dashboards and blind-spot debugging with an *
 
 <Step>
 
-### Install the SDK
+### Install the Package
 
-<Tabs items={['npm', 'yarn', 'pnpm']}>
+Choose the package that fits your needs:
 
-<Tab value="npm">```bash npm install @llmonitor/sdk ```</Tab>
+<Tabs items={['Core SDK', 'React', 'Both']}>
 
-<Tab value="yarn">```bash yarn add @llmonitor/sdk ```</Tab>
+<Tab value="Core SDK">```bash npm install @llmonitor/sdk ```</Tab>
 
-<Tab value="pnpm">```bash pnpm add @llmonitor/sdk ```</Tab>
+<Tab value="React">```bash npm install @llmonitor/react @llmonitor/sdk ```</Tab>
+
+<Tab value="Both">```bash npm install @llmonitor/sdk @llmonitor/react ```</Tab>
 
 </Tabs>
 
@@ -32,32 +64,23 @@ Replace home-grown logs, scattered dashboards and blind-spot debugging with an *
 
 <Step>
 
-### Initialize LLMonitor
+### Core SDK Usage
 
 ```typescript
 import { LLMonitor } from "@llmonitor/sdk";
+import OpenAI from "openai";
 
 const monitor = new LLMonitor({
   apiKey: "your-api-key", // Get this from your dashboard
   sessionId: "user-session-123",
   versionTag: "v1.0.0",
 });
-```
 
-</Step>
+// Wrap any LLM client
+const openai = monitor.openai(new OpenAI({ apiKey: "your-openai-key" }));
 
-<Step>
-
-### Wrap your LLM client
-
-```typescript
-import OpenAI from "openai";
-
-const openai = new OpenAI({ apiKey: "your-openai-key" });
-const monitoredOpenAI = monitor.openai(openai);
-
-// Use exactly like normal OpenAI - automatically logged!
-const response = await monitoredOpenAI.chat.completions.create({
+// Use exactly like normal - automatically logged!
+const response = await openai.chat.completions.create({
   model: "gpt-4",
   messages: [{ role: "user", content: "Hello!" }],
 });
@@ -65,20 +88,92 @@ const response = await monitoredOpenAI.chat.completions.create({
 
 </Step>
 
+<Step>
+
+### React Usage
+
+```jsx
+import { LLMonitorProvider, useLLMonitor } from "@llmonitor/react";
+
+// Wrap your app
+function App() {
+  return (
+    <LLMonitorProvider config={{ apiKey: "your-api-key" }}>
+      <ChatComponent />
+    </LLMonitorProvider>
+  );
+}
+
+// Use in components
+function ChatComponent() {
+  const { track, logEvent, sessionId, setSessionId } = useLLMonitor();
+
+  const handleAICall = async () => {
+    await track('chat-completion', async () => {
+      // Your LLM logic here
+      return await openai.chat.completions.create({...});
+    });
+  };
+}
+```
+
+</Step>
+
 </Steps>
 
-## Features
+## Supported Providers
 
-- **📊 Centralized Dashboard** - All your LLM calls in one place
-- **💰 Cost Intelligence** - Automatic cost calculation and optimization
-- **⚡ Performance Monitoring** - Latency, tokens, success rates
-- **🔍 Multi-provider Support** - OpenAI, Anthropic, Google, Cohere
-- **🚨 Smart Alerts** - Get notified when things break
-- **🧪 A/B Testing** - Compare prompt variants with ease
+| Provider      | SDK Support | Pricing            | Models                   |
+| ------------- | ----------- | ------------------ | ------------------------ |
+| **OpenAI**    | ✅ Full     | ✅ Auto-calculated | GPT-4, GPT-3.5, etc.     |
+| **Anthropic** | ✅ Full     | ✅ Auto-calculated | Claude-3, Claude-3.5     |
+| **Google AI** | ✅ Full     | ✅ Auto-calculated | Gemini Pro, Gemini Flash |
+| **Cohere**    | ✅ Full     | ✅ Auto-calculated | Command, Command-R       |
+
+## Key Features
+
+### 📊 **Centralized Observability**
+
+- All LLM calls across providers in one dashboard
+- Real-time metrics and historical trends
+- Session-based request grouping
+
+### 💰 **Cost Intelligence**
+
+- Automatic cost calculation for all providers
+- Token usage optimization insights
+- Budget alerts and spend tracking
+
+### ⚡ **Performance Monitoring**
+
+- Latency tracking and P95/P99 metrics
+- Success rate monitoring
+- Error categorization and debugging
+
+### 🔧 **Developer Experience**
+
+- Drop-in replacement for existing LLM clients
+- TypeScript-first with full type safety
+- Zero-config setup with sensible defaults
+
+### 🚨 **Smart Alerting**
+
+- Cost threshold notifications
+- Error rate alerts
+- Performance degradation detection
+
+## Architecture
+
+```
+Your App ──→ @llmonitor/react ──→ @llmonitor/sdk ──→ LLMonitor API
+                                      ↗
+         ──→ @llmonitor/langchain ────→
+```
 
 ## What's Next?
 
-- [SDK Reference](/sdk) - Complete API documentation
-- [Integrations](/integrations) - Connect with your favorite tools
-- [Guides](/guides) - Best practices and tutorials
-- [Examples](/examples) - Working code examples
+- [Getting Started Guide](/guides/getting-started) - Complete setup tutorial
+- [SDK Reference](/sdk) - Full API documentation
+- [React Integration](/integrations/react) - React-specific features
+- [Provider Examples](/integrations) - Implementation guides for each LLM provider
+- [Cost Optimization](/guides/cost-optimization) - Save money on LLM usage
