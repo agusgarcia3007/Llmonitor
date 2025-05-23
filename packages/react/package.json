@@ -1,0 +1,49 @@
+{
+  "name": "@llmonitor/react",
+  "version": "0.1.0",
+  "description": "React hooks for LLMonitor - Model-agnostic LLM Observability & Cost Intelligence",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "llm",
+    "monitoring",
+    "observability",
+    "react",
+    "hooks",
+    "openai",
+    "anthropic",
+    "claude",
+    "gpt"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@llmonitor/sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": false
+    }
+  }
+}

@@ -7,9 +7,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     }
   },
   "scripts": {
@@ -25,22 +25,39 @@
     "anthropic",
     "claude",
     "gpt",
-    "gemini"
+    "gemini",
+    "cohere",
+    "express",
+    "middleware"
   ],
   "license": "MIT",
-  "dependencies": {
-    "openai": "^4.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "tsup": "^8.0.0",
     "typescript": "^5.0.0",
     "@types/node": "^20.0.0"
   },
   "peerDependencies": {
-    "openai": ">=4.0.0"
+    "openai": ">=4.0.0",
+    "@anthropic-ai/sdk": ">=0.20.0",
+    "@google/generative-ai": ">=0.11.0",
+    "cohere-ai": ">=7.0.0",
+    "express": ">=4.0.0"
   },
   "peerDependenciesMeta": {
     "openai": {
+      "optional": true
+    },
+    "@anthropic-ai/sdk": {
+      "optional": true
+    },
+    "@google/generative-ai": {
+      "optional": true
+    },
+    "cohere-ai": {
+      "optional": true
+    },
+    "express": {
       "optional": true
     }
   }

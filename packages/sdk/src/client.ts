@@ -1,7 +1,7 @@
 import { LLMEvent, LLMonitorConfig } from "./types";
 
 export class LLMonitorClient {
-  private config: LLMonitorConfig;
+  public config: LLMonitorConfig;
   private queue: LLMEvent[] = [];
   private isProcessing = false;
 
@@ -12,6 +12,10 @@ export class LLMonitorClient {
       enabled: true,
       ...config,
     };
+  }
+
+  getConfig(): LLMonitorConfig {
+    return { ...this.config };
   }
 
   async logEvent(event: LLMEvent): Promise<void> {
