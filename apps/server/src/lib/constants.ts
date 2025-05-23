@@ -11,3 +11,8 @@ export const CORS_OPTIONS = {
   maxAge: 600,
   credentials: true,
 };
+
+export const siteData = {
+  title: "LLMonitor",
+  url: "https://llmonitor.ai",
+};

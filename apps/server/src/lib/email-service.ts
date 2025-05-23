@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { siteData } from "./constants";
 
 export class EmailService {
   private resend: Resend;
@@ -39,7 +40,7 @@ export class EmailService {
       });
 
       const result = await this.resend.emails.send({
-        from: "LLMonitor Alerts <alerts@llmonitor.com>",
+        from: `LLMonitor Alerts <alerts@${siteData.url}>`,
         to: [to],
         subject,
         html: htmlContent,
@@ -116,9 +117,7 @@ export class EmailService {
               </p>
               
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${
-                  process.env.FRONTEND_URL || "https://llmonitor.com"
-                }/alerts" 
+                <a href="${siteData.url}/alerts" 
                    style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
                   View Dashboard
                 </a>
@@ -130,7 +129,7 @@ export class EmailService {
               <p style="color: #6b7280; font-size: 14px; margin: 0;">
                 This email was sent by LLMonitor Alert System.<br>
                 <a href="${
-                  process.env.FRONTEND_URL || "https://llmonitor.com"
+                  siteData.url
                 }/settings/alerts" style="color: #3b82f6;">Manage alert settings</a>
               </p>
             </div>
@@ -173,10 +172,8 @@ Alert Details:
 This alert was triggered because your ${metricDisplayName.toLowerCase()} has exceeded the configured threshold.
 Please review your usage and take appropriate action if necessary.
 
-View Dashboard: ${process.env.FRONTEND_URL || "https://llmonitor.com"}/alerts
-Manage Settings: ${
-      process.env.FRONTEND_URL || "https://llmonitor.com"
-    }/settings/alerts
+View Dashboard: ${siteData.url}/alerts
+Manage Settings: ${siteData.url}/settings/alerts
 
 ---
 This email was sent by LLMonitor Alert System.

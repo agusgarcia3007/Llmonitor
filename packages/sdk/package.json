@@ -1,7 +1,7 @@
 {
   "name": "@llmonitor/sdk",
   "version": "0.1.0",
-  "description": "SDK for llmonitor - Model-agnostic LLM Observability & Cost Intelligence",
+  "description": "Universal LLM observability & cost intelligence - Monitor OpenAI, Anthropic, Google AI, Cohere and more",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -12,10 +12,17 @@
       "require": "./dist/index.js"
     }
   },
+  "files": [
+    "dist",
+    "README.md",
+    "QUICKSTART.md"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "test": "echo 'Tests coming soon!'",
+    "prepublishOnly": "npm run clean && npm run build"
   },
   "keywords": [
     "llm",
@@ -27,10 +34,24 @@
     "gpt",
     "gemini",
     "cohere",
+    "cost-tracking",
+    "analytics",
     "express",
-    "middleware"
+    "middleware",
+    "ai",
+    "machine-learning"
   ],
+  "author": "LLMonitor Team",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/llmonitor/llmonitor.git",
+    "directory": "packages/sdk"
+  },
+  "homepage": "https://llmonitor.com",
+  "bugs": {
+    "url": "https://github.com/llmonitor/llmonitor/issues"
+  },
   "dependencies": {},
   "devDependencies": {
     "tsup": "^8.0.0",

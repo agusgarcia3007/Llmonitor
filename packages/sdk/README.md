@@ -1,147 +1,251 @@
 # @llmonitor/sdk
 
-Model-agnostic LLM Observability & Cost Intelligence SDK for JavaScript and TypeScript.
+**Model-agnostic LLM Observability & Cost Intelligence**
 
-## Installation
+Monitor, track, and optimize your LLM usage across any provider with just 3 lines of code.
+
+## 🚀 Quick Start
 
 ```bash
 npm install @llmonitor/sdk
 ```
 
-## Quick Start
-
 ```typescript
 import { LLMonitor } from "@llmonitor/sdk";
+import OpenAI from "openai";
 
+// 1. Initialize LLMonitor
 const monitor = new LLMonitor({
-  apiKey: "your-api-key",
-  sessionId: "user-session-123",
-  versionTag: "v1.0.0",
+  apiKey: "your-api-key", // Get this from your LLMonitor dashboard
+});
+
+// 2. Wrap your LLM client
+const openai = monitor.openai(new OpenAI({ apiKey: "your-openai-key" }));
+
+// 3. Use exactly like normal - automatically logged!
+const response = await openai.chat.completions.create({
+  model: "gpt-4",
+  messages: [{ role: "user", content: "Hello!" }],
 });
 ```
 
-## Supported Providers
+That's it! Every request is now automatically tracked with:
+
+- ✅ **Token usage & costs**
+- ✅ **Latency metrics**
+- ✅ **Error tracking**
+- ✅ **Session grouping**
+
+## 📊 What Gets Tracked
+
+- **Costs**: Automatic cost calculation for all major providers
+- **Performance**: Latency, token usage, success rates
+- **Context**: Sessions, versions, custom metadata
+- **Errors**: Failed requests with detailed error info
+
+## 🎯 Supported Providers
+
+| Provider      | Support | Auto-Pricing | Models                 |
+| ------------- | ------- | ------------ | ---------------------- |
+| **OpenAI**    | ✅ Full | ✅           | GPT-4, GPT-3.5, GPT-4o |
+| **Anthropic** | ✅ Full | ✅           | Claude-3, Claude-3.5   |
+| **Google AI** | ✅ Full | ✅           | Gemini Pro, Flash      |
+| **Cohere**    | ✅ Full | ✅           | Command, Command-R     |
+
+## 📖 Provider Examples
 
 ### OpenAI
 
 ```typescript
+import { LLMonitor } from "@llmonitor/sdk";
 import OpenAI from "openai";
 
-const openai = new OpenAI({ apiKey: "your-openai-key" });
-const monitoredOpenAI = monitor.openai(openai);
+const monitor = new LLMonitor({ apiKey: "llm_..." });
+const openai = monitor.openai(new OpenAI());
 
-const response = await monitoredOpenAI.chat.completions.create({
+const response = await openai.chat.completions.create({
   model: "gpt-4",
-  messages: [{ role: "user", content: "Hello!" }],
+  messages: [{ role: "user", content: "Explain quantum computing" }],
 });
 ```
 
 ### Anthropic
 
 ```typescript
-import { Anthropic } from "@anthropic-ai/sdk";
+import { LLMonitor } from "@llmonitor/sdk";
+import Anthropic from "@anthropic-ai/sdk";
 
-const anthropic = new Anthropic({ apiKey: "your-anthropic-key" });
-const monitoredAnthropic = monitor.anthropic(anthropic);
+const monitor = new LLMonitor({ apiKey: "llm_..." });
+const anthropic = monitor.anthropic(new Anthropic());
 
-const response = await monitoredAnthropic.messages.create({
-  model: "claude-3-sonnet-20240229",
+const response = await anthropic.messages.create({
+  model: "claude-3-5-sonnet-20241022",
   max_tokens: 1000,
-  messages: [{ role: "user", content: "Hello!" }],
+  messages: [{ role: "user", content: "Write a haiku about code" }],
 });
 ```
 
 ### Google AI
 
 ```typescript
+import { LLMonitor } from "@llmonitor/sdk";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI("your-google-key");
-const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-const monitoredModel = monitor.google(model, "gemini-pro");
+const monitor = new LLMonitor({ apiKey: "llm_..." });
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const model = monitor.google(genAI.getGenerativeModel({ model: "gemini-pro" }));
 
-const response = await monitoredModel.generateContent("Hello!");
+const result = await model.generateContent("Explain machine learning");
 ```
 
-### Cohere
+## ⚙️ Configuration
 
 ```typescript
-import { CohereClient } from "cohere-ai";
-
-const cohere = new CohereClient({ token: "your-cohere-key" });
-const monitoredCohere = monitor.cohere(cohere);
-
-const response = await monitoredCohere.generate({
-  prompt: "Hello!",
-  model: "command",
+const monitor = new LLMonitor({
+  apiKey: "llm_...", // Required: Your LLMonitor API key
+  baseURL: "https://api.llmonitor.com", // Optional: Custom endpoint
+  sessionId: "user-123", // Optional: Group requests by session
+  versionTag: "v1.2.0", // Optional: Track different versions
+  debug: true, // Optional: Enable debug logging
+  enabled: true, // Optional: Toggle monitoring
+  metadata: {
+    // Optional: Custom metadata
+    userId: "user-123",
+    feature: "chat",
+  },
 });
 ```
 
-## Express.js Middleware
+## 🔧 Express.js Middleware
+
+Track all LLM calls across your Express app:
 
 ```typescript
 import express from "express";
+import { LLMonitor } from "@llmonitor/sdk";
 
 const app = express();
+const monitor = new LLMonitor({ apiKey: "llm_..." });
 
-// Add monitoring middleware
-app.use(
-  monitor.express({
-    skipPaths: ["/health", "/metrics"],
-    extractSessionId: (req) => req.headers["x-session-id"],
-  })
+// Add middleware
+app.use(monitor.express({
+  sessionId: (req) => req.user?.id,
+  metadata: (req) => ({ route: req.route?.path })
+}));
+
+// Now all LLM calls in your routes are automatically tracked
+app.post("/chat", async (req, res) => {
+  const openai = monitor.openai(new OpenAI());
+  const response = await openai.chat.completions.create({...});
+  res.json(response);
+});
+```
+
+## 🎛️ Advanced Usage
+
+### Session Tracking
+
+Group related requests together:
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: "llm_...",
+  sessionId: "conversation-abc-123",
+});
+
+// All requests will be grouped under this session
+```
+
+### Version Tagging
+
+Track different prompt versions:
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: "llm_...",
+  versionTag: "prompt-v2.1",
+});
+```
+
+### Per-Request Options
+
+Override config for specific requests:
+
+```typescript
+const openai = monitor.openai(new OpenAI());
+
+await openai.chat.completions.create(
+  {
+    model: "gpt-4",
+    messages: [{ role: "user", content: "Hello" }],
+  },
+  {
+    sessionId: "special-session",
+    versionTag: "experimental",
+    metadata: { feature: "onboarding" },
+  }
 );
 ```
 
-## Manual Event Logging
+### Manual Event Logging
+
+For custom integrations:
 
 ```typescript
 await monitor.logEvent({
   provider: "custom",
   model: "my-model",
-  prompt: "Hello!",
+  prompt: "Hello world",
   completion: "Hi there!",
+  prompt_tokens: 10,
+  completion_tokens: 5,
+  latency_ms: 250,
   status: 200,
-  latency_ms: 1200,
-  cost_usd: 0.002,
+  cost_usd: 0.001,
 });
 ```
 
-## Configuration
+## 🔄 Error Handling
+
+The SDK gracefully handles errors and never interrupts your LLM calls:
 
 ```typescript
-interface LLMonitorConfig {
-  apiKey: string;
-  baseURL?: string; // Default: "http://localhost:3001"
-  debug?: boolean; // Default: false
-  enabled?: boolean; // Default: true
-  sessionId?: string;
-  versionTag?: string;
-  metadata?: Record<string, any>;
-}
+const monitor = new LLMonitor({
+  apiKey: "llm_...",
+  debug: true  // See any monitoring errors in console
+});
+
+// Even if LLMonitor is down, your OpenAI calls continue normally
+const openai = monitor.openai(new OpenAI());
+const response = await openai.chat.completions.create({...}); // Always works
 ```
 
-## TypeScript Support
+## 🏗️ TypeScript Support
 
-Full TypeScript support with exported types:
+Full TypeScript support with proper types:
 
 ```typescript
-import {
-  LLMonitor,
-  LLMonitorConfig,
-  LLMEvent,
-  ProviderOptions,
-} from "@llmonitor/sdk";
+import { LLMonitor, LLMEvent, LLMonitorConfig } from "@llmonitor/sdk";
+
+const config: LLMonitorConfig = {
+  apiKey: "llm_...",
+  debug: true,
+};
+
+const monitor = new LLMonitor(config);
 ```
 
-## Error Handling
+## 📚 Links
 
-The SDK is designed to never break your application:
+- [Dashboard](https://app.llmonitor.com) - View your metrics
+- [Documentation](https://docs.llmonitor.com) - Complete guides
+- [GitHub](https://github.com/llmonitor/llmonitor) - Source code
+- [Discord](https://discord.gg/llmonitor) - Community support
 
-- Network errors are silently caught
-- Invalid configurations fall back to safe defaults
-- Wrapped clients behave identically to originals
+## 🤝 Contributing
 
-## License
+We love contributions! Check out our [contributing guide](CONTRIBUTING.md).
 
-MIT
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file.

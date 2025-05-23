@@ -7,7 +7,7 @@ export class LLMonitorClient {
 
   constructor(config: LLMonitorConfig) {
     this.config = {
-      baseURL: "http://localhost:3001",
+      baseURL: "http://localhost:4444",
       debug: false,
       enabled: true,
       ...config,
@@ -57,7 +57,7 @@ export class LLMonitorClient {
 
   private async sendEvent(event: LLMEvent): Promise<void> {
     try {
-      const response = await fetch(`${this.config.baseURL}/api/llm-events`, {
+      const response = await fetch(`${this.config.baseURL}/llm-events`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
