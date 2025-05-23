@@ -8,16 +8,6 @@
       "icon": "Home"
     },
     {
-      "title": "SDK Reference",
-      "url": "/sdk",
-      "icon": "Code"
-    },
-    {
-      "title": "Examples",
-      "url": "/examples",
-      "icon": "BookOpen"
-    },
-    {
       "title": "Guides",
       "url": "/guides",
       "icon": "Map",
@@ -27,12 +17,83 @@
           "url": "/guides/getting-started"
         },
         {
+          "title": "Configuration",
+          "url": "/guides/configuration"
+        },
+        {
           "title": "Cost Optimization",
           "url": "/guides/cost-optimization"
         },
         {
           "title": "A/B Testing",
           "url": "/guides/ab-testing"
+        },
+        {
+          "title": "Performance Monitoring",
+          "url": "/guides/performance"
+        },
+        {
+          "title": "Session Tracking",
+          "url": "/guides/sessions"
+        },
+        {
+          "title": "Error Handling",
+          "url": "/guides/error-handling"
+        },
+        {
+          "title": "Token Management",
+          "url": "/guides/token-management"
+        },
+        {
+          "title": "Multi-environment Setup",
+          "url": "/guides/environments"
+        },
+        {
+          "title": "Microservices",
+          "url": "/guides/microservices"
+        },
+        {
+          "title": "Batch Processing",
+          "url": "/guides/batch-processing"
+        },
+        {
+          "title": "Real-time Applications",
+          "url": "/guides/realtime"
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/guides/troubleshooting"
+        },
+        {
+          "title": "Debugging",
+          "url": "/guides/debugging"
+        }
+      ]
+    },
+    {
+      "title": "SDK Reference",
+      "url": "/sdk",
+      "icon": "Code",
+      "pages": [
+        {
+          "title": "Installation",
+          "url": "/sdk/installation"
+        },
+        {
+          "title": "Configuration",
+          "url": "/sdk/configuration"
+        },
+        {
+          "title": "Methods",
+          "url": "/sdk/methods"
+        },
+        {
+          "title": "Types",
+          "url": "/sdk/types"
+        },
+        {
+          "title": "Middleware",
+          "url": "/sdk/middleware"
         }
       ]
     },
@@ -42,27 +103,144 @@
       "icon": "Puzzle",
       "pages": [
         {
-          "title": "OpenAI",
-          "url": "/integrations/openai"
+          "title": "LLM Providers",
+          "pages": [
+            {
+              "title": "OpenAI",
+              "url": "/integrations/openai"
+            },
+            {
+              "title": "Anthropic",
+              "url": "/integrations/anthropic"
+            },
+            {
+              "title": "Google AI",
+              "url": "/integrations/google"
+            },
+            {
+              "title": "Cohere",
+              "url": "/integrations/cohere"
+            }
+          ]
         },
         {
-          "title": "Anthropic",
-          "url": "/integrations/anthropic"
+          "title": "Frameworks",
+          "pages": [
+            {
+              "title": "Express.js",
+              "url": "/integrations/express"
+            },
+            {
+              "title": "Next.js",
+              "url": "/integrations/nextjs"
+            },
+            {
+              "title": "React",
+              "url": "/integrations/react"
+            },
+            {
+              "title": "LangChain",
+              "url": "/integrations/langchain"
+            }
+          ]
         },
         {
-          "title": "Express.js",
-          "url": "/integrations/express"
+          "title": "Platforms",
+          "pages": [
+            {
+              "title": "Vercel",
+              "url": "/integrations/vercel"
+            },
+            {
+              "title": "AWS Lambda",
+              "url": "/integrations/aws-lambda"
+            },
+            {
+              "title": "Docker",
+              "url": "/integrations/docker"
+            },
+            {
+              "title": "Kubernetes",
+              "url": "/integrations/kubernetes"
+            }
+          ]
         },
         {
-          "title": "Next.js",
-          "url": "/integrations/nextjs"
+          "title": "Monitoring",
+          "pages": [
+            {
+              "title": "DataDog",
+              "url": "/integrations/datadog"
+            },
+            {
+              "title": "Sentry",
+              "url": "/integrations/sentry"
+            },
+            {
+              "title": "Webhooks",
+              "url": "/integrations/webhooks"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Examples",
+      "url": "/examples",
+      "icon": "BookOpen",
+      "pages": [
+        {
+          "title": "Basic Usage",
+          "url": "/examples/basic"
+        },
+        {
+          "title": "OpenAI Examples",
+          "url": "/examples/openai"
+        },
+        {
+          "title": "Cost Optimization",
+          "url": "/examples/cost-optimization"
+        },
+        {
+          "title": "A/B Testing",
+          "url": "/examples/ab-testing"
+        },
+        {
+          "title": "Error Handling",
+          "url": "/examples/error-handling"
+        },
+        {
+          "title": "Production Setup",
+          "url": "/examples/production"
         }
       ]
     },
     {
       "title": "API Reference",
       "url": "/api",
-      "icon": "Server"
+      "icon": "Server",
+      "pages": [
+        {
+          "title": "REST API",
+          "url": "/api/rest"
+        },
+        {
+          "title": "Events",
+          "url": "/api/events"
+        },
+        {
+          "title": "Webhooks",
+          "url": "/api/webhooks"
+        },
+        {
+          "title": "Rate Limits",
+          "url": "/api/rate-limits"
+        },
+        {
+          "title": "Authentication",
+          "url": "/api/authentication"
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,418 @@
+---
+title: Integrations
+description: Connect LLMonitor with your favorite LLM providers and frameworks
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Callout } from "fumadocs-ui/components/callout";
+
+# Integrations
+
+LLMonitor supports all major LLM providers and popular frameworks. Choose your integration to get started quickly.
+
+## LLM Providers
+
+### OpenAI
+
+The most popular LLM provider with models like GPT-4, GPT-3.5, and DALL-E.
+
+```typescript
+import OpenAI from "openai";
+import { LLMonitor } from "@llmonitor/sdk";
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const monitor = new LLMonitor({ apiKey: process.env.LLMONITOR_API_KEY });
+
+const monitoredOpenAI = monitor.openai(openai);
+```
+
+[**Full OpenAI Guide →**](/docs/integrations/openai)
+
+### Anthropic
+
+Claude models for complex reasoning and analysis.
+
+```typescript
+import { Anthropic } from "@anthropic-ai/sdk";
+import { LLMonitor } from "@llmonitor/sdk";
+
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const monitor = new LLMonitor({ apiKey: process.env.LLMONITOR_API_KEY });
+
+const monitoredAnthropic = monitor.anthropic(anthropic);
+```
+
+[**Full Anthropic Guide →**](/docs/integrations/anthropic)
+
+### Google AI
+
+Gemini models for multimodal AI applications.
+
+```typescript
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { LLMonitor } from "@llmonitor/sdk";
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const monitor = new LLMonitor({ apiKey: process.env.LLMONITOR_API_KEY });
+
+const monitoredModel = monitor.google(
+  genAI.getGenerativeModel({ model: "gemini-pro" })
+);
+```
+
+[**Full Google AI Guide →**](/docs/integrations/google)
+
+### Cohere
+
+Specialized models for text generation, classification, and embeddings.
+
+```typescript
+import { CohereClient } from "cohere-ai";
+import { LLMonitor } from "@llmonitor/sdk";
+
+const cohere = new CohereClient({ token: process.env.COHERE_API_KEY });
+const monitor = new LLMonitor({ apiKey: process.env.LLMONITOR_API_KEY });
+
+const monitoredCohere = monitor.cohere(cohere);
+```
+
+[**Full Cohere Guide →**](/docs/integrations/cohere)
+
+## Frameworks & Libraries
+
+### Express.js
+
+Monitor LLM calls in your Express.js applications.
+
+```typescript
+import express from "express";
+import { LLMonitor } from "@llmonitor/sdk";
+
+const app = express();
+const monitor = new LLMonitor({ apiKey: process.env.LLMONITOR_API_KEY });
+
+// Add monitoring middleware
+app.use(monitor.express());
+```
+
+[**Full Express.js Guide →**](/docs/integrations/express)
+
+### Next.js
+
+Integrate LLMonitor in your Next.js applications with API routes and middleware.
+
+```typescript
+// app/api/chat/route.ts
+import { LLMonitor } from "@llmonitor/sdk";
+
+const monitor = new LLMonitor({ apiKey: process.env.LLMONITOR_API_KEY });
+
+export async function POST(request: Request) {
+  // Monitor LLM calls in API routes
+  const response = await monitoredOpenAI.chat.completions.create({
+    // ... your parameters
+  });
+
+  return Response.json(response);
+}
+```
+
+[**Full Next.js Guide →**](/docs/integrations/nextjs)
+
+### React
+
+Track LLM usage in React applications with hooks and components.
+
+```typescript
+import { useLLMonitor } from "@llmonitor/react";
+
+function ChatComponent() {
+  const { track, isLoading } = useLLMonitor();
+
+  const handleSubmit = async (message: string) => {
+    await track("chat-completion", () =>
+      // Your LLM call here
+    );
+  };
+}
+```
+
+[**Full React Guide →**](/docs/integrations/react)
+
+### LangChain
+
+Monitor LangChain applications with automatic chain tracking.
+
+```typescript
+import { LangChainMonitor } from "@llmonitor/langchain";
+
+const monitor = new LangChainMonitor({ apiKey: process.env.LLMONITOR_API_KEY });
+
+// Wrap your LangChain LLM
+const monitoredLLM = monitor.wrapLLM(llm);
+```
+
+[**Full LangChain Guide →**](/docs/integrations/langchain)
+
+## Deployment Platforms
+
+### Vercel
+
+Deploy your monitored applications on Vercel with edge function support.
+
+```typescript
+// vercel.json
+{
+  "functions": {
+    "app/api/chat/route.ts": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "LLMONITOR_API_KEY": "@llmonitor-api-key"
+  }
+}
+```
+
+[**Full Vercel Guide →**](/docs/integrations/vercel)
+
+### AWS Lambda
+
+Monitor serverless functions with minimal cold start impact.
+
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  environment: "lambda",
+  async: true, // Recommended for Lambda
+});
+
+export const handler = async (event: any) => {
+  // Your monitored LLM calls
+};
+```
+
+[**Full AWS Lambda Guide →**](/docs/integrations/aws-lambda)
+
+## Monitoring & Analytics
+
+### DataDog
+
+Send LLMonitor metrics to DataDog for unified observability.
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  integrations: {
+    datadog: {
+      enabled: true,
+      apiKey: process.env.DATADOG_API_KEY,
+      tags: ["service:llm-app", "env:production"],
+    },
+  },
+});
+```
+
+[**Full DataDog Guide →**](/docs/integrations/datadog)
+
+### Sentry
+
+Track LLM errors and performance issues with Sentry integration.
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  integrations: {
+    sentry: {
+      enabled: true,
+      dsn: process.env.SENTRY_DSN,
+      captureErrors: true,
+      capturePerformance: true,
+    },
+  },
+});
+```
+
+[**Full Sentry Guide →**](/docs/integrations/sentry)
+
+## Databases & Storage
+
+### PostgreSQL
+
+Store LLMonitor data in your own PostgreSQL database.
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  storage: {
+    type: "postgresql",
+    connectionString: process.env.DATABASE_URL,
+    schema: "llmonitor",
+  },
+});
+```
+
+[**Full PostgreSQL Guide →**](/docs/integrations/postgresql)
+
+### Redis
+
+Use Redis for caching and real-time data.
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  cache: {
+    type: "redis",
+    url: process.env.REDIS_URL,
+    ttl: 3600,
+  },
+});
+```
+
+[**Full Redis Guide →**](/docs/integrations/redis)
+
+## Custom Integrations
+
+### Webhook Integration
+
+Send LLMonitor events to your own endpoints.
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  webhooks: [
+    {
+      url: "https://your-app.com/llm-events",
+      events: ["completion", "error", "cost-alert"],
+      headers: { "X-API-Key": "your-webhook-secret" },
+    },
+  ],
+});
+```
+
+[**Full Webhook Guide →**](/docs/integrations/webhooks)
+
+### REST API
+
+Use the LLMonitor REST API for custom integrations.
+
+```typescript
+// Custom logging via REST API
+const response = await fetch("https://api.llmonitor.ai/v1/events", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.LLMONITOR_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    event: "llm-completion",
+    data: {
+      model: "gpt-4",
+      tokens: 150,
+      cost: 0.003,
+      // ... other data
+    },
+  }),
+});
+```
+
+[**Full REST API Guide →**](/docs/api)
+
+## Integration Patterns
+
+### Multi-Provider Setup
+
+Use multiple LLM providers with unified monitoring:
+
+```typescript
+const monitor = new LLMonitor({ apiKey: process.env.LLMONITOR_API_KEY });
+
+const providers = {
+  openai: monitor.openai(new OpenAI({ apiKey: process.env.OPENAI_API_KEY })),
+  anthropic: monitor.anthropic(
+    new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  ),
+  google: monitor.google(genAI.getGenerativeModel({ model: "gemini-pro" })),
+};
+
+// Route requests to different providers based on requirements
+async function selectProvider(task: string) {
+  if (task === "simple-classification") return providers.openai;
+  if (task === "complex-analysis") return providers.anthropic;
+  if (task === "multimodal") return providers.google;
+  return providers.openai; // default
+}
+```
+
+### Environment-Based Configuration
+
+Different monitoring settings for different environments:
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  environment: process.env.NODE_ENV,
+  debug: process.env.NODE_ENV === "development",
+  async: process.env.NODE_ENV === "production",
+  sampling: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
+});
+```
+
+### Microservices Architecture
+
+Monitor LLM usage across multiple services:
+
+```typescript
+// Service A
+const monitorA = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  serviceName: "user-service",
+  version: process.env.SERVICE_VERSION,
+});
+
+// Service B
+const monitorB = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  serviceName: "recommendation-service",
+  version: process.env.SERVICE_VERSION,
+});
+```
+
+## Quick Start Guides
+
+Choose your integration to get started in minutes:
+
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+
+### Providers
+
+- [OpenAI](/docs/integrations/openai)
+- [Anthropic](/docs/integrations/anthropic)
+- [Google AI](/docs/integrations/google)
+- [Cohere](/docs/integrations/cohere)
+
+### Frameworks
+
+- [Express.js](/docs/integrations/express)
+- [Next.js](/docs/integrations/nextjs)
+- [React](/docs/integrations/react)
+- [LangChain](/docs/integrations/langchain)
+
+### Platforms
+
+- [Vercel](/docs/integrations/vercel)
+- [AWS Lambda](/docs/integrations/aws-lambda)
+- [Docker](/docs/integrations/docker)
+- [Kubernetes](/docs/integrations/kubernetes)
+
+</div>
+
+## Need Help?
+
+Can't find the integration you're looking for?
+
+- [Request an Integration](https://github.com/agustin/llmonitor/issues/new?template=integration-request.md)
+- [Build a Custom Integration](/docs/guides/custom-integrations)
+- [Join our Discord](https://discord.gg/llmonitor) for community support

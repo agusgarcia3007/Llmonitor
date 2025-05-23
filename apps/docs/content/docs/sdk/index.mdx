@@ -11,13 +11,15 @@ The `@llmonitor/sdk` package provides seamless integration with LLMonitor for Ja
 
 ## Installation
 
-<Tabs items={['npm', 'yarn', 'pnpm']}>
+<Tabs items={['npm', 'yarn', 'pnpm', 'bun']}>
 
-<Tab value="npm">```bash npm install @llmonitor/sdk ```</Tab>
+<Tab value="npm">```npm install @llmonitor/sdk ```</Tab>
 
-<Tab value="yarn">```bash yarn add @llmonitor/sdk ```</Tab>
+<Tab value="yarn">```yarn add @llmonitor/sdk ```</Tab>
 
-<Tab value="pnpm">```bash pnpm add @llmonitor/sdk ```</Tab>
+<Tab value="pnpm">```pnpm add @llmonitor/sdk ```</Tab>
+
+<Tab value="bun">```bun add @llmonitor/sdk ```</Tab>
 
 </Tabs>
 
@@ -44,7 +46,7 @@ import { LLMonitor } from "@llmonitor/sdk";
 
 const monitor = new LLMonitor({
   apiKey: process.env.LLMONITOR_API_KEY,
-  baseURL: "https://api.llmonitor.com",
+  baseURL: "https://api.llmonitor.ai",
   debug: process.env.NODE_ENV === "development",
   sessionId: "user-session-123",
   versionTag: "v2.1.0",

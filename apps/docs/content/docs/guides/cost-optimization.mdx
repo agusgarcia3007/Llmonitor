@@ -1,0 +1,440 @@
+---
+title: Cost Optimization
+description: Strategies and best practices to reduce your LLM costs with LLMonitor
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Callout } from "fumadocs-ui/components/callout";
+
+# Cost Optimization
+
+LLM costs can quickly add up, especially in production applications. LLMonitor provides several tools and insights to help you optimize your spending while maintaining quality.
+
+## Understanding LLM Costs
+
+LLM providers typically charge based on:
+
+- **Input tokens** - The text you send to the model
+- **Output tokens** - The text the model generates
+- **Model tier** - More powerful models cost more per token
+- **Features** - Function calling, vision, etc. may have additional costs
+
+<Callout type="info">
+  LLMonitor automatically calculates costs for all major providers using their
+  latest pricing, so you always have accurate cost tracking.
+</Callout>
+
+## Cost Monitoring
+
+### Real-time Cost Tracking
+
+Monitor your costs in real-time with LLMonitor's dashboard:
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  costThreshold: 100, // Alert when daily costs exceed $100
+  sessionBudget: 10, // Alert when session costs exceed $10
+});
+```
+
+### Cost Alerts
+
+Set up alerts to prevent cost overruns:
+
+```typescript
+// Monitor costs at different levels
+monitor.setCostAlerts({
+  daily: 100, // $100 per day
+  weekly: 500, // $500 per week
+  monthly: 2000, // $2000 per month
+  perUser: 5, // $5 per user session
+});
+```
+
+## Optimization Strategies
+
+### 1. Model Selection
+
+Choose the right model for your use case:
+
+<Tabs items={['Simple Tasks', 'Complex Tasks', 'Code Generation']}>
+
+<Tab value="Simple Tasks">
+**Best for**: Classification, simple Q&A, data extraction
+
+```typescript
+// Use cheaper models for simple tasks
+const response = await monitoredOpenAI.chat.completions.create({
+  model: "gpt-3.5-turbo", // 10x cheaper than GPT-4
+  messages: [
+    { role: "user", content: "Classify this email as spam or not spam: ..." },
+  ],
+  max_tokens: 10, // Limit output for classification
+});
+```
+
+**Cost savings**: Up to 90% compared to GPT-4
+
+</Tab>
+
+<Tab value="Complex Tasks">
+**Best for**: Complex reasoning, analysis, creative writing
+
+```typescript
+// Use more powerful models only when needed
+const response = await monitoredOpenAI.chat.completions.create({
+  model: "gpt-4-turbo", // Better price/performance than GPT-4
+  messages: [
+    { role: "user", content: "Analyze this complex business scenario..." },
+  ],
+  max_tokens: 500,
+});
+```
+
+**Cost savings**: 50% cheaper than standard GPT-4
+
+</Tab>
+
+<Tab value="Code Generation">
+**Best for**: Code completion, debugging, code review
+
+```typescript
+// Specialized models for code
+const response = await monitoredOpenAI.chat.completions.create({
+  model: "gpt-3.5-turbo", // Often sufficient for code tasks
+  messages: [
+    { role: "system", content: "You are a coding assistant." },
+    { role: "user", content: "Write a function to..." },
+  ],
+  max_tokens: 200,
+  temperature: 0, // Deterministic output for code
+});
+```
+
+**Tip**: Consider specialized code models like Codex for better efficiency
+
+</Tab>
+
+</Tabs>
+
+### 2. Token Optimization
+
+Reduce token usage without sacrificing quality:
+
+```typescript
+// Optimize your prompts
+const optimizedPrompt = {
+  // ❌ Verbose prompt (150 tokens)
+  verbose:
+    "Could you please help me by providing a comprehensive analysis of the following business document and give me detailed insights about what the main points are and what I should focus on?",
+
+  // ✅ Concise prompt (25 tokens)
+  concise:
+    "Analyze this business document. Provide key insights and focus areas:",
+};
+
+const response = await monitoredOpenAI.chat.completions.create({
+  model: "gpt-3.5-turbo",
+  messages: [
+    { role: "user", content: optimizedPrompt.concise + "\n\n" + document },
+  ],
+  max_tokens: 300, // Set appropriate limits
+});
+```
+
+### 3. Smart Caching
+
+Avoid redundant API calls by caching responses:
+
+```typescript
+// Enable response caching
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  cache: {
+    enabled: true,
+    ttl: 3600, // Cache for 1 hour
+    strategy: "semantic", // Cache based on semantic similarity
+  },
+});
+
+// Cached responses don't incur API costs
+const response = await monitoredOpenAI.chat.completions.create({
+  model: "gpt-3.5-turbo",
+  messages: [{ role: "user", content: "What is the capital of France?" }],
+  // This will be cached and reused for similar questions
+});
+```
+
+### 4. Batch Processing
+
+Process multiple requests together:
+
+```typescript
+// Batch multiple questions into one call
+const batchQuestions = [
+  "Summarize document A",
+  "Summarize document B",
+  "Summarize document C",
+];
+
+const batchPrompt = `Please provide brief summaries for each of these documents:
+
+${batchQuestions.map((q, i) => `${i + 1}. ${q}`).join("\n")}
+
+Provide numbered responses.`;
+
+const response = await monitoredOpenAI.chat.completions.create({
+  model: "gpt-3.5-turbo",
+  messages: [{ role: "user", content: batchPrompt }],
+});
+```
+
+### 5. Progressive Enhancement
+
+Start with cheaper models and upgrade only when needed:
+
+```typescript
+async function progressiveCompletion(prompt: string) {
+  // Try cheaper model first
+  let response = await monitoredOpenAI.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    messages: [{ role: "user", content: prompt }],
+    max_tokens: 100,
+  });
+
+  // Check quality score (you define this logic)
+  const qualityScore = evaluateResponse(response);
+
+  if (qualityScore < 0.8) {
+    // Upgrade to better model if quality is insufficient
+    response = await monitoredOpenAI.chat.completions.create({
+      model: "gpt-4",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 100,
+    });
+  }
+
+  return response;
+}
+```
+
+## Cost Analysis
+
+### Track Costs by Category
+
+Organize your spending to identify optimization opportunities:
+
+```typescript
+// Tag requests for cost analysis
+await monitoredOpenAI.chat.completions.create({
+  model: "gpt-4",
+  messages: [{ role: "user", content: "..." }],
+  // LLMonitor will track these tags
+  metadata: {
+    category: "customer-support",
+    priority: "high",
+    department: "sales",
+  },
+});
+
+// View costs by category in your dashboard
+```
+
+### A/B Test for Cost Efficiency
+
+Compare different approaches:
+
+```typescript
+// Test different models for the same task
+const testA = await monitor.abTest({
+  name: "model-comparison",
+  variant: "gpt-3.5",
+  action: () =>
+    monitoredOpenAI.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: prompt }],
+    }),
+});
+
+const testB = await monitor.abTest({
+  name: "model-comparison",
+  variant: "gpt-4",
+  action: () =>
+    monitoredOpenAI.chat.completions.create({
+      model: "gpt-4",
+      messages: [{ role: "user", content: prompt }],
+    }),
+});
+
+// Compare cost vs. quality metrics in dashboard
+```
+
+## Budget Controls
+
+### Set Spending Limits
+
+Implement hard limits to prevent overspending:
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  budgetControls: {
+    dailyLimit: 200, // Stop requests after $200/day
+    userLimit: 10, // $10 per user per day
+    sessionLimit: 5, // $5 per session
+    gracefulDegradation: true, // Fall back to cheaper models
+  },
+});
+```
+
+### Graceful Degradation
+
+When approaching limits, automatically switch to cheaper alternatives:
+
+```typescript
+// Configure fallback strategy
+monitor.configureFallbacks({
+  "gpt-4": "gpt-3.5-turbo", // Fallback to cheaper model
+  "gpt-3.5-turbo": "cached-responses", // Use cache when available
+  "claude-3": "gpt-3.5-turbo", // Cross-provider fallbacks
+});
+```
+
+## Cost Optimization Dashboard
+
+Monitor your optimization efforts:
+
+### Key Metrics to Track
+
+1. **Cost per Request** - Average cost per API call
+2. **Cost per User** - Total cost divided by active users
+3. **Cost per Token** - Efficiency of your token usage
+4. **Cache Hit Rate** - Percentage of requests served from cache
+5. **Model Distribution** - Which models you're using most
+
+### Setting Up Alerts
+
+```typescript
+// Configure cost monitoring alerts
+monitor.configureAlerts({
+  costSpike: {
+    threshold: 2.0, // Alert if costs double
+    timeWindow: "1h",
+    action: "email", // or "webhook", "slack"
+  },
+  budgetWarning: {
+    threshold: 0.8, // Alert at 80% of budget
+    action: "dashboard",
+  },
+  inefficiency: {
+    condition: "high_token_per_response",
+    threshold: 1000,
+    action: "log",
+  },
+});
+```
+
+## Best Practices
+
+### 1. Regular Cost Reviews
+
+- Review costs weekly to identify trends
+- Analyze high-cost sessions and requests
+- Look for opportunities to optimize prompts
+
+### 2. Model-Task Matching
+
+- Use GPT-3.5 for simple tasks (classification, extraction)
+- Use GPT-4 for complex reasoning and analysis
+- Use specialized models for specific domains (code, math)
+
+### 3. Prompt Engineering
+
+- Write concise, specific prompts
+- Use system messages to set context once
+- Avoid repetitive information in prompts
+
+### 4. Response Optimization
+
+- Set appropriate `max_tokens` limits
+- Use `stop` sequences to end responses early
+- Consider streaming for better user experience
+
+### 5. Monitoring and Alerting
+
+- Set up cost alerts before problems occur
+- Monitor cost trends and usage patterns
+- Regular review of optimization opportunities
+
+## Common Cost Traps
+
+Avoid these common mistakes that lead to high costs:
+
+### 1. Using GPT-4 for Everything
+
+```typescript
+// ❌ Expensive - using GPT-4 for simple classification
+const expensive = await monitoredOpenAI.chat.completions.create({
+  model: "gpt-4",
+  messages: [{ role: "user", content: "Is this email spam? Yes or no." }],
+});
+
+// ✅ Cost-effective - using appropriate model
+const costEffective = await monitoredOpenAI.chat.completions.create({
+  model: "gpt-3.5-turbo",
+  messages: [{ role: "user", content: "Is this email spam? Yes or no." }],
+  max_tokens: 5,
+});
+```
+
+### 2. Not Setting Token Limits
+
+```typescript
+// ❌ No limits - could generate very long responses
+const unlimited = await monitoredOpenAI.chat.completions.create({
+  model: "gpt-4",
+  messages: [{ role: "user", content: "Tell me about AI" }],
+  // No max_tokens set
+});
+
+// ✅ With limits - controlled output length
+const limited = await monitoredOpenAI.chat.completions.create({
+  model: "gpt-4",
+  messages: [{ role: "user", content: "Tell me about AI" }],
+  max_tokens: 150, // Reasonable limit
+});
+```
+
+### 3. Redundant Context
+
+```typescript
+// ❌ Sending same context repeatedly
+for (const question of questions) {
+  await monitoredOpenAI.chat.completions.create({
+    model: "gpt-4",
+    messages: [
+      { role: "system", content: longSystemPrompt }, // Repeated context
+      { role: "user", content: question },
+    ],
+  });
+}
+
+// ✅ Batch processing with shared context
+const batchPrompt = `${longSystemPrompt}\n\nPlease answer these questions:\n${questions.join(
+  "\n"
+)}`;
+await monitoredOpenAI.chat.completions.create({
+  model: "gpt-4",
+  messages: [{ role: "user", content: batchPrompt }],
+});
+```
+
+## Next Steps
+
+Now that you understand cost optimization:
+
+- [Set up A/B Testing](/docs/guides/ab-testing) to compare cost vs. quality
+- [Monitor Performance](/docs/guides/performance) to ensure optimization doesn't hurt quality
+- [Implement Error Handling](/docs/guides/error-handling) to avoid costly retry loops
+- [Configure Session Tracking](/docs/guides/sessions) for per-user cost analysis

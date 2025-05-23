@@ -23,7 +23,7 @@ import { LLMonitor } from "@llmonitor/sdk";
 
 const monitor = new LLMonitor({
   apiKey: "your-api-key", // Get this from your llmonitor dashboard
-  baseURL: "https://api.llmonitor.com", // Optional: defaults to localhost for dev
+  baseURL: "https://api.llmonitor.ai", // Optional: defaults to localhost for dev
   sessionId: "user-session-123", // Optional: track user sessions
   versionTag: "v1.0.0", // Optional: tag your prompt versions
   debug: true, // Optional: enable debug logging
@@ -162,7 +162,7 @@ You can set configuration via environment variables:
 
 ```bash
 LLMONITOR_API_KEY=your-api-key
-LLMONITOR_BASE_URL=https://api.llmonitor.com
+LLMONITOR_BASE_URL=https://api.llmonitor.ai
 LLMONITOR_DEBUG=true
 LLMONITOR_ENABLED=true
 ```

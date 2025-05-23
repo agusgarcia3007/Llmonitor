@@ -1,0 +1,906 @@
+---
+title: A/B Testing
+description: Compare different prompts, models, and configurations to optimize your LLM performance
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+
+# A/B Testing
+
+A/B testing with LLMonitor allows you to systematically compare different prompts, models, and configurations to optimize your LLM applications for cost, quality, and performance.
+
+## Why A/B Testing Matters
+
+LLM applications have many variables that can impact performance:
+
+- **Prompt variations** - Different wording can drastically change results
+- **Model selection** - Balancing cost vs. quality
+- **Parameters** - Temperature, max_tokens, etc.
+- **System messages** - Different instructions or context
+
+A/B testing helps you make data-driven decisions about these choices.
+
+## Quick Start
+
+<Steps>
+
+<Step>
+
+### Set Up A/B Testing
+
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  abTesting: {
+    enabled: true,
+    sampleRatio: 0.5, // 50/50 split
+  },
+});
+```
+
+</Step>
+
+<Step>
+
+### Create Your First Test
+
+```typescript
+async function testPromptVariations(userQuery: string) {
+  const testResult = await monitor.abTest({
+    name: "prompt-comparison",
+    variants: {
+      control: async () => {
+        // Control: Simple prompt
+        return await monitoredOpenAI.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [{ role: "user", content: userQuery }],
+        });
+      },
+
+      variant: async () => {
+        // Variant: Enhanced prompt with instructions
+        return await monitoredOpenAI.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a helpful assistant. Provide clear, concise answers.",
+            },
+            { role: "user", content: userQuery },
+          ],
+        });
+      },
+    },
+  });
+
+  return testResult;
+}
+```
+
+</Step>
+
+<Step>
+
+### Analyze Results
+
+```typescript
+// View results in your LLMonitor dashboard
+// - Response quality metrics
+// - Cost comparison
+// - Latency differences
+// - User satisfaction (if tracked)
+```
+
+</Step>
+
+</Steps>
+
+## Test Types
+
+### 1. Prompt Comparison
+
+Compare different prompt formulations:
+
+```typescript
+async function promptABTest(userInput: string) {
+  return await monitor.abTest({
+    name: "prompt-styles",
+    variants: {
+      formal: async () => {
+        return await monitoredOpenAI.chat.completions.create({
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a professional business consultant. Provide formal, detailed analysis.",
+            },
+            { role: "user", content: userInput },
+          ],
+        });
+      },
+
+      casual: async () => {
+        return await monitoredOpenAI.chat.completions.create({
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You're a friendly helper. Keep responses conversational and easy to understand.",
+            },
+            { role: "user", content: userInput },
+          ],
+        });
+      },
+
+      structured: async () => {
+        return await monitoredOpenAI.chat.completions.create({
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content:
+                "Provide responses in bullet points with clear sections: Overview, Key Points, Recommendations.",
+            },
+            { role: "user", content: userInput },
+          ],
+        });
+      },
+    },
+    metadata: {
+      category: "prompt-style",
+      userInput: userInput,
+    },
+  });
+}
+```
+
+### 2. Model Comparison
+
+Test different models for the same task:
+
+```typescript
+async function modelComparison(prompt: string) {
+  return await monitor.abTest({
+    name: "model-performance",
+    variants: {
+      "gpt-4": async () => {
+        return await monitoredOpenAI.chat.completions.create({
+          model: "gpt-4",
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 500,
+        });
+      },
+
+      "gpt-3.5": async () => {
+        return await monitoredOpenAI.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 500,
+        });
+      },
+
+      claude: async () => {
+        return await monitoredAnthropic.messages.create({
+          model: "claude-3-sonnet-20240229",
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 500,
+        });
+      },
+    },
+    metrics: ["cost", "latency", "quality"],
+  });
+}
+```
+
+### 3. Parameter Optimization
+
+Test different model parameters:
+
+```typescript
+async function temperatureTest(prompt: string) {
+  return await monitor.abTest({
+    name: "temperature-optimization",
+    variants: {
+      creative: async () => {
+        return await monitoredOpenAI.chat.completions.create({
+          model: "gpt-4",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.9, // High creativity
+          max_tokens: 300,
+        });
+      },
+
+      balanced: async () => {
+        return await monitoredOpenAI.chat.completions.create({
+          model: "gpt-4",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.5, // Balanced
+          max_tokens: 300,
+        });
+      },
+
+      deterministic: async () => {
+        return await monitoredOpenAI.chat.completions.create({
+          model: "gpt-4",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.1, // Low randomness
+          max_tokens: 300,
+        });
+      },
+    },
+  });
+}
+```
+
+### 4. Cost vs Quality Testing
+
+Find the optimal balance between cost and quality:
+
+```typescript
+async function costQualityTest(complexPrompt: string) {
+  return await monitor.abTest({
+    name: "cost-vs-quality",
+    variants: {
+      premium: async () => {
+        // High quality, high cost
+        return await monitoredOpenAI.chat.completions.create({
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are an expert analyst. Provide comprehensive, detailed responses.",
+            },
+            { role: "user", content: complexPrompt },
+          ],
+          max_tokens: 1000,
+          temperature: 0.3,
+        });
+      },
+
+      balanced: async () => {
+        // Good quality, moderate cost
+        return await monitoredOpenAI.chat.completions.create({
+          model: "gpt-4-turbo",
+          messages: [
+            {
+              role: "system",
+              content: "Provide clear, helpful responses.",
+            },
+            { role: "user", content: complexPrompt },
+          ],
+          max_tokens: 500,
+          temperature: 0.5,
+        });
+      },
+
+      economical: async () => {
+        // Lower cost, acceptable quality
+        return await monitoredOpenAI.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [{ role: "user", content: complexPrompt }],
+          max_tokens: 300,
+          temperature: 0.7,
+        });
+      },
+    },
+    metrics: ["cost", "tokens", "response_time", "user_satisfaction"],
+  });
+}
+```
+
+## Advanced A/B Testing
+
+### Multi-variate Testing
+
+Test multiple variables simultaneously:
+
+```typescript
+async function multivariateTest(
+  userQuery: string,
+  userType: "new" | "returning"
+) {
+  const variants = {
+    "simple-gpt35": {
+      model: "gpt-3.5-turbo",
+      systemMessage: "You are a helpful assistant.",
+      temperature: 0.7,
+    },
+    "detailed-gpt35": {
+      model: "gpt-3.5-turbo",
+      systemMessage:
+        "You are an expert assistant. Provide detailed, step-by-step explanations.",
+      temperature: 0.5,
+    },
+    "simple-gpt4": {
+      model: "gpt-4",
+      systemMessage: "You are a helpful assistant.",
+      temperature: 0.7,
+    },
+    "detailed-gpt4": {
+      model: "gpt-4",
+      systemMessage:
+        "You are an expert assistant. Provide detailed, step-by-step explanations.",
+      temperature: 0.5,
+    },
+  };
+
+  return await monitor.abTest({
+    name: "multivariate-optimization",
+    variants: Object.fromEntries(
+      Object.entries(variants).map(([name, config]) => [
+        name,
+        async () => {
+          return await monitoredOpenAI.chat.completions.create({
+            model: config.model,
+            messages: [
+              { role: "system", content: config.systemMessage },
+              { role: "user", content: userQuery },
+            ],
+            temperature: config.temperature,
+            max_tokens: 400,
+          });
+        },
+      ])
+    ),
+    metadata: {
+      userType,
+      testType: "multivariate",
+    },
+  });
+}
+```
+
+### Segmented Testing
+
+Run different tests for different user segments:
+
+```typescript
+async function segmentedTesting(userQuery: string, userSegment: string) {
+  // Different test configurations for different segments
+  const testConfigs = {
+    enterprise: {
+      name: "enterprise-optimization",
+      variants: {
+        detailed: () => enterpriseDetailedResponse(userQuery),
+        executive: () => executiveSummaryResponse(userQuery),
+      },
+    },
+    startup: {
+      name: "startup-optimization",
+      variants: {
+        quick: () => quickResponse(userQuery),
+        creative: () => creativeResponse(userQuery),
+      },
+    },
+    individual: {
+      name: "individual-optimization",
+      variants: {
+        friendly: () => friendlyResponse(userQuery),
+        educational: () => educationalResponse(userQuery),
+      },
+    },
+  };
+
+  const config = testConfigs[userSegment] || testConfigs["individual"];
+
+  return await monitor.abTest({
+    ...config,
+    metadata: {
+      userSegment,
+      segmentedTest: true,
+    },
+  });
+}
+```
+
+### Time-based Testing
+
+Test performance across different time periods:
+
+```typescript
+async function timeBasedTesting(prompt: string) {
+  const hour = new Date().getHours();
+  const timeSegment =
+    hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
+
+  return await monitor.abTest({
+    name: `performance-${timeSegment}`,
+    variants: {
+      optimized: async () => {
+        // Use faster model during peak hours
+        const model = timeSegment === "afternoon" ? "gpt-3.5-turbo" : "gpt-4";
+        return await monitoredOpenAI.chat.completions.create({
+          model: model,
+          messages: [{ role: "user", content: prompt }],
+        });
+      },
+
+      standard: async () => {
+        return await monitoredOpenAI.chat.completions.create({
+          model: "gpt-4",
+          messages: [{ role: "user", content: prompt }],
+        });
+      },
+    },
+    metadata: {
+      timeSegment,
+      hour,
+    },
+  });
+}
+```
+
+## Measuring Success
+
+### Built-in Metrics
+
+LLMonitor automatically tracks:
+
+```typescript
+// Automatic metrics tracked for each variant:
+const metrics = {
+  cost: 0.003, // Total cost per request
+  latency: 1250, // Response time in ms
+  tokens: {
+    input: 45, // Input tokens used
+    output: 123, // Output tokens generated
+    total: 168, // Total tokens
+  },
+  success: true, // Request succeeded
+  model: "gpt-4", // Model used
+  timestamp: "2024-01-15T10:30:00Z",
+};
+```
+
+### Custom Metrics
+
+Add your own success metrics:
+
+```typescript
+async function customMetricsTest(prompt: string) {
+  const result = await monitor.abTest({
+    name: "quality-assessment",
+    variants: {
+      verbose: async () => {
+        const response = await monitoredOpenAI.chat.completions.create({
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content:
+                "Provide comprehensive, detailed responses with examples.",
+            },
+            { role: "user", content: prompt },
+          ],
+          max_tokens: 800,
+        });
+
+        // Add custom quality metrics
+        const responseText = response.choices[0]?.message.content || "";
+
+        return {
+          ...response,
+          customMetrics: {
+            wordCount: responseText.split(" ").length,
+            hasExamples: responseText.includes("example"),
+            readabilityScore: calculateReadability(responseText),
+            completeness: assessCompleteness(responseText, prompt),
+          },
+        };
+      },
+
+      concise: async () => {
+        const response = await monitoredOpenAI.chat.completions.create({
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content:
+                "Provide brief, focused responses. Be concise but complete.",
+            },
+            { role: "user", content: prompt },
+          ],
+          max_tokens: 200,
+        });
+
+        const responseText = response.choices[0]?.message.content || "";
+
+        return {
+          ...response,
+          customMetrics: {
+            wordCount: responseText.split(" ").length,
+            clarity: assessClarity(responseText),
+            completeness: assessCompleteness(responseText, prompt),
+          },
+        };
+      },
+    },
+  });
+
+  return result;
+}
+
+function calculateReadability(text: string): number {
+  // Simple readability score implementation
+  const sentences = text.split(/[.!?]+/).length;
+  const words = text.split(" ").length;
+  const avgWordsPerSentence = words / sentences;
+
+  // Higher score = more readable (simplified calculation)
+  return Math.max(0, 100 - avgWordsPerSentence);
+}
+
+function assessCompleteness(response: string, originalPrompt: string): number {
+  // Custom logic to assess if response fully addresses the prompt
+  // This could use semantic similarity, keyword matching, etc.
+  return 0.85; // Placeholder
+}
+
+function assessClarity(text: string): number {
+  // Custom clarity assessment
+  return 0.92; // Placeholder
+}
+```
+
+### User Feedback Integration
+
+Collect user feedback to measure real-world performance:
+
+```typescript
+async function testWithUserFeedback(prompt: string, userId: string) {
+  const result = await monitor.abTest({
+    name: "user-satisfaction",
+    variants: {
+      formal: () => formalResponse(prompt),
+      casual: () => casualResponse(prompt),
+    },
+    metadata: {
+      userId,
+      collectFeedback: true,
+    },
+  });
+
+  // Later, when user provides feedback:
+  await monitor.recordFeedback({
+    testName: "user-satisfaction",
+    variant: result.variant,
+    userId: userId,
+    feedback: {
+      helpful: true,
+      rating: 4,
+      comment: "Good response, but could be more detailed",
+    },
+  });
+
+  return result;
+}
+```
+
+## Statistical Significance
+
+### Sample Size Calculation
+
+```typescript
+class ABTestManager {
+  private tests = new Map();
+
+  async runTest(testConfig: any) {
+    const test = this.tests.get(testConfig.name) || {
+      variants: {},
+      totalSamples: 0,
+      startTime: Date.now(),
+    };
+
+    // Check if we have enough samples for statistical significance
+    if (test.totalSamples > 100) {
+      const significance = this.calculateSignificance(test);
+      if (significance.isSignificant) {
+        console.log(
+          `Test ${testConfig.name} reached significance:`,
+          significance
+        );
+      }
+    }
+
+    // Run the test variant
+    const variant = this.selectVariant(testConfig.variants);
+    const result = await variant();
+
+    // Update test data
+    test.variants[variant.name] = test.variants[variant.name] || [];
+    test.variants[variant.name].push(result);
+    test.totalSamples++;
+
+    this.tests.set(testConfig.name, test);
+
+    return result;
+  }
+
+  private calculateSignificance(test: any) {
+    // Simplified significance calculation
+    // In production, use proper statistical tests
+    const variants = Object.keys(test.variants);
+    if (variants.length !== 2) return { isSignificant: false };
+
+    const [variantA, variantB] = variants;
+    const samplesA = test.variants[variantA].length;
+    const samplesB = test.variants[variantB].length;
+
+    // Need minimum sample size
+    if (samplesA < 50 || samplesB < 50) {
+      return { isSignificant: false, reason: "Insufficient sample size" };
+    }
+
+    // Calculate metrics difference (simplified)
+    const avgCostA = this.calculateAverage(test.variants[variantA], "cost");
+    const avgCostB = this.calculateAverage(test.variants[variantB], "cost");
+
+    const difference = Math.abs(avgCostA - avgCostB) / avgCostA;
+
+    return {
+      isSignificant: difference > 0.05, // 5% difference threshold
+      difference: difference,
+      winner: avgCostA < avgCostB ? variantA : variantB,
+      confidence: 0.95, // Placeholder
+    };
+  }
+
+  private calculateAverage(samples: any[], metric: string): number {
+    const values = samples.map((s) => s.metrics?.[metric] || 0);
+    return values.reduce((sum, val) => sum + val, 0) / values.length;
+  }
+
+  private selectVariant(variants: any) {
+    // Random selection for now
+    const variantNames = Object.keys(variants);
+    const selected =
+      variantNames[Math.floor(Math.random() * variantNames.length)];
+    return { name: selected, ...variants[selected] };
+  }
+}
+```
+
+## Best Practices
+
+### 1. Define Clear Hypotheses
+
+Before running tests, define what you're trying to prove:
+
+```typescript
+const testHypothesis = {
+  name: "prompt-length-optimization",
+  hypothesis:
+    "Shorter prompts will reduce cost without significantly impacting quality",
+  successMetrics: [
+    "cost reduction > 20%",
+    "quality score > 0.8",
+    "user satisfaction > 4.0/5",
+  ],
+  minimumSampleSize: 100,
+  testDuration: "7 days",
+};
+```
+
+### 2. Test One Variable at a Time
+
+When possible, isolate variables:
+
+```typescript
+// ❌ Testing multiple variables - hard to determine what caused the difference
+async function badTest() {
+  return await monitor.abTest({
+    name: "everything-different",
+    variants: {
+      control: () => gpt3Response("You are helpful.", 0.7, 300),
+      variant: () => gpt4Response("You are an expert.", 0.3, 500),
+    },
+  });
+}
+
+// ✅ Testing one variable - clear cause and effect
+async function goodTest() {
+  return await monitor.abTest({
+    name: "model-only-test",
+    variants: {
+      gpt3: () => openaiResponse("gpt-3.5-turbo", standardPrompt),
+      gpt4: () => openaiResponse("gpt-4", standardPrompt),
+    },
+  });
+}
+```
+
+### 3. Run Tests Long Enough
+
+Ensure statistical significance:
+
+```typescript
+const testConfig = {
+  minimumDuration: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
+  minimumSamples: 100,
+  significanceLevel: 0.05,
+};
+
+function shouldStopTest(testData: any): boolean {
+  const duration = Date.now() - testData.startTime;
+  const hasMinimumDuration = duration >= testConfig.minimumDuration;
+  const hasMinimumSamples = testData.totalSamples >= testConfig.minimumSamples;
+  const isSignificant =
+    calculatePValue(testData) < testConfig.significanceLevel;
+
+  return hasMinimumDuration && hasMinimumSamples && isSignificant;
+}
+```
+
+### 4. Monitor for External Factors
+
+Account for variables that might affect results:
+
+```typescript
+async function contextAwareTest(prompt: string) {
+  const context = {
+    time: new Date().toISOString(),
+    dayOfWeek: new Date().getDay(),
+    hour: new Date().getHours(),
+    serverLoad: await getServerLoad(),
+    userType: getCurrentUserType(),
+  };
+
+  return await monitor.abTest({
+    name: "context-aware-test",
+    variants: {
+      /* ... */
+    },
+    metadata: {
+      context,
+      excludeFromAnalysis: context.serverLoad > 0.8, // High load might skew results
+    },
+  });
+}
+```
+
+## Dashboard and Reporting
+
+### Real-time Test Monitoring
+
+Your LLMonitor dashboard shows:
+
+- **Active tests** - Currently running experiments
+- **Sample distribution** - How traffic is split between variants
+- **Real-time metrics** - Cost, latency, success rates
+- **Statistical significance** - When tests reach confidence thresholds
+
+### Test Reports
+
+Automated reports include:
+
+```typescript
+const testReport = {
+  testName: "prompt-optimization-v2",
+  duration: "14 days",
+  totalSamples: 1547,
+  variants: {
+    control: {
+      samples: 773,
+      avgCost: 0.0042,
+      avgLatency: 1250,
+      successRate: 0.97,
+      userRating: 3.8,
+    },
+    optimized: {
+      samples: 774,
+      avgCost: 0.0028, // 33% reduction
+      avgLatency: 950, // 24% faster
+      successRate: 0.98,
+      userRating: 4.1, // Better user satisfaction
+    },
+  },
+  winner: "optimized",
+  confidence: 0.95,
+  recommendation: "Deploy optimized variant to 100% of traffic",
+};
+```
+
+## Common Testing Scenarios
+
+### 1. New Model Evaluation
+
+When a new model is released:
+
+```typescript
+async function evaluateNewModel(prompt: string) {
+  return await monitor.abTest({
+    name: "gpt4-vs-new-model",
+    variants: {
+      current: () =>
+        monitoredOpenAI.chat.completions.create({
+          model: "gpt-4",
+          messages: [{ role: "user", content: prompt }],
+        }),
+
+      new: () =>
+        monitoredOpenAI.chat.completions.create({
+          model: "gpt-4-new-preview", // New model
+          messages: [{ role: "user", content: prompt }],
+        }),
+    },
+    duration: "30 days", // Longer test for major changes
+  });
+}
+```
+
+### 2. Prompt Engineering
+
+Iteratively improve prompts:
+
+```typescript
+const promptEvolution = {
+  v1: "Summarize this text:",
+  v2: "Provide a concise summary of the following text, focusing on key points:",
+  v3: "Create a brief summary highlighting the main ideas and conclusions:",
+  v4: "Summarize this text in 2-3 sentences, emphasizing the most important information:",
+};
+
+async function evolvePrompt(
+  text: string,
+  currentVersion: string,
+  newVersion: string
+) {
+  return await monitor.abTest({
+    name: `prompt-evolution-${currentVersion}-vs-${newVersion}`,
+    variants: {
+      current: () => generateSummary(promptEvolution[currentVersion] + text),
+      new: () => generateSummary(promptEvolution[newVersion] + text),
+    },
+  });
+}
+```
+
+### 3. Feature Rollouts
+
+Gradually roll out new features:
+
+```typescript
+async function featureRollout(userQuery: string, userTier: string) {
+  // Start with 5% of premium users
+  const rolloutPercentage = userTier === "premium" ? 0.05 : 0;
+
+  if (Math.random() > rolloutPercentage) {
+    return await currentImplementation(userQuery);
+  }
+
+  return await monitor.abTest({
+    name: "new-feature-rollout",
+    variants: {
+      current: () => currentImplementation(userQuery),
+      newFeature: () => newFeatureImplementation(userQuery),
+    },
+    metadata: {
+      userTier,
+      rolloutPhase: "phase1",
+    },
+  });
+}
+```
+
+## Next Steps
+
+Now that you understand A/B testing with LLMonitor:
+
+- [**Performance Monitoring**](/docs/guides/performance) - Track and optimize LLM performance
+- [**Cost Optimization**](/docs/guides/cost-optimization) - Use test results to reduce costs
+- [**Session Tracking**](/docs/guides/sessions) - Test user experience improvements
+- [**Error Handling**](/docs/guides/error-handling) - Test error recovery strategies
+
+## Need Help?
+
+- Check our [Statistical Significance Guide](/docs/guides/statistics)
+- Join our [Discord Community](https://discord.gg/llmonitor) for testing advice
+- View [A/B Testing Examples](/docs/examples/ab-testing) for more scenarios
