@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDashboardStatsQuery } from "@/services/analytics/query";
+import type { DashboardStats } from "@/types/analytics";
 
 export const Route = createFileRoute("/_dashboard/dashboard")({
   component: Dashboard,
@@ -225,30 +226,39 @@ export function Dashboard() {
                       </div>
                     </div>
                   ))
-                : stats?.topModels.slice(0, 5).map((model, index) => (
-                    <div
-                      key={`${model.provider}-${model.model}`}
-                      className="flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium">
-                          {index + 1}
-                        </div>
-                        <div>
-                          <div className="font-medium">{model.model}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {model.provider}
+                : stats?.topModels
+                    .slice(0, 5)
+                    .map(
+                      (
+                        model: DashboardStats["topModels"][0],
+                        index: number
+                      ) => (
+                        <div
+                          key={`${model.provider}-${model.model}`}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium">
+                              {index + 1}
+                            </div>
+                            <div>
+                              <div className="font-medium">{model.model}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {model.provider}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-medium">
+                              {model.count} calls
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              ${model.cost.toFixed(4)}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-medium">{model.count} calls</div>
-                        <div className="text-sm text-muted-foreground">
-                          ${model.cost.toFixed(4)}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                      )
+                    )}
             </div>
           </div>
         </Card>

@@ -164,7 +164,7 @@ export function DataTable<TData, TValue>({
         <div className="rounded-md border">
           <Table>
             <TableHeader>
-              {columns.map((column, i) => (
+              {columns.map((_, i) => (
                 <TableHead key={i}>
                   <Skeleton className="h-6 w-full" />
                 </TableHead>

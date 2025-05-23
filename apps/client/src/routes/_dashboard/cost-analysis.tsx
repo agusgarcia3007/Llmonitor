@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCostAnalysisQuery } from "@/services/analytics/query";
+import type { CostAnalysis } from "@/types/analytics";
 import { IconCurrency, IconDownload } from "@tabler/icons-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
@@ -32,12 +33,14 @@ export function CostAnalysisPage() {
 
     const csvContent = [
       ["Provider", "Total Cost", "Requests", "Avg Cost per Request"],
-      ...analysis.costByProvider.map((item) => [
-        item.provider,
-        item.cost.toFixed(4),
-        item.count.toString(),
-        item.avg_cost.toFixed(6),
-      ]),
+      ...analysis.costByProvider.map(
+        (item: CostAnalysis["costByProvider"][0]) => [
+          item.provider,
+          item.cost.toFixed(4),
+          item.count.toString(),
+          item.avg_cost.toFixed(6),
+        ]
+      ),
     ]
       .map((row) => row.join(","))
       .join("\n");
@@ -134,41 +137,44 @@ export function CostAnalysisPage() {
                       </div>
                     </div>
                   ))
-                : analysis?.costByProvider.map((provider) => {
-                    const totalCost = analysis.costByProvider.reduce(
-                      (sum, p) => sum + p.cost,
-                      0
-                    );
-                    const percentage =
-                      totalCost > 0 ? (provider.cost / totalCost) * 100 : 0;
+                : analysis?.costByProvider.map(
+                    (provider: CostAnalysis["costByProvider"][0]) => {
+                      const totalCost = analysis.costByProvider.reduce(
+                        (sum: number, p: CostAnalysis["costByProvider"][0]) =>
+                          sum + p.cost,
+                        0
+                      );
+                      const percentage =
+                        totalCost > 0 ? (provider.cost / totalCost) * 100 : 0;
 
-                    return (
-                      <div
-                        key={provider.provider}
-                        className="flex items-center justify-between"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-3 h-3 rounded-full bg-primary" />
-                          <div>
-                            <div className="font-medium capitalize">
-                              {provider.provider}
+                      return (
+                        <div
+                          key={provider.provider}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-3 h-3 rounded-full bg-primary" />
+                            <div>
+                              <div className="font-medium capitalize">
+                                {provider.provider}
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                {provider.count} requests
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-medium">
+                              ${provider.cost.toFixed(2)}
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              {provider.count} requests
+                              {percentage.toFixed(1)}%
                             </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="font-medium">
-                            ${provider.cost.toFixed(2)}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {percentage.toFixed(1)}%
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    }
+                  )}
             </div>
           </CardContent>
         </Card>
@@ -200,31 +206,34 @@ export function CostAnalysisPage() {
                       </div>
                     </div>
                   ))
-                : analysis?.topCostlyRequests.slice(0, 5).map((request) => (
-                    <div
-                      key={request.id}
-                      className="flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center text-xs font-medium">
-                          ${request.cost_usd.toFixed(3)}
+                : analysis?.topCostlyRequests
+                    .slice(0, 5)
+                    .map((request: CostAnalysis["topCostlyRequests"][0]) => (
+                      <div
+                        key={request.id}
+                        className="flex items-center justify-between"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center text-xs font-medium">
+                            ${request.cost_usd.toFixed(3)}
+                          </div>
+                          <div>
+                            <div className="font-medium">{request.model}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {request.provider} •{" "}
+                              {request.prompt_tokens +
+                                request.completion_tokens}{" "}
+                              tokens
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="font-medium">{request.model}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {request.provider} •{" "}
-                            {request.prompt_tokens + request.completion_tokens}{" "}
-                            tokens
+                        <div className="text-right">
+                          <div className="text-sm">
+                            {new Date(request.created_at).toLocaleDateString()}
                           </div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm">
-                          {new Date(request.created_at).toLocaleDateString()}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
             </div>
           </CardContent>
         </Card>
@@ -252,22 +261,26 @@ export function CostAnalysisPage() {
                     </div>
                   </div>
                 ))
-              : analysis?.costTrend.slice(-10).map((day) => (
-                  <div
-                    key={day.date}
-                    className="flex items-center justify-between py-2 border-b border-border/50 last:border-0"
-                  >
-                    <div className="font-medium">
-                      {new Date(day.date).toLocaleDateString()}
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-sm text-muted-foreground">
-                        {day.count} requests
+              : analysis?.costTrend
+                  .slice(-10)
+                  .map((day: CostAnalysis["costTrend"][0]) => (
+                    <div
+                      key={day.date}
+                      className="flex items-center justify-between py-2 border-b border-border/50 last:border-0"
+                    >
+                      <div className="font-medium">
+                        {new Date(day.date).toLocaleDateString()}
                       </div>
-                      <div className="font-medium">${day.cost.toFixed(2)}</div>
+                      <div className="flex items-center gap-3">
+                        <div className="text-sm text-muted-foreground">
+                          {day.count} requests
+                        </div>
+                        <div className="font-medium">
+                          ${day.cost.toFixed(2)}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
           </div>
         </CardContent>
       </Card>

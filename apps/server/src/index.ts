@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { CORS_OPTIONS } from "@/lib/constants";
 import { sessionMiddleware } from "@/middleware/auth";
+import { AlertScheduler } from "@/lib/alert-scheduler";
 // import { ROUTES } from "@/routes";
 import { HonoApp } from "@/types";
 import { Hono } from "hono";
@@ -29,6 +30,21 @@ ROUTES.forEach((route) => {
 app.onError((err, c) => {
   console.error(err);
   return c.text("Internal Server Error", 500);
+});
+
+const alertScheduler = new AlertScheduler();
+alertScheduler.start(5);
+
+process.on("SIGTERM", () => {
+  console.log("Received SIGTERM, stopping alert scheduler...");
+  alertScheduler.stop();
+  process.exit(0);
+});
+
+process.on("SIGINT", () => {
+  console.log("Received SIGINT, stopping alert scheduler...");
+  alertScheduler.stop();
+  process.exit(0);
 });
 
 const port = parseInt(Bun.env.PORT || "4444", 10);

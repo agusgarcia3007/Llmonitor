@@ -140,3 +140,82 @@ export const llm_event = pgTable("llm_event", {
     .$defaultFn(() => new Date())
     .notNull(),
 });
+
+export const alert_config = pgTable("alert_config", {
+  id: text("id").primaryKey(),
+  organization_id: text("organization_id")
+    .notNull()
+    .references(() => organization.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  type: text("type").notNull(),
+  metric: text("metric").notNull(),
+  threshold_value: real("threshold_value").notNull(),
+  threshold_operator: text("threshold_operator").notNull(),
+  time_window: integer("time_window").notNull(),
+  is_active: boolean("is_active").default(true).notNull(),
+  notification_channels: json("notification_channels").notNull(),
+  filters: json("filters"),
+  created_by: text("created_by")
+    .notNull()
+    .references(() => user.id),
+  created_at: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updated_at: timestamp("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+});
+
+export const alert_trigger = pgTable("alert_trigger", {
+  id: text("id").primaryKey(),
+  alert_config_id: text("alert_config_id")
+    .notNull()
+    .references(() => alert_config.id, { onDelete: "cascade" }),
+  triggered_at: timestamp("triggered_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  metric_value: real("metric_value").notNull(),
+  context: json("context"),
+  status: text("status").default("triggered").notNull(),
+  resolved_at: timestamp("resolved_at"),
+});
+
+export const webhook_config = pgTable("webhook_config", {
+  id: text("id").primaryKey(),
+  organization_id: text("organization_id")
+    .notNull()
+    .references(() => organization.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  url: text("url").notNull(),
+  secret: text("secret"),
+  headers: json("headers"),
+  is_active: boolean("is_active").default(true).notNull(),
+  events: json("events").notNull(),
+  created_at: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updated_at: timestamp("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+});
+
+export const webhook_delivery = pgTable("webhook_delivery", {
+  id: text("id").primaryKey(),
+  webhook_config_id: text("webhook_config_id")
+    .notNull()
+    .references(() => webhook_config.id, { onDelete: "cascade" }),
+  alert_trigger_id: text("alert_trigger_id").references(() => alert_trigger.id),
+  event_type: text("event_type").notNull(),
+  payload: json("payload").notNull(),
+  status: text("status").default("pending").notNull(),
+  attempts: integer("attempts").default(0).notNull(),
+  last_attempt_at: timestamp("last_attempt_at"),
+  response_status: integer("response_status"),
+  response_body: text("response_body"),
+  error_message: text("error_message"),
+  delivered_at: timestamp("delivered_at"),
+  created_at: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+});
