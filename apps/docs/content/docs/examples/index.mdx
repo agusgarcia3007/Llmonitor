@@ -1,0 +1,493 @@
+---
+title: Examples
+description: Practical examples and use cases for LLMonitor SDK
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+# Examples
+
+Real-world examples of integrating LLMonitor into your applications.
+
+## Basic OpenAI Integration
+
+The simplest way to get started with monitoring your OpenAI calls:
+
+```typescript
+import OpenAI from "openai";
+import { LLMonitor } from "@llmonitor/sdk";
+
+// Initialize clients
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  debug: true,
+  sessionId: "demo-session",
+});
+
+// Wrap and use
+const monitoredOpenAI = monitor.openai(openai);
+
+const response = await monitoredOpenAI.chat.completions.create({
+  model: "gpt-3.5-turbo",
+  messages: [{ role: "user", content: "Explain TypeScript benefits" }],
+  temperature: 0.7,
+});
+
+console.log(response.choices[0].message.content);
+```
+
+## Express.js Middleware
+
+Create reusable monitoring middleware for your Express application:
+
+```typescript
+import express from "express";
+import OpenAI from "openai";
+import { LLMonitor } from "@llmonitor/sdk";
+
+const app = express();
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+// Create monitoring middleware
+function createLLMMiddleware() {
+  return (req: any, res: any, next: any) => {
+    const monitor = new LLMonitor({
+      apiKey: process.env.LLMONITOR_API_KEY,
+      sessionId: req.session?.id || "anonymous",
+      metadata: {
+        userId: req.user?.id,
+        userAgent: req.headers["user-agent"],
+        endpoint: req.path,
+      },
+    });
+
+    req.llm = {
+      openai: monitor.openai(openai),
+      monitor,
+    };
+
+    // Ensure events are flushed before response
+    res.on("finish", () => {
+      req.llm.monitor.flush().catch(console.error);
+    });
+
+    next();
+  };
+}
+
+// Use middleware
+app.use(createLLMMiddleware());
+
+app.post("/chat", async (req, res) => {
+  try {
+    const response = await req.llm.openai.chat.completions.create(
+      {
+        model: "gpt-4",
+        messages: req.body.messages,
+      },
+      {
+        versionTag: "chat-v1",
+        requestId: req.id,
+        metadata: {
+          feature: "chat",
+          messageCount: req.body.messages.length,
+        },
+      }
+    );
+
+    res.json({ message: response.choices[0].message });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+```
+
+## Next.js API Route
+
+Monitor LLM calls in Next.js API routes:
+
+```typescript
+// pages/api/chat.ts or app/api/chat/route.ts
+import OpenAI from "openai";
+import { LLMonitor } from "@llmonitor/sdk";
+import type { NextApiRequest, NextApiResponse } from "next";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  baseURL: process.env.LLMONITOR_BASE_URL,
+});
+
+const monitoredOpenAI = monitor.openai(openai);
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  try {
+    const { messages, userId } = req.body;
+
+    const response = await monitoredOpenAI.chat.completions.create(
+      {
+        model: "gpt-4",
+        messages,
+        temperature: 0.7,
+      },
+      {
+        sessionId: `user-${userId}`,
+        versionTag: "api-v1",
+        metadata: {
+          userId,
+          source: "nextjs-api",
+          timestamp: new Date().toISOString(),
+        },
+      }
+    );
+
+    await monitor.flush();
+
+    res.json({
+      message: response.choices[0].message.content,
+      usage: response.usage,
+    });
+  } catch (error) {
+    console.error("Chat API error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+```
+
+## Multi-Provider Setup
+
+Log events from multiple LLM providers:
+
+```typescript
+import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
+import { LLMonitor } from "@llmonitor/sdk";
+
+class MultiProviderLLM {
+  private monitor: LLMonitor;
+  private openai: any;
+  private anthropic: Anthropic;
+
+  constructor() {
+    this.monitor = new LLMonitor({
+      apiKey: process.env.LLMONITOR_API_KEY,
+      sessionId: "multi-provider-session",
+    });
+
+    this.openai = this.monitor.openai(
+      new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    );
+
+    this.anthropic = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY,
+    });
+  }
+
+  async askOpenAI(prompt: string) {
+    return await this.openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [{ role: "user", content: prompt }],
+    });
+  }
+
+  async askClaude(prompt: string) {
+    const startTime = Date.now();
+
+    try {
+      const response = await this.anthropic.messages.create({
+        model: "claude-3-sonnet-20240229",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }],
+      });
+
+      // Manually log Claude events
+      await this.monitor.logEvent({
+        provider: "anthropic",
+        model: "claude-3-sonnet-20240229",
+        prompt,
+        completion: response.content[0].text,
+        status: 200,
+        latency_ms: Date.now() - startTime,
+        prompt_tokens: response.usage.input_tokens,
+        completion_tokens: response.usage.output_tokens,
+        cost_usd: this.calculateClaudeCost(response.usage),
+        metadata: {
+          stop_reason: response.stop_reason,
+        },
+      });
+
+      return response;
+    } catch (error) {
+      // Log failed attempts too
+      await this.monitor.logEvent({
+        provider: "anthropic",
+        model: "claude-3-sonnet-20240229",
+        prompt,
+        completion: "",
+        status: 500,
+        latency_ms: Date.now() - startTime,
+        metadata: {
+          error: error.message,
+        },
+      });
+      throw error;
+    }
+  }
+
+  private calculateClaudeCost(usage: any): number {
+    // Claude pricing: $3 per million input tokens, $15 per million output tokens
+    const inputCost = (usage.input_tokens / 1_000_000) * 3;
+    const outputCost = (usage.output_tokens / 1_000_000) * 15;
+    return inputCost + outputCost;
+  }
+}
+```
+
+## A/B Testing Prompts
+
+Compare different prompt versions to optimize performance:
+
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+
+class PromptExperiments {
+  private monitor: LLMonitor;
+  private monitoredOpenAI: any;
+
+  constructor() {
+    this.monitor = new LLMonitor({
+      apiKey: process.env.LLMONITOR_API_KEY,
+    });
+    this.monitoredOpenAI = this.monitor.openai(
+      new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    );
+  }
+
+  async runCodeExplanationExperiment(code: string, userId: string) {
+    // Randomly assign users to different prompt versions
+    const variants = ["concise", "detailed", "beginner-friendly"];
+    const variant = variants[Math.floor(Math.random() * variants.length)];
+
+    const prompts = {
+      concise: `Explain this code briefly:\n\n${code}`,
+      detailed: `Provide a comprehensive explanation of this code, including what each part does:\n\n${code}`,
+      "beginner-friendly": `Explain this code in simple terms that a beginner would understand:\n\n${code}`,
+    };
+
+    const response = await this.monitoredOpenAI.chat.completions.create(
+      {
+        model: "gpt-4",
+        messages: [{ role: "user", content: prompts[variant] }],
+        temperature: 0.3,
+      },
+      {
+        sessionId: `user-${userId}`,
+        versionTag: `code-explanation-${variant}`,
+        metadata: {
+          experiment: "code-explanation-prompts",
+          variant,
+          userId,
+          codeLength: code.length,
+        },
+      }
+    );
+
+    return {
+      explanation: response.choices[0].message.content,
+      variant,
+      usage: response.usage,
+    };
+  }
+}
+
+// Usage
+const experiments = new PromptExperiments();
+const result = await experiments.runCodeExplanationExperiment(
+  "const sum = (a, b) => a + b;",
+  "user-123"
+);
+```
+
+## Cost Monitoring & Alerts
+
+Set up automated cost monitoring with custom thresholds:
+
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+
+class CostAwareMonitor {
+  private monitor: LLMonitor;
+  private dailyCost: number = 0;
+  private dailyLimit: number = 50; // $50 daily limit
+
+  constructor() {
+    this.monitor = new LLMonitor({
+      apiKey: process.env.LLMONITOR_API_KEY,
+      metadata: {
+        environment: "production",
+        costTracking: true,
+      },
+    });
+  }
+
+  async monitoredCall(params: any, context: any = {}) {
+    // Check if we're approaching limits
+    if (this.dailyCost > this.dailyLimit * 0.8) {
+      console.warn(
+        `⚠️  Approaching daily cost limit: $${this.dailyCost}/$${this.dailyLimit}`
+      );
+    }
+
+    if (this.dailyCost >= this.dailyLimit) {
+      throw new Error(`Daily cost limit exceeded: $${this.dailyCost}`);
+    }
+
+    const monitoredOpenAI = this.monitor.openai(
+      new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    );
+
+    const response = await monitoredOpenAI.chat.completions.create(params, {
+      versionTag: "cost-monitored",
+      metadata: {
+        ...context,
+        dailyCostSoFar: this.dailyCost,
+        dailyLimit: this.dailyLimit,
+      },
+    });
+
+    // Estimate and track cost
+    const estimatedCost = this.estimateCost(params.model, response.usage);
+    this.dailyCost += estimatedCost;
+
+    if (estimatedCost > 1) {
+      // Log expensive calls
+      console.log(
+        `💰 Expensive call: $${estimatedCost.toFixed(4)} for ${
+          response.usage.total_tokens
+        } tokens`
+      );
+    }
+
+    return response;
+  }
+
+  private estimateCost(model: string, usage: any): number {
+    const pricing = {
+      "gpt-4": { input: 0.03, output: 0.06 },
+      "gpt-3.5-turbo": { input: 0.001, output: 0.002 },
+    };
+
+    const modelPricing = pricing[model] || pricing["gpt-3.5-turbo"];
+    return (
+      (usage.prompt_tokens / 1000) * modelPricing.input +
+      (usage.completion_tokens / 1000) * modelPricing.output
+    );
+  }
+
+  resetDailyCost() {
+    this.dailyCost = 0;
+  }
+}
+```
+
+## Error Tracking & Recovery
+
+Implement robust error handling with automatic retries:
+
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+
+class ResilientLLM {
+  private monitor: LLMonitor;
+  private monitoredOpenAI: any;
+
+  constructor() {
+    this.monitor = new LLMonitor({
+      apiKey: process.env.LLMONITOR_API_KEY,
+      debug: true,
+    });
+    this.monitoredOpenAI = this.monitor.openai(
+      new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    );
+  }
+
+  async callWithRetry(params: any, options: any = {}, maxRetries: number = 3) {
+    let lastError: Error;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await this.monitoredOpenAI.chat.completions.create(
+          params,
+          {
+            ...options,
+            metadata: {
+              ...options.metadata,
+              attempt,
+              maxRetries,
+            },
+          }
+        );
+
+        // Log successful retry
+        if (attempt > 1) {
+          await this.monitor.logEvent({
+            provider: "openai",
+            model: params.model,
+            prompt: JSON.stringify(params.messages),
+            completion: "SUCCESS_AFTER_RETRY",
+            status: 200,
+            metadata: {
+              successfulAttempt: attempt,
+              totalAttempts: attempt,
+            },
+          });
+        }
+
+        return response;
+      } catch (error) {
+        lastError = error;
+
+        // Log failed attempt
+        await this.monitor.logEvent({
+          provider: "openai",
+          model: params.model,
+          prompt: JSON.stringify(params.messages),
+          completion: "",
+          status: 500,
+          metadata: {
+            attempt,
+            maxRetries,
+            error: error.message,
+            errorType: error.constructor.name,
+          },
+        });
+
+        if (attempt === maxRetries) {
+          throw lastError;
+        }
+
+        // Exponential backoff
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.pow(2, attempt) * 1000)
+        );
+      }
+    }
+  }
+}
+```
+
+These examples show various patterns for integrating LLMonitor into real applications. Choose the ones that match your use case and adapt them to your specific needs.

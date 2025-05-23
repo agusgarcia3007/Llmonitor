@@ -13,3 +13,4 @@ coverage/
 *.swo
 npm-debug.log*
 yarn.lock 
+PRD.md

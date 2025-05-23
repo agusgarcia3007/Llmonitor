@@ -6,7 +6,11 @@
     "dev": "pnpm -r dev",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
-    "preview": "pnpm -r preview"
+    "preview": "pnpm -r preview",
+    "start": "pnpm -r start",
+    "dev:docs": "pnpm --filter docs dev",
+    "dev:server": "pnpm --filter server dev",
+    "dev:client": "pnpm --filter client dev"
   },
   "workspaces": [
     "client",

@@ -1,0 +1,88 @@
+---
+title: Welcome to LLMonitor
+description: Model-agnostic LLM Observability & Cost Intelligence
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+# Welcome to LLMonitor
+
+**Model-agnostic LLM Observability & Cost Intelligence**
+
+LLMonitor gives AI builders a **single pane of glass** to see **how every prompt behaves, how much it costs, and when it breaks**—across any model provider (OpenAI, Anthropic, Google, etc.).
+
+Replace home-grown logs, scattered dashboards and blind-spot debugging with an **actionable, dev-friendly analytics layer** that pays for itself by cutting token spend and downtime.
+
+## Quick Start
+
+<Steps>
+
+<Step>
+
+### Install the SDK
+
+<Tabs items={['npm', 'yarn', 'pnpm']}>
+
+<Tab value="npm">```bash npm install @llmonitor/sdk ```</Tab>
+
+<Tab value="yarn">```bash yarn add @llmonitor/sdk ```</Tab>
+
+<Tab value="pnpm">```bash pnpm add @llmonitor/sdk ```</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step>
+
+### Initialize LLMonitor
+
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+
+const monitor = new LLMonitor({
+  apiKey: "your-api-key", // Get this from your dashboard
+  sessionId: "user-session-123",
+  versionTag: "v1.0.0",
+});
+```
+
+</Step>
+
+<Step>
+
+### Wrap your LLM client
+
+```typescript
+import OpenAI from "openai";
+
+const openai = new OpenAI({ apiKey: "your-openai-key" });
+const monitoredOpenAI = monitor.openai(openai);
+
+// Use exactly like normal OpenAI - automatically logged!
+const response = await monitoredOpenAI.chat.completions.create({
+  model: "gpt-4",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+```
+
+</Step>
+
+</Steps>
+
+## Features
+
+- **📊 Centralized Dashboard** - All your LLM calls in one place
+- **💰 Cost Intelligence** - Automatic cost calculation and optimization
+- **⚡ Performance Monitoring** - Latency, tokens, success rates
+- **🔍 Multi-provider Support** - OpenAI, Anthropic, Google, Cohere
+- **🚨 Smart Alerts** - Get notified when things break
+- **🧪 A/B Testing** - Compare prompt variants with ease
+
+## What's Next?
+
+- [SDK Reference](/sdk) - Complete API documentation
+- [Integrations](/integrations) - Connect with your favorite tools
+- [Guides](/guides) - Best practices and tutorials
+- [Examples](/examples) - Working code examples

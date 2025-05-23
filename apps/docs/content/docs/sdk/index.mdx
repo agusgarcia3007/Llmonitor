@@ -1,0 +1,238 @@
+---
+title: SDK Reference
+description: Complete API reference for the LLMonitor SDK
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+# SDK Reference
+
+The `@llmonitor/sdk` package provides seamless integration with LLMonitor for JavaScript and TypeScript applications.
+
+## Installation
+
+<Tabs items={['npm', 'yarn', 'pnpm']}>
+
+<Tab value="npm">```bash npm install @llmonitor/sdk ```</Tab>
+
+<Tab value="yarn">```bash yarn add @llmonitor/sdk ```</Tab>
+
+<Tab value="pnpm">```bash pnpm add @llmonitor/sdk ```</Tab>
+
+</Tabs>
+
+## Configuration
+
+### LLMonitorConfig
+
+```typescript
+interface LLMonitorConfig {
+  apiKey: string; // Required: Your LLMonitor API key
+  baseURL?: string; // Optional: API endpoint (default: localhost:3001)
+  debug?: boolean; // Optional: Enable debug logging (default: false)
+  enabled?: boolean; // Optional: Enable/disable monitoring (default: true)
+  sessionId?: string; // Optional: Default session ID for grouping calls
+  versionTag?: string; // Optional: Default version tag for experiments
+  metadata?: Record<string, any>; // Optional: Default metadata for all events
+}
+```
+
+### Example Configuration
+
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  baseURL: "https://api.llmonitor.com",
+  debug: process.env.NODE_ENV === "development",
+  sessionId: "user-session-123",
+  versionTag: "v2.1.0",
+  metadata: {
+    environment: "production",
+    service: "chat-api",
+  },
+});
+```
+
+## API Methods
+
+### monitor.openai(client)
+
+Wraps an OpenAI client instance to automatically log all chat completion calls.
+
+```typescript
+import OpenAI from "openai";
+
+const openai = new OpenAI({ apiKey: "your-key" });
+const monitoredOpenAI = monitor.openai(openai);
+
+// Returns a wrapped client with the same interface
+const response = await monitoredOpenAI.chat.completions.create(
+  {
+    model: "gpt-4",
+    messages: [{ role: "user", content: "Hello!" }],
+    temperature: 0.7,
+  },
+  {
+    // Optional: Override per-call options
+    sessionId: "special-session",
+    versionTag: "experiment-a",
+    requestId: "req-123",
+    metadata: { userId: "user-456" },
+  }
+);
+```
+
+### monitor.logEvent(event)
+
+Manually log an LLM event for any provider.
+
+```typescript
+await monitor.logEvent({
+  provider: "anthropic",
+  model: "claude-3-sonnet",
+  prompt: "Hello Claude!",
+  completion: "Hello! How can I help you?",
+  status: 200,
+  latency_ms: 1200,
+  prompt_tokens: 10,
+  completion_tokens: 15,
+  cost_usd: 0.002,
+  session_id: "custom-session",
+  metadata: {
+    temperature: 0.7,
+    max_tokens: 100,
+  },
+});
+```
+
+### monitor.flush()
+
+Ensure all queued events are sent to LLMonitor before your application exits.
+
+```typescript
+// Before app shutdown
+await monitor.flush();
+```
+
+### monitor.updateConfig(updates)
+
+Update configuration after initialization.
+
+```typescript
+monitor.updateConfig({
+  sessionId: "new-session",
+  debug: false,
+});
+```
+
+## Provider Options
+
+When calling OpenAI methods, you can override default settings per call:
+
+```typescript
+interface ProviderOptions {
+  sessionId?: string; // Override session for this call
+  versionTag?: string; // Override version tag
+  requestId?: string; // Custom request identifier
+  metadata?: Record<string, any>; // Additional metadata
+}
+```
+
+## TypeScript Support
+
+The SDK is built with TypeScript and provides full type safety:
+
+```typescript
+import { LLMonitor, LLMEvent, LLMonitorConfig } from "@llmonitor/sdk";
+
+// All types are exported and properly defined
+const config: LLMonitorConfig = {
+  apiKey: "your-key",
+  debug: true,
+};
+
+const event: LLMEvent = {
+  provider: "openai",
+  model: "gpt-4",
+  prompt: "Hello",
+  completion: "Hi!",
+  status: 200,
+};
+```
+
+## Error Handling
+
+The SDK is designed to never break your application:
+
+- Network errors are silently caught and optionally logged (if `debug: true`)
+- Invalid configurations fall back to safe defaults
+- The wrapped OpenAI client behaves identically to the original
+- Events are queued and retried automatically
+
+```typescript
+try {
+  const response = await monitoredOpenAI.chat.completions.create({
+    model: "gpt-4",
+    messages: [{ role: "user", content: "Hello!" }],
+  });
+  // Response handling
+} catch (error) {
+  // OpenAI errors are passed through unchanged
+  // LLMonitor logging errors don't affect this flow
+  console.error("OpenAI error:", error);
+}
+```
+
+## Best Practices
+
+### Environment Variables
+
+Set up environment-based configuration:
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY!,
+  baseURL: process.env.LLMONITOR_BASE_URL,
+  debug: process.env.NODE_ENV === "development",
+  enabled: process.env.NODE_ENV !== "test", // Disable in tests
+});
+```
+
+### Session Tracking
+
+Group related calls with session IDs:
+
+```typescript
+// Global session for a user conversation
+const monitor = new LLMonitor({
+  apiKey: "your-key",
+  sessionId: `user-${userId}-${conversationId}`,
+});
+
+// Override for specific features
+await monitoredOpenAI.chat.completions.create(params, {
+  sessionId: `feature-${featureName}`,
+  metadata: { userId, feature: featureName },
+});
+```
+
+### A/B Testing
+
+Use version tags to compare prompt performance:
+
+```typescript
+const versionTag = Math.random() > 0.5 ? "prompt-v1" : "prompt-v2";
+
+await monitoredOpenAI.chat.completions.create(
+  {
+    model: "gpt-4",
+    messages: getMessagesForVersion(versionTag),
+  },
+  {
+    versionTag,
+    metadata: { experiment: "system-prompt-test" },
+  }
+);
+```

@@ -1,0 +1,68 @@
+{
+  "title": "LLMonitor Documentation",
+  "description": "Model-agnostic LLM Observability & Cost Intelligence",
+  "pages": [
+    {
+      "title": "Introduction",
+      "url": "/",
+      "icon": "Home"
+    },
+    {
+      "title": "SDK Reference",
+      "url": "/sdk",
+      "icon": "Code"
+    },
+    {
+      "title": "Examples",
+      "url": "/examples",
+      "icon": "BookOpen"
+    },
+    {
+      "title": "Guides",
+      "url": "/guides",
+      "icon": "Map",
+      "pages": [
+        {
+          "title": "Getting Started",
+          "url": "/guides/getting-started"
+        },
+        {
+          "title": "Cost Optimization",
+          "url": "/guides/cost-optimization"
+        },
+        {
+          "title": "A/B Testing",
+          "url": "/guides/ab-testing"
+        }
+      ]
+    },
+    {
+      "title": "Integrations",
+      "url": "/integrations",
+      "icon": "Puzzle",
+      "pages": [
+        {
+          "title": "OpenAI",
+          "url": "/integrations/openai"
+        },
+        {
+          "title": "Anthropic",
+          "url": "/integrations/anthropic"
+        },
+        {
+          "title": "Express.js",
+          "url": "/integrations/express"
+        },
+        {
+          "title": "Next.js",
+          "url": "/integrations/nextjs"
+        }
+      ]
+    },
+    {
+      "title": "API Reference",
+      "url": "/api",
+      "icon": "Server"
+    }
+  ]
+}
