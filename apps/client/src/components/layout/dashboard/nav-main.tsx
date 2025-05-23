@@ -1,8 +1,8 @@
 "use client";
 
-import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react";
-
-import { Button } from "@/components/ui/button";
+import { type Icon } from "@tabler/icons-react";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 
 export function NavMain({
   items,
@@ -19,41 +19,56 @@ export function NavMain({
     title: string;
     url: string;
     icon?: Icon;
+    isComingSoon?: boolean;
   }[];
 }) {
+  const router = useRouterState();
+  const currentPath = router.location.pathname;
+
   return (
     <SidebarGroup>
-      <SidebarGroupContent className="flex flex-col gap-2">
+      <SidebarGroupContent>
         <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-2">
-            <SidebarMenuButton
-              tooltip="Quick Create"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
-            >
-              <IconCirclePlusFilled />
-              <span>Quick Create</span>
-            </SidebarMenuButton>
-            <Button
-              size="icon"
-              className="size-8 group-data-[collapsible=icon]:opacity-0"
-              variant="outline"
-            >
-              <IconMail />
-              <span className="sr-only">Inbox</span>
-            </Button>
-          </SidebarMenuItem>
-        </SidebarMenu>
-        <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild tooltip={item.title}>
-                <Link to={item.url}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          {items.map((item) => {
+            const isActive =
+              currentPath === item.url ||
+              (item.url !== "/" && currentPath.startsWith(item.url));
+
+            return (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton
+                  asChild={!item.isComingSoon}
+                  tooltip={
+                    item.isComingSoon
+                      ? `${item.title} (Coming Soon)`
+                      : item.title
+                  }
+                  className={cn(
+                    isActive &&
+                      "bg-sidebar-accent text-sidebar-accent-foreground",
+                    item.isComingSoon && "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  {item.isComingSoon ? (
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-2">
+                        {item.icon && <item.icon />}
+                        <span>{item.title}</span>
+                      </div>
+                      <Badge variant="secondary" className="text-xs">
+                        Soon
+                      </Badge>
+                    </div>
+                  ) : (
+                    <Link to={item.url}>
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                    </Link>
+                  )}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

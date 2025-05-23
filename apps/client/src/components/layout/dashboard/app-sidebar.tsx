@@ -1,20 +1,15 @@
 import {
-  IconCamera,
   IconDashboard,
-  IconDatabase,
-  IconFileAi,
   IconFileDescription,
-  IconFileWord,
+  IconCurrency,
+  IconBell,
+  IconSettings,
   IconHelp,
   IconInnerShadowTop,
-  IconListDetails,
-  IconReport,
-  IconSearch,
-  IconSettings,
+  IconFlask,
 } from "@tabler/icons-react";
 import * as React from "react";
 
-import { NavDocuments } from "@/components/layout/dashboard/nav-documents";
 import { NavMain } from "@/components/layout/dashboard/nav-main";
 import { NavSecondary } from "@/components/layout/dashboard/nav-secondary";
 import { NavUser } from "@/components/layout/dashboard/nav-user";
@@ -28,6 +23,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
+import { Link } from "@tanstack/react-router";
 
 const data = {
   user: {
@@ -42,96 +38,39 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "Orders",
-      url: "/orders",
-      icon: IconListDetails,
-    },
-    {
       title: "Logs",
       url: "/logs",
-      icon: IconReport,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
       icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
     },
     {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
+      title: "Cost Analysis",
+      url: "/cost-analysis",
+      icon: IconCurrency,
+    },
+    {
+      title: "Alerts",
+      url: "/alerts",
+      icon: IconBell,
+      isComingSoon: true,
+    },
+    {
+      title: "Experiments",
+      url: "/experiments",
+      icon: IconFlask,
+      isComingSoon: true,
     },
   ],
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/settings",
       icon: IconSettings,
     },
     {
-      title: "Get Help",
-      url: "#",
+      title: "Documentation",
+      url: "/docs",
       icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
-  ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: IconDatabase,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: IconReport,
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: IconFileWord,
+      external: true,
     },
   ],
 };
@@ -155,17 +94,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <Link to="/">
                 <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Ordora</span>
-              </a>
+                <span className="text-base font-semibold">LLMonitor</span>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
