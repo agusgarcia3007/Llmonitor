@@ -164,11 +164,13 @@ export function DataTable<TData, TValue>({
         <div className="rounded-md border">
           <Table>
             <TableHeader>
-              {columns.map((_, i) => (
-                <TableHead key={i}>
-                  <Skeleton className="h-6 w-full" />
-                </TableHead>
-              ))}
+              <TableRow>
+                {columns.map((_, i) => (
+                  <TableHead key={i}>
+                    <Skeleton className="h-6 w-full" />
+                  </TableHead>
+                ))}
+              </TableRow>
             </TableHeader>
             <TableBody>
               {Array.from({ length: meta?.pageSize || 10 }).map((_, i) => (

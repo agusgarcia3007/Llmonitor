@@ -56,8 +56,108 @@ export function CostAnalysisPage() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        Loading cost analysis...
+      <div className="space-y-6 px-4 lg:px-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <Skeleton className="h-8 w-40" />
+            <Skeleton className="h-4 w-64 mt-2" />
+          </div>
+          <div className="flex gap-2">
+            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-24" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <IconCurrency className="h-4 w-4" />
+                Cost by Provider
+              </CardTitle>
+              <CardDescription>
+                Spending breakdown across different LLM providers
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="w-3 h-3 rounded-full" />
+                      <div className="space-y-1">
+                        <Skeleton className="h-4 w-20" />
+                        <Skeleton className="h-3 w-16" />
+                      </div>
+                    </div>
+                    <div className="text-right space-y-1">
+                      <Skeleton className="h-4 w-12" />
+                      <Skeleton className="h-3 w-10" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Top Costly Requests</CardTitle>
+              <CardDescription>
+                Individual requests with highest token costs
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="w-8 h-8 rounded-full" />
+                      <div className="space-y-1">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-3 w-32" />
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <Skeleton className="h-3 w-16" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Cost Trend</CardTitle>
+            <CardDescription>
+              Daily spending pattern over the selected period
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between py-2 border-b border-border/50 last:border-0"
+                >
+                  <Skeleton className="h-4 w-20" />
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-3 w-16" />
+                    <Skeleton className="h-4 w-12" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -118,63 +218,57 @@ export function CostAnalysisPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {isLoading
-                ? Array.from({ length: 3 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Skeleton className="w-3 h-3 rounded-full" />
-                        <div className="space-y-1">
-                          <Skeleton className="h-4 w-20" />
-                          <Skeleton className="h-3 w-16" />
-                        </div>
-                      </div>
-                      <div className="text-right space-y-1">
-                        <Skeleton className="h-4 w-12" />
-                        <Skeleton className="h-3 w-10" />
-                      </div>
-                    </div>
-                  ))
-                : analysis?.costByProvider.map(
-                    (provider: CostAnalysis["costByProvider"][0]) => {
-                      const totalCost = analysis.costByProvider.reduce(
-                        (sum: number, p: CostAnalysis["costByProvider"][0]) =>
-                          sum + p.cost,
-                        0
-                      );
-                      const percentage =
-                        totalCost > 0 ? (provider.cost / totalCost) * 100 : 0;
+              {analysis?.costByProvider &&
+              analysis.costByProvider.length > 0 ? (
+                analysis.costByProvider.map(
+                  (provider: CostAnalysis["costByProvider"][0]) => {
+                    const totalCost = analysis.costByProvider.reduce(
+                      (sum: number, p: CostAnalysis["costByProvider"][0]) =>
+                        sum + p.cost,
+                      0
+                    );
+                    const percentage =
+                      totalCost > 0 ? (provider.cost / totalCost) * 100 : 0;
 
-                      return (
-                        <div
-                          key={provider.provider}
-                          className="flex items-center justify-between"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-3 h-3 rounded-full bg-primary" />
-                            <div>
-                              <div className="font-medium capitalize">
-                                {provider.provider}
-                              </div>
-                              <div className="text-sm text-muted-foreground">
-                                {provider.count} requests
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-medium">
-                              ${provider.cost.toFixed(2)}
+                    return (
+                      <div
+                        key={provider.provider}
+                        className="flex items-center justify-between"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 rounded-full bg-primary" />
+                          <div>
+                            <div className="font-medium capitalize">
+                              {provider.provider}
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              {percentage.toFixed(1)}%
+                              {provider.count} requests
                             </div>
                           </div>
                         </div>
-                      );
-                    }
-                  )}
+                        <div className="text-right">
+                          <div className="font-medium">
+                            ${provider.cost.toFixed(2)}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {percentage.toFixed(1)}%
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                )
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <IconCurrency className="h-12 w-12 text-muted-foreground/50 mb-4" />
+                  <p className="text-sm text-muted-foreground font-medium">
+                    No cost data available
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Start making LLM requests to see provider costs
+                  </p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -188,52 +282,46 @@ export function CostAnalysisPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {isLoading
-                ? Array.from({ length: 3 }).map((_, index) => (
+              {analysis?.topCostlyRequests &&
+              analysis.topCostlyRequests.length > 0 ? (
+                analysis.topCostlyRequests
+                  ?.slice(0, 5)
+                  ?.map((request: CostAnalysis["topCostlyRequests"][0]) => (
                     <div
-                      key={index}
+                      key={request.id}
                       className="flex items-center justify-between"
                     >
                       <div className="flex items-center gap-3">
-                        <Skeleton className="w-8 h-8 rounded-full" />
-                        <div className="space-y-1">
-                          <Skeleton className="h-4 w-24" />
-                          <Skeleton className="h-3 w-32" />
+                        <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center text-xs font-medium">
+                          ${request.cost_usd.toFixed(3)}
+                        </div>
+                        <div>
+                          <div className="font-medium">{request.model}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {request.provider} •{" "}
+                            {request.prompt_tokens + request.completion_tokens}{" "}
+                            tokens
+                          </div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <Skeleton className="h-3 w-16" />
+                        <div className="text-sm">
+                          {new Date(request.created_at).toLocaleDateString()}
+                        </div>
                       </div>
                     </div>
                   ))
-                : analysis?.topCostlyRequests
-                    .slice(0, 5)
-                    .map((request: CostAnalysis["topCostlyRequests"][0]) => (
-                      <div
-                        key={request.id}
-                        className="flex items-center justify-between"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center text-xs font-medium">
-                            ${request.cost_usd.toFixed(3)}
-                          </div>
-                          <div>
-                            <div className="font-medium">{request.model}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {request.provider} •{" "}
-                              {request.prompt_tokens +
-                                request.completion_tokens}{" "}
-                              tokens
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm">
-                            {new Date(request.created_at).toLocaleDateString()}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <IconCurrency className="h-12 w-12 text-muted-foreground/50 mb-4" />
+                  <p className="text-sm text-muted-foreground font-medium">
+                    No expensive requests yet
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Costly requests will appear here as you use the API
+                  </p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -248,39 +336,36 @@ export function CostAnalysisPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {isLoading
-              ? Array.from({ length: 5 }).map((_, index) => (
+            {analysis?.costTrend && analysis.costTrend.length > 0 ? (
+              analysis.costTrend
+                ?.slice(-10)
+                ?.map((day: CostAnalysis["costTrend"][0]) => (
                   <div
-                    key={index}
+                    key={day.date}
                     className="flex items-center justify-between py-2 border-b border-border/50 last:border-0"
                   >
-                    <Skeleton className="h-4 w-20" />
+                    <div className="font-medium">
+                      {new Date(day.date).toLocaleDateString()}
+                    </div>
                     <div className="flex items-center gap-3">
-                      <Skeleton className="h-3 w-16" />
-                      <Skeleton className="h-4 w-12" />
+                      <div className="text-sm text-muted-foreground">
+                        {day.count} requests
+                      </div>
+                      <div className="font-medium">${day.cost.toFixed(2)}</div>
                     </div>
                   </div>
                 ))
-              : analysis?.costTrend
-                  .slice(-10)
-                  .map((day: CostAnalysis["costTrend"][0]) => (
-                    <div
-                      key={day.date}
-                      className="flex items-center justify-between py-2 border-b border-border/50 last:border-0"
-                    >
-                      <div className="font-medium">
-                        {new Date(day.date).toLocaleDateString()}
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="text-sm text-muted-foreground">
-                          {day.count} requests
-                        </div>
-                        <div className="font-medium">
-                          ${day.cost.toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <IconCurrency className="h-12 w-12 text-muted-foreground/50 mb-4" />
+                <p className="text-sm text-muted-foreground font-medium">
+                  No cost trend data
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Daily cost patterns will show here over time
+                </p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -13,7 +13,7 @@ endpointBuilder({
 })(analyticsRouter);
 
 endpointBuilder({
-  path: "/cost",
+  path: "/cost-analysis",
   method: HttpMethod.GET,
   body: getCostAnalysis,
   isPrivate: true,

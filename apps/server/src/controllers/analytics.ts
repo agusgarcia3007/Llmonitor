@@ -77,18 +77,19 @@ export const getDashboardStats = async (c: Context) => {
       .limit(30),
   ]);
 
-  const errorRatePercent = totalEvents[0]?.count
-    ? ((errorRate[0]?.errors || 0) / totalEvents[0].count) * 100
-    : 0;
+  const errorRatePercent =
+    totalEvents[0]?.count && totalEvents[0].count > 0
+      ? ((errorRate[0]?.errors || 0) / totalEvents[0].count) * 100
+      : 0;
 
   return c.json({
     success: true,
     data: {
       overview: {
-        totalEvents: totalEvents[0]?.count || 0,
-        totalCost: totalCost[0]?.total || 0,
-        avgLatency: avgLatency[0]?.avg || 0,
-        errorRate: errorRatePercent,
+        totalEvents: Number(totalEvents[0]?.count || 0),
+        totalCost: Number(totalCost[0]?.total || 0),
+        avgLatency: Number(avgLatency[0]?.avg || 0),
+        errorRate: Number(errorRatePercent || 0),
       },
       topModels,
       charts: {

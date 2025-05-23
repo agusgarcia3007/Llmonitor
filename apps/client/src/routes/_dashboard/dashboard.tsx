@@ -172,19 +172,21 @@ export function Dashboard() {
               {isLoading ? (
                 <Skeleton className="h-8 w-14" />
               ) : (
-                `${overview.errorRate.toFixed(1)}%`
+                `${(overview.errorRate ?? 0).toFixed(1)}%`
               )}
             </CardTitle>
             <CardAction>
               <Badge
-                variant={overview.errorRate < 5 ? "outline" : "destructive"}
+                variant={
+                  (overview.errorRate ?? 0) < 5 ? "outline" : "destructive"
+                }
               >
-                {overview.errorRate < 5 ? (
+                {(overview.errorRate ?? 0) < 5 ? (
                   <IconTrendingUp />
                 ) : (
                   <IconTrendingDown />
                 )}
-                {overview.errorRate < 5 ? "Healthy" : "High"}
+                {(overview.errorRate ?? 0) < 5 ? "Healthy" : "High"}
               </Badge>
             </CardAction>
           </CardHeader>

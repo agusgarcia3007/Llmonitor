@@ -61,7 +61,9 @@ function Button({
     >
       <div className="flex items-center gap-2">
         {isLoading && <IconLoader3 className="animate-spin" />}
-        <span aria-hidden={isLoading}>{children}</span>
+        <span className="flex items-center gap-2" aria-hidden={isLoading}>
+          {children}
+        </span>
       </div>
     </Comp>
   );

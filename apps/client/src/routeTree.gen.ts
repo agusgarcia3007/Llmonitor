@@ -17,6 +17,7 @@ import { Route as IndexImport } from './routes/index'
 import { Route as DashboardLogsImport } from './routes/_dashboard/logs'
 import { Route as DashboardDashboardImport } from './routes/_dashboard/dashboard'
 import { Route as DashboardCostAnalysisImport } from './routes/_dashboard/cost-analysis'
+import { Route as DashboardAlertsImport } from './routes/_dashboard/alerts'
 import { Route as AuthSignupImport } from './routes/_auth/signup'
 import { Route as AuthLoginImport } from './routes/_auth/login'
 
@@ -53,6 +54,12 @@ const DashboardDashboardRoute = DashboardDashboardImport.update({
 const DashboardCostAnalysisRoute = DashboardCostAnalysisImport.update({
   id: '/cost-analysis',
   path: '/cost-analysis',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+
+const DashboardAlertsRoute = DashboardAlertsImport.update({
+  id: '/alerts',
+  path: '/alerts',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 
@@ -107,6 +114,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignupImport
       parentRoute: typeof AuthRouteImport
     }
+    '/_dashboard/alerts': {
+      id: '/_dashboard/alerts'
+      path: '/alerts'
+      fullPath: '/alerts'
+      preLoaderRoute: typeof DashboardAlertsImport
+      parentRoute: typeof DashboardRouteImport
+    }
     '/_dashboard/cost-analysis': {
       id: '/_dashboard/cost-analysis'
       path: '/cost-analysis'
@@ -148,12 +162,14 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 interface DashboardRouteRouteChildren {
+  DashboardAlertsRoute: typeof DashboardAlertsRoute
   DashboardCostAnalysisRoute: typeof DashboardCostAnalysisRoute
   DashboardDashboardRoute: typeof DashboardDashboardRoute
   DashboardLogsRoute: typeof DashboardLogsRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardAlertsRoute: DashboardAlertsRoute,
   DashboardCostAnalysisRoute: DashboardCostAnalysisRoute,
   DashboardDashboardRoute: DashboardDashboardRoute,
   DashboardLogsRoute: DashboardLogsRoute,
@@ -168,6 +184,7 @@ export interface FileRoutesByFullPath {
   '': typeof DashboardRouteRouteWithChildren
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
+  '/alerts': typeof DashboardAlertsRoute
   '/cost-analysis': typeof DashboardCostAnalysisRoute
   '/dashboard': typeof DashboardDashboardRoute
   '/logs': typeof DashboardLogsRoute
@@ -178,6 +195,7 @@ export interface FileRoutesByTo {
   '': typeof DashboardRouteRouteWithChildren
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
+  '/alerts': typeof DashboardAlertsRoute
   '/cost-analysis': typeof DashboardCostAnalysisRoute
   '/dashboard': typeof DashboardDashboardRoute
   '/logs': typeof DashboardLogsRoute
@@ -190,6 +208,7 @@ export interface FileRoutesById {
   '/_dashboard': typeof DashboardRouteRouteWithChildren
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/signup': typeof AuthSignupRoute
+  '/_dashboard/alerts': typeof DashboardAlertsRoute
   '/_dashboard/cost-analysis': typeof DashboardCostAnalysisRoute
   '/_dashboard/dashboard': typeof DashboardDashboardRoute
   '/_dashboard/logs': typeof DashboardLogsRoute
@@ -202,6 +221,7 @@ export interface FileRouteTypes {
     | ''
     | '/login'
     | '/signup'
+    | '/alerts'
     | '/cost-analysis'
     | '/dashboard'
     | '/logs'
@@ -211,6 +231,7 @@ export interface FileRouteTypes {
     | ''
     | '/login'
     | '/signup'
+    | '/alerts'
     | '/cost-analysis'
     | '/dashboard'
     | '/logs'
@@ -221,6 +242,7 @@ export interface FileRouteTypes {
     | '/_dashboard'
     | '/_auth/login'
     | '/_auth/signup'
+    | '/_dashboard/alerts'
     | '/_dashboard/cost-analysis'
     | '/_dashboard/dashboard'
     | '/_dashboard/logs'
@@ -267,6 +289,7 @@ export const routeTree = rootRoute
     "/_dashboard": {
       "filePath": "_dashboard/route.tsx",
       "children": [
+        "/_dashboard/alerts",
         "/_dashboard/cost-analysis",
         "/_dashboard/dashboard",
         "/_dashboard/logs"
@@ -279,6 +302,10 @@ export const routeTree = rootRoute
     "/_auth/signup": {
       "filePath": "_auth/signup.tsx",
       "parent": "/_auth"
+    },
+    "/_dashboard/alerts": {
+      "filePath": "_dashboard/alerts.tsx",
+      "parent": "/_dashboard"
     },
     "/_dashboard/cost-analysis": {
       "filePath": "_dashboard/cost-analysis.tsx",

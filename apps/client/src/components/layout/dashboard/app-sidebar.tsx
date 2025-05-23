@@ -51,7 +51,6 @@ const data = {
       title: "Alerts",
       url: "/alerts",
       icon: IconBell,
-      isComingSoon: true,
     },
     {
       title: "Experiments",
