@@ -2,6 +2,7 @@ export const TRUSTED_ORIGINS = [
   "http://localhost:5173",
   "http://localhost:4444",
   "https://llmonitor-nine.vercel.app",
+  "https://llm-moonitor-production.up.railway.app",
 ];
 
 export const CORS_OPTIONS = {
