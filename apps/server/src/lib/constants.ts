@@ -1,6 +1,7 @@
 export const TRUSTED_ORIGINS = [
   "http://localhost:5173",
   "http://localhost:4444",
+  "https://llmonitor-nine.vercel.app",
 ];
 
 export const CORS_OPTIONS = {
