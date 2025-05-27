@@ -24,6 +24,7 @@ import { Copy, Key, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_dashboard/api-keys")({
   component: ApiKeysPage,
@@ -110,7 +111,27 @@ function ApiKeysPage() {
           </div>
           <div className="space-y-3">
             {isLoading ? (
-              <div>{t("apiKeys.loading")}</div>
+              <div className="space-y-2">
+                {[...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
+                    <div className="space-y-1 w-full">
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-4 w-16" />
+                      </div>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Skeleton className="h-4 w-40" />
+                        <Skeleton className="h-8 w-8 rounded-full" />
+                      </div>
+                      <Skeleton className="h-3 w-28 mt-2" />
+                    </div>
+                    <Skeleton className="h-8 w-8 rounded" />
+                  </div>
+                ))}
+              </div>
             ) : data?.data && data.data.length > 0 ? (
               data.data.map((apiKey) => (
                 <div
