@@ -1,13 +1,12 @@
 import {
+  IconBell,
+  IconCurrency,
   IconDashboard,
   IconFileDescription,
-  IconCurrency,
-  IconBell,
-  IconSettings,
   IconHelp,
-  IconInnerShadowTop,
   // IconFlask,
   IconKey,
+  IconSettings,
 } from "@tabler/icons-react";
 import * as React from "react";
 
@@ -100,7 +99,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Link to="/">
-                <IconInnerShadowTop className="!size-5" />
+                <img
+                  src="/logo.svg"
+                  alt="LLMonitor"
+                  className="!size-5 text-primary"
+                />
                 <span className="text-base font-semibold">LLMonitor</span>
               </Link>
             </SidebarMenuButton>

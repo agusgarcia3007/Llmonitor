@@ -4,6 +4,8 @@ export const TRUSTED_ORIGINS = [
   "https://llmonitor-nine.vercel.app",
   "https://llm-moonitor-production.up.railway.app",
   "https://llmonitor.io",
+  "https://www.llmonitor.io",
+  "https://api.llmonitor.io",
   "http://localhost:3000",
 ];
 
