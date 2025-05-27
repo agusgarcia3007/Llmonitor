@@ -21,7 +21,9 @@ export const auth = betterAuth({
     window: 10, // time window in seconds
     max: 100, // max requests in the window
   },
-
+  advanced: {
+    crossSubDomainCookies: { enabled: true },
+  },
   session: {
     cookieCache: {
       enabled: true,
