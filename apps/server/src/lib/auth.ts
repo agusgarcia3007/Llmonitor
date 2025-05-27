@@ -1,11 +1,11 @@
 import { db } from "@/db";
+import * as schema from "@/db/schema";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, organization } from "better-auth/plugins";
-import { TRUSTED_ORIGINS } from "./constants";
-import * as schema from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { admin, apiKey, openAPI, organization } from "better-auth/plugins";
 import { randomUUID } from "crypto";
+import { eq } from "drizzle-orm";
+import { TRUSTED_ORIGINS } from "./constants";
 import { getActiveOrganization } from "./utils";
 
 export const auth = betterAuth({
@@ -29,7 +29,7 @@ export const auth = betterAuth({
     },
   },
 
-  plugins: [organization(), admin()],
+  plugins: [organization(), admin(), apiKey(), openAPI()],
 
   databaseHooks: {
     session: {

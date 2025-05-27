@@ -1,0 +1,308 @@
+---
+title: Quick Start
+description: Get up and running with LLMonitor in under 2 minutes
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+
+# 🚀 Quick Start
+
+Get up and running with LLMonitor in **under 2 minutes**.
+
+<Steps>
+
+<Step>
+
+### Install the SDK
+
+<Tabs items={['npm', 'yarn', 'pnpm']}>
+
+<Tab value="npm">```bash npm install @llmonitor/sdk ```</Tab>
+
+<Tab value="yarn">```bash yarn add @llmonitor/sdk ```</Tab>
+
+<Tab value="pnpm">```bash pnpm add @llmonitor/sdk ```</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step>
+
+### Sign Up & Get Your API Key
+
+1. **Sign up** at [LLMonitor Dashboard](https://app.llmonitor.com)
+2. **Organization created automatically** - No setup needed!
+3. **Copy your API key** from the Settings page
+
+<Callout type="info">
+  Your organization is created automatically when you sign up. You'll get a
+  default API key immediately - no manual setup required!
+</Callout>
+
+</Step>
+
+<Step>
+
+### Wrap Your LLM Client
+
+Choose your provider and start monitoring:
+
+<Tabs items={['OpenAI', 'Anthropic', 'Google AI', 'Cohere']}>
+
+<Tab value="OpenAI">
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+import OpenAI from "openai";
+
+// Initialize monitor
+const monitor = new LLMonitor({
+apiKey: "llm_your_api_key_here"
+});
+
+// Wrap your OpenAI client
+const openai = monitor.openai(new OpenAI({
+apiKey: process.env.OPENAI_API_KEY
+}));
+
+// Use normally - automatically tracked!
+async function chatExample() {
+const response = await openai.chat.completions.create({
+model: "gpt-4o-mini",
+messages: [
+{ role: "user", content: "Explain React hooks in simple terms" }
+],
+temperature: 0.7,
+max_tokens: 200
+});
+
+console.log(response.choices[0].message.content);
+
+// Ensure events are sent
+await monitor.flush();
+}
+
+chatExample();
+
+````
+</Tab>
+
+<Tab value="Anthropic">
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+import Anthropic from "@anthropic-ai/sdk";
+
+const monitor = new LLMonitor({ apiKey: "llm_..." });
+const anthropic = monitor.anthropic(new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY
+}));
+
+const response = await anthropic.messages.create({
+  model: "claude-3-5-sonnet-20241022",
+  max_tokens: 1000,
+  messages: [{ role: "user", content: "Write a haiku about code" }]
+});
+````
+
+</Tab>
+
+<Tab value="Google AI">
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const monitor = new LLMonitor({ apiKey: "llm\_..." });
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const model = monitor.google(genAI.getGenerativeModel({ model: "gemini-pro" }));
+
+const result = await model.generateContent("Explain machine learning");
+
+````
+</Tab>
+
+<Tab value="Cohere">
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+import { CohereClient } from "cohere-ai";
+
+const monitor = new LLMonitor({ apiKey: "llm_..." });
+const cohere = monitor.cohere(new CohereClient({
+  token: process.env.COHERE_API_KEY
+}));
+
+const response = await cohere.generate({
+  prompt: "Explain quantum computing",
+  model: "command"
+});
+````
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step>
+
+### Check Your Dashboard
+
+1. **Run your code** - Your events are automatically sent
+2. **Visit the Dashboard** - Go to [LLMonitor Dashboard](https://app.llmonitor.com)
+3. **See your metrics** - Costs, latency, tokens, and more! 🎉
+
+</Step>
+
+</Steps>
+
+## What You'll See
+
+- ✅ **Request logs** with full details (prompt, completion, metadata)
+- ✅ **Token usage** and automatic cost calculation
+- ✅ **Latency metrics** and performance insights
+- ✅ **Success/error rates** and debugging info
+- ✅ **Cost analytics** and spend tracking over time
+
+<Callout type="success">
+  That's it! Every LLM request is now automatically tracked with costs,
+  performance metrics, and debugging info.
+</Callout>
+
+## Advanced Setup
+
+### Session Tracking
+
+Group related requests together (e.g., conversation threads):
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: "llm_your_api_key_here",
+  sessionId: "user-conversation-123", // Group related requests
+});
+```
+
+### Version Tagging
+
+Monitor A/B tests or prompt iterations:
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: "llm_your_api_key_here",
+  versionTag: "prompt-v2.1", // Track different versions
+});
+```
+
+### Custom Metadata
+
+Include context about your requests:
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: "llm_your_api_key_here",
+  metadata: {
+    userId: "user-123",
+    feature: "chat-assistant",
+    environment: "production",
+  },
+});
+```
+
+### Express.js Integration
+
+Automatically track all LLM calls in your Express app:
+
+```typescript
+import express from "express";
+import { LLMonitor } from "@llmonitor/sdk";
+
+const app = express();
+const monitor = new LLMonitor({ apiKey: "llm_..." });
+
+// Add middleware for automatic tracking
+app.use(
+  monitor.express({
+    sessionId: (req) => req.user?.id,
+    metadata: (req) => ({
+      route: req.route?.path,
+      userAgent: req.get("User-Agent"),
+    }),
+  })
+);
+
+// All LLM calls in your routes are now tracked
+app.post("/chat", async (req, res) => {
+  const openai = monitor.openai(new OpenAI());
+  const response = await openai.chat.completions.create({
+    model: "gpt-4",
+    messages: req.body.messages,
+  });
+  res.json(response);
+});
+```
+
+## Troubleshooting
+
+### Enable Debug Mode
+
+See what's happening under the hood:
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: "llm_...",
+  debug: true, // See monitoring logs in console
+});
+```
+
+### Check Network Connection
+
+For local development, make sure the baseURL is correct:
+
+```typescript
+const monitor = new LLMonitor({
+  apiKey: "llm_...",
+  baseURL: "http://localhost:4444", // For local development
+  debug: true,
+});
+```
+
+### Test Connection
+
+Send a manual test event:
+
+```typescript
+// Manual test event
+await monitor.logEvent({
+  provider: "test",
+  model: "test-model",
+  prompt: "Hello",
+  completion: "Hi!",
+  status: 200,
+  latency_ms: 100,
+});
+
+console.log("Test event sent!");
+```
+
+## Common Issues
+
+<Callout type="warn">
+  **Missing Environment Variables**: Make sure your LLM provider API keys are
+  set in your environment.
+</Callout>
+
+```bash
+# .env file
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+GOOGLE_API_KEY=AI...
+COHERE_API_KEY=...
+```
+
+## What's Next?
+
+- [Full Configuration Guide](/guides/configuration) - Advanced setup options
+- [Cost Optimization](/guides/cost-optimization) - Save money on LLM usage
+- [A/B Testing](/guides/ab-testing) - Compare prompt performance
+- [Express.js Integration](/integrations/express) - Complete middleware guide
+- [API Reference](/sdk) - Full SDK documentation

@@ -31,9 +31,9 @@ export const baseOptions: BaseLayoutProps = {
     },
     {
       text: "GitHub",
-      url: "https://github.com/agustin/llmonitor",
+      url: "https://github.com/agusgarcia3007/Llmonitor",
       external: true,
     },
   ],
-  githubUrl: "https://github.com/agustin/llmonitor",
+  githubUrl: "https://github.com/agusgarcia3007/Llmonitor",
 };

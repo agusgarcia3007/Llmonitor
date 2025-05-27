@@ -11,8 +11,10 @@ npm install @llmonitor/sdk
 ## Step 2: Get Your API Key
 
 1. Sign up at [LLMonitor Dashboard](https://app.llmonitor.com)
-2. Create an organization
+2. **Organization created automatically** - No setup needed!
 3. Copy your API key from Settings
+
+> Your organization and API key are created automatically when you sign up - no manual configuration required!
 
 ## Step 3: Wrap Your LLM Client
 

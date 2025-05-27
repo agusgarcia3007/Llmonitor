@@ -36,6 +36,14 @@ That's it! Every request is now automatically tracked with:
 - ✅ **Error tracking**
 - ✅ **Session grouping**
 
+## 🏃‍♂️ Get Your API Key
+
+1. **Sign up** at [LLMonitor Dashboard](https://app.llmonitor.com)
+2. **Organization created automatically** - No setup needed!
+3. **Copy your API key** from Settings
+
+> Your organization and API key are created automatically when you sign up - no manual configuration required!
+
 ## 📊 What Gets Tracked
 
 - **Costs**: Automatic cost calculation for all major providers

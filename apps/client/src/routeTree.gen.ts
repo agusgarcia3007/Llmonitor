@@ -14,9 +14,11 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/_dashboard/route'
 import { Route as AuthRouteImport } from './routes/_auth/route'
 import { Route as IndexImport } from './routes/index'
+import { Route as DashboardSettingsImport } from './routes/_dashboard/settings'
 import { Route as DashboardLogsImport } from './routes/_dashboard/logs'
 import { Route as DashboardDashboardImport } from './routes/_dashboard/dashboard'
 import { Route as DashboardCostAnalysisImport } from './routes/_dashboard/cost-analysis'
+import { Route as DashboardApiKeysImport } from './routes/_dashboard/api-keys'
 import { Route as DashboardAlertsImport } from './routes/_dashboard/alerts'
 import { Route as AuthSignupImport } from './routes/_auth/signup'
 import { Route as AuthLoginImport } from './routes/_auth/login'
@@ -39,6 +41,12 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const DashboardSettingsRoute = DashboardSettingsImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+
 const DashboardLogsRoute = DashboardLogsImport.update({
   id: '/logs',
   path: '/logs',
@@ -54,6 +62,12 @@ const DashboardDashboardRoute = DashboardDashboardImport.update({
 const DashboardCostAnalysisRoute = DashboardCostAnalysisImport.update({
   id: '/cost-analysis',
   path: '/cost-analysis',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+
+const DashboardApiKeysRoute = DashboardApiKeysImport.update({
+  id: '/api-keys',
+  path: '/api-keys',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 
@@ -121,6 +135,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAlertsImport
       parentRoute: typeof DashboardRouteImport
     }
+    '/_dashboard/api-keys': {
+      id: '/_dashboard/api-keys'
+      path: '/api-keys'
+      fullPath: '/api-keys'
+      preLoaderRoute: typeof DashboardApiKeysImport
+      parentRoute: typeof DashboardRouteImport
+    }
     '/_dashboard/cost-analysis': {
       id: '/_dashboard/cost-analysis'
       path: '/cost-analysis'
@@ -140,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/logs'
       fullPath: '/logs'
       preLoaderRoute: typeof DashboardLogsImport
+      parentRoute: typeof DashboardRouteImport
+    }
+    '/_dashboard/settings': {
+      id: '/_dashboard/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof DashboardSettingsImport
       parentRoute: typeof DashboardRouteImport
     }
   }
@@ -163,16 +191,20 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 
 interface DashboardRouteRouteChildren {
   DashboardAlertsRoute: typeof DashboardAlertsRoute
+  DashboardApiKeysRoute: typeof DashboardApiKeysRoute
   DashboardCostAnalysisRoute: typeof DashboardCostAnalysisRoute
   DashboardDashboardRoute: typeof DashboardDashboardRoute
   DashboardLogsRoute: typeof DashboardLogsRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardAlertsRoute: DashboardAlertsRoute,
+  DashboardApiKeysRoute: DashboardApiKeysRoute,
   DashboardCostAnalysisRoute: DashboardCostAnalysisRoute,
   DashboardDashboardRoute: DashboardDashboardRoute,
   DashboardLogsRoute: DashboardLogsRoute,
+  DashboardSettingsRoute: DashboardSettingsRoute,
 }
 
 const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
@@ -185,9 +217,11 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
   '/alerts': typeof DashboardAlertsRoute
+  '/api-keys': typeof DashboardApiKeysRoute
   '/cost-analysis': typeof DashboardCostAnalysisRoute
   '/dashboard': typeof DashboardDashboardRoute
   '/logs': typeof DashboardLogsRoute
+  '/settings': typeof DashboardSettingsRoute
 }
 
 export interface FileRoutesByTo {
@@ -196,9 +230,11 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
   '/alerts': typeof DashboardAlertsRoute
+  '/api-keys': typeof DashboardApiKeysRoute
   '/cost-analysis': typeof DashboardCostAnalysisRoute
   '/dashboard': typeof DashboardDashboardRoute
   '/logs': typeof DashboardLogsRoute
+  '/settings': typeof DashboardSettingsRoute
 }
 
 export interface FileRoutesById {
@@ -209,9 +245,11 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/signup': typeof AuthSignupRoute
   '/_dashboard/alerts': typeof DashboardAlertsRoute
+  '/_dashboard/api-keys': typeof DashboardApiKeysRoute
   '/_dashboard/cost-analysis': typeof DashboardCostAnalysisRoute
   '/_dashboard/dashboard': typeof DashboardDashboardRoute
   '/_dashboard/logs': typeof DashboardLogsRoute
+  '/_dashboard/settings': typeof DashboardSettingsRoute
 }
 
 export interface FileRouteTypes {
@@ -222,9 +260,11 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/alerts'
+    | '/api-keys'
     | '/cost-analysis'
     | '/dashboard'
     | '/logs'
+    | '/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -232,9 +272,11 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/alerts'
+    | '/api-keys'
     | '/cost-analysis'
     | '/dashboard'
     | '/logs'
+    | '/settings'
   id:
     | '__root__'
     | '/'
@@ -243,9 +285,11 @@ export interface FileRouteTypes {
     | '/_auth/login'
     | '/_auth/signup'
     | '/_dashboard/alerts'
+    | '/_dashboard/api-keys'
     | '/_dashboard/cost-analysis'
     | '/_dashboard/dashboard'
     | '/_dashboard/logs'
+    | '/_dashboard/settings'
   fileRoutesById: FileRoutesById
 }
 
@@ -290,9 +334,11 @@ export const routeTree = rootRoute
       "filePath": "_dashboard/route.tsx",
       "children": [
         "/_dashboard/alerts",
+        "/_dashboard/api-keys",
         "/_dashboard/cost-analysis",
         "/_dashboard/dashboard",
-        "/_dashboard/logs"
+        "/_dashboard/logs",
+        "/_dashboard/settings"
       ]
     },
     "/_auth/login": {
@@ -307,6 +353,10 @@ export const routeTree = rootRoute
       "filePath": "_dashboard/alerts.tsx",
       "parent": "/_dashboard"
     },
+    "/_dashboard/api-keys": {
+      "filePath": "_dashboard/api-keys.tsx",
+      "parent": "/_dashboard"
+    },
     "/_dashboard/cost-analysis": {
       "filePath": "_dashboard/cost-analysis.tsx",
       "parent": "/_dashboard"
@@ -317,6 +367,10 @@ export const routeTree = rootRoute
     },
     "/_dashboard/logs": {
       "filePath": "_dashboard/logs.tsx",
+      "parent": "/_dashboard"
+    },
+    "/_dashboard/settings": {
+      "filePath": "_dashboard/settings.tsx",
       "parent": "/_dashboard"
     }
   }

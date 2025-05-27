@@ -6,7 +6,8 @@ import {
   IconSettings,
   IconHelp,
   IconInnerShadowTop,
-  IconFlask,
+  // IconFlask,
+  IconKey,
 } from "@tabler/icons-react";
 import * as React from "react";
 
@@ -52,11 +53,16 @@ const data = {
       url: "/alerts",
       icon: IconBell,
     },
+    // {
+    //   title: "Experiments",
+    //   url: "/experiments",
+    //   icon: IconFlask,
+    //   isComingSoon: true,
+    // },
     {
-      title: "Experiments",
-      url: "/experiments",
-      icon: IconFlask,
-      isComingSoon: true,
+      title: "API Keys",
+      url: "/api-keys",
+      icon: IconKey,
     },
   ],
   navSecondary: [

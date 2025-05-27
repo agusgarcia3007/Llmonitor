@@ -8,6 +8,11 @@
       "icon": "Home"
     },
     {
+      "title": "Quick Start",
+      "url": "/quickstart",
+      "icon": "Zap"
+    },
+    {
       "title": "Guides",
       "url": "/guides",
       "icon": "Map",
@@ -198,8 +203,32 @@
           "url": "/examples/openai"
         },
         {
-          "title": "Cost Optimization",
-          "url": "/examples/cost-optimization"
+          "title": "Anthropic Examples",
+          "url": "/examples/anthropic"
+        },
+        {
+          "title": "Google AI Examples",
+          "url": "/examples/google"
+        },
+        {
+          "title": "Cohere Examples",
+          "url": "/examples/cohere"
+        },
+        {
+          "title": "Express.js Integration",
+          "url": "/examples/express"
+        },
+        {
+          "title": "Next.js Application",
+          "url": "/examples/nextjs"
+        },
+        {
+          "title": "Cost Tracking",
+          "url": "/examples/cost-tracking"
+        },
+        {
+          "title": "Session Management",
+          "url": "/examples/sessions"
         },
         {
           "title": "A/B Testing",
@@ -210,23 +239,47 @@
           "url": "/examples/error-handling"
         },
         {
-          "title": "Production Setup",
-          "url": "/examples/production"
+          "title": "Real-time Chat",
+          "url": "/examples/realtime-chat"
+        },
+        {
+          "title": "Batch Processing",
+          "url": "/examples/batch"
+        },
+        {
+          "title": "Multi-tenant Apps",
+          "url": "/examples/multi-tenant"
+        },
+        {
+          "title": "Microservices",
+          "url": "/examples/microservices"
         }
       ]
     },
     {
       "title": "API Reference",
       "url": "/api",
-      "icon": "Server",
+      "icon": "FileText",
       "pages": [
         {
-          "title": "REST API",
-          "url": "/api/rest"
+          "title": "Authentication",
+          "url": "/api/authentication"
         },
         {
           "title": "Events",
           "url": "/api/events"
+        },
+        {
+          "title": "Analytics",
+          "url": "/api/analytics"
+        },
+        {
+          "title": "Organizations",
+          "url": "/api/organizations"
+        },
+        {
+          "title": "Users",
+          "url": "/api/users"
         },
         {
           "title": "Webhooks",
@@ -237,8 +290,8 @@
           "url": "/api/rate-limits"
         },
         {
-          "title": "Authentication",
-          "url": "/api/authentication"
+          "title": "Errors",
+          "url": "/api/errors"
         }
       ]
     }
