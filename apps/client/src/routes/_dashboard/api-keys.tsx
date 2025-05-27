@@ -13,6 +13,15 @@ import { Badge } from "@/components/ui/badge";
 import { Copy, Key, Plus, Trash2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_dashboard/api-keys")({
   component: ApiKeysPage,
@@ -28,6 +37,7 @@ type ApiKey = {
 };
 
 function ApiKeysPage() {
+  const { t } = useTranslation();
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [loading, setLoading] = useState(true);
   const [newKeyName, setNewKeyName] = useState("");
@@ -66,7 +76,7 @@ function ApiKeysPage() {
 
   async function handleCreateKey() {
     if (!newKeyName.trim()) {
-      toast.error("Please enter a name for the API key");
+      toast.error(t("apiKeys.error.enterName"));
       return;
     }
     setCreating(true);
@@ -81,7 +91,7 @@ function ApiKeysPage() {
     setCreatedKey(data.key);
     setNewKeyName("");
     fetchApiKeys();
-    toast.success("API key created successfully");
+    toast.success(t("apiKeys.success.created"));
   }
 
   async function handleDeleteKey(id: string) {
@@ -93,12 +103,12 @@ function ApiKeysPage() {
       return;
     }
     fetchApiKeys();
-    toast.success("API key deleted");
+    toast.success(t("apiKeys.success.deleted"));
   }
 
   const handleCopyKey = (key: string) => {
     navigator.clipboard.writeText(key);
-    toast.success("API key copied to clipboard");
+    toast.success(t("apiKeys.success.copied"));
   };
 
   const handleToggleVisibility = (id: string) => {
@@ -107,60 +117,69 @@ function ApiKeysPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center gap-2">
-        <Key className="w-6 h-6" />
-        <h1 className="text-2xl font-bold">API Keys</h1>
-      </div>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Key className="w-5 h-5" />
-            API Keys
+            {t("apiKeys.title")}
           </CardTitle>
-          <CardDescription>
-            Manage your API keys for accessing LLMonitor services
-          </CardDescription>
+          <CardDescription>{t("apiKeys.description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
             <div className="flex gap-2">
               <Input
-                placeholder="Enter API key name"
+                placeholder={t("apiKeys.input.placeholder")}
                 value={newKeyName}
                 onChange={(e) => setNewKeyName(e.target.value)}
                 disabled={creating}
               />
               <Button onClick={handleCreateKey} disabled={creating}>
                 <Plus className="w-4 h-4 mr-2" />
-                {creating ? "Creating..." : "Create Key"}
+                {creating
+                  ? t("apiKeys.button.creating")
+                  : t("apiKeys.button.create")}
               </Button>
             </div>
             {createdKey && (
-              <div className="bg-muted p-4 rounded-lg flex items-center gap-2">
-                <span className="font-mono text-sm">{createdKey}</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleCopyKey(createdKey)}
-                >
-                  <Copy className="w-4 h-4" />
-                </Button>
-                <span className="text-xs text-muted-foreground">
-                  Copy and save this key now. You won't see it again.
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCreatedKey(null)}
-                >
-                  Close
-                </Button>
-              </div>
+              <Dialog
+                open={!!createdKey}
+                onOpenChange={(open) => {
+                  if (!open) setCreatedKey(null);
+                }}
+              >
+                <DialogContent>
+                  <DialogTitle>{t("apiKeys.modal.title")}</DialogTitle>
+                  <div className="flex flex-col items-center gap-2">
+                    <span className="font-mono text-base break-all bg-muted px-3 py-2 rounded select-all">
+                      {createdKey}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleCopyKey(createdKey)}
+                    >
+                      <Copy className="w-4 h-4 mr-1" />{" "}
+                      {t("apiKeys.button.copy")}
+                    </Button>
+                    <DialogDescription className="text-center max-w-xs">
+                      {t("apiKeys.modal.description")}
+                    </DialogDescription>
+                  </div>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline" size="sm" className="w-full">
+                        {t("apiKeys.button.close")}
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             )}
           </div>
           <div className="space-y-3">
             {loading ? (
-              <div>Loading...</div>
+              <div>{t("apiKeys.loading")}</div>
             ) : apiKeys.length > 0 ? (
               apiKeys.map((apiKey) => (
                 <div
@@ -170,10 +189,12 @@ function ApiKeysPage() {
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <p className="font-medium">
-                        {apiKey.name ?? "(no name)"}
+                        {apiKey.name ?? t("apiKeys.noName")}
                       </p>
                       <Badge variant="secondary">
-                        {apiKey.enabled ? "Active" : "Disabled"}
+                        {apiKey.enabled
+                          ? t("apiKeys.active")
+                          : t("apiKeys.disabled")}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-2">
@@ -212,7 +233,8 @@ function ApiKeysPage() {
                       </Button>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Created: {new Date(apiKey.createdAt).toLocaleString()}
+                      {t("apiKeys.created")}:{" "}
+                      {new Date(apiKey.createdAt).toLocaleString()}
                     </p>
                   </div>
                   <Button
@@ -226,7 +248,7 @@ function ApiKeysPage() {
                 </div>
               ))
             ) : (
-              <div className="text-muted-foreground">No API keys found.</div>
+              <div className="text-muted-foreground">{t("apiKeys.noKeys")}</div>
             )}
           </div>
         </CardContent>

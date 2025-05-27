@@ -225,5 +225,36 @@
     "footer": {
       "copyright": "© {{year}} LLMonitor."
     }
+  },
+  "apiKeys": {
+    "title": "Claves API",
+    "description": "Gestiona tus claves API para acceder a los servicios de LLMonitor",
+    "input": {
+      "placeholder": "Ingresa un nombre para la clave"
+    },
+    "button": {
+      "create": "Crear clave",
+      "creating": "Creando...",
+      "copy": "Copiar",
+      "close": "Cerrar"
+    },
+    "modal": {
+      "title": "Clave API creada",
+      "description": "Copia y guarda esta clave ahora. Por seguridad, no podrás volver a verla después de cerrar este mensaje."
+    },
+    "loading": "Cargando...",
+    "noName": "(sin nombre)",
+    "active": "Activa",
+    "disabled": "Desactivada",
+    "created": "Creada",
+    "noKeys": "No se encontraron claves API.",
+    "error": {
+      "enterName": "Por favor ingresa un nombre para la clave API"
+    },
+    "success": {
+      "created": "Clave API creada exitosamente",
+      "deleted": "Clave API eliminada",
+      "copied": "Clave API copiada al portapapeles"
+    }
   }
 }

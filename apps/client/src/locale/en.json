@@ -224,5 +224,36 @@
     "footer": {
       "copyright": "© {{year}} LLMonitor."
     }
+  },
+  "apiKeys": {
+    "title": "API Keys",
+    "description": "Manage your API keys for accessing LLMonitor services",
+    "input": {
+      "placeholder": "Enter API key name"
+    },
+    "button": {
+      "create": "Create Key",
+      "creating": "Creating...",
+      "copy": "Copy",
+      "close": "Close"
+    },
+    "modal": {
+      "title": "API Key created",
+      "description": "Copy and save this key now. For security, you won't be able to see it again after closing this message."
+    },
+    "loading": "Loading...",
+    "noName": "(no name)",
+    "active": "Active",
+    "disabled": "Disabled",
+    "created": "Created",
+    "noKeys": "No API keys found.",
+    "error": {
+      "enterName": "Please enter a name for the API key"
+    },
+    "success": {
+      "created": "API key created successfully",
+      "deleted": "API key deleted",
+      "copied": "API key copied to clipboard"
+    }
   }
 }
