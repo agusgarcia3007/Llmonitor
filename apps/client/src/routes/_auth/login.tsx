@@ -49,6 +49,10 @@ function Login({ className, ...props }: React.ComponentProps<"div">) {
           setLoading(true);
         },
         onSuccess: () => {
+          const expires = new Date(
+            Date.now() + 24 * 60 * 60 * 1000
+          ).toUTCString();
+          document.cookie = `isAuthenticated=true; expires=${expires}; path=/;`;
           navigate({ to: "/dashboard" });
         },
       }

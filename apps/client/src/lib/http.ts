@@ -15,7 +15,7 @@ http.interceptors.response.use(
     if (error.response?.status === 403) {
       await authClient.signOut();
       document.cookie =
-        "feedai_status=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        "isAuthenticated=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       window.location.href = "/login";
     }
     return Promise.reject(error);

@@ -43,6 +43,8 @@ export function NavUser({
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
+          document.cookie =
+            "isAuthenticated=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
           navigate({ to: "/login" });
         },
       },

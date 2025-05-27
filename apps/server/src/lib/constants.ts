@@ -3,6 +3,8 @@ export const TRUSTED_ORIGINS = [
   "http://localhost:4444",
   "https://llmonitor-nine.vercel.app",
   "https://llm-moonitor-production.up.railway.app",
+  "https://llmonitor.io",
+  "http://localhost:3000",
 ];
 
 export const CORS_OPTIONS = {
@@ -16,5 +18,5 @@ export const CORS_OPTIONS = {
 
 export const siteData = {
   title: "LLMonitor",
-  url: "https://llmonitor.ai",
+  url: "https://llmonitor.io",
 };
