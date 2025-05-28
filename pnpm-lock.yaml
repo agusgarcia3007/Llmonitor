@@ -290,7 +290,7 @@ importers:
         version: 16.5.0
       drizzle-orm:
         specifier: ^0.43.1
-        version: 0.43.1(@neondatabase/serverless@1.0.0)(@prisma/client@6.8.2(prisma@6.8.2(typescript@5.8.3))(typescript@5.8.3))(@types/pg@8.15.2)(bun-types@1.2.14)(kysely@0.28.2)(prisma@6.8.2(typescript@5.8.3))
+        version: 0.43.1(@neondatabase/serverless@1.0.0)(@prisma/client@6.8.2(prisma@6.8.2(typescript@5.8.3))(typescript@5.8.3))(@types/pg@8.15.2)(bun-types@1.2.15)(kysely@0.28.2)(prisma@6.8.2(typescript@5.8.3))
       hono:
         specifier: ^4.7.10
         version: 4.7.10
@@ -303,7 +303,7 @@ importers:
     devDependencies:
       '@types/bun':
         specifier: latest
-        version: 1.2.14
+        version: 1.2.15
       drizzle-kit:
         specifier: ^0.31.1
         version: 0.31.1
@@ -2590,8 +2590,8 @@ packages:
   '@types/babel__traverse@7.20.7':
     resolution: {integrity: sha512-dkO5fhS7+/oos4ciWxyEyjWe48zmG6wbCheo/G2ZnHx4fs3EU6YC6UM8rk56gAjNJ9P3MTH2jo5jb92/K6wbng==}
 
-  '@types/bun@1.2.14':
-    resolution: {integrity: sha512-VsFZKs8oKHzI7zwvECiAJ5oSorWndIWEVhfbYqZd4HI/45kzW7PN2Rr5biAzvGvRuNmYLSANY+H59ubHq8xw7Q==}
+  '@types/bun@1.2.15':
+    resolution: {integrity: sha512-U1ljPdBEphF0nw1MIk0hI7kPg7dFdPyM7EenHsp6W5loNHl7zqy6JQf/RKCgnUn2KDzUpkBwHPnEJEjII594bA==}
 
   '@types/d3-array@3.2.1':
     resolution: {integrity: sha512-Y2Jn2idRrLzUfAKV2LyRImR+y4oa2AntrgID95SHJxuMUrkNXmanDSed71sRNZysveJVt1hLLemQZIady0FpEg==}
@@ -3016,8 +3016,8 @@ packages:
   buffer@6.0.3:
     resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
 
-  bun-types@1.2.14:
-    resolution: {integrity: sha512-Kuh4Ub28ucMRWeiUUWMHsT9Wcbr4H3kLIO72RZZElSDxSu7vpetRvxIUDUaW6QtaIeixIpm7OXtNnZPf82EzwA==}
+  bun-types@1.2.15:
+    resolution: {integrity: sha512-NarRIaS+iOaQU1JPfyKhZm4AsUOrwUOqRNHY0XxI8GI8jYxiLXLcdjYMG9UKS+fwWasc1uw1htV9AX24dD+p4w==}
 
   bundle-require@5.1.0:
     resolution: {integrity: sha512-3WrrOuZiyaaZPWiEt4G3+IffISVC9HYlWueJEBWED4ZH4aIAC2PnkdnuRrR94M+w6yGWn4AglWtJtBI8YqvgoA==}
@@ -8599,9 +8599,9 @@ snapshots:
     dependencies:
       '@babel/types': 7.27.1
 
-  '@types/bun@1.2.14':
+  '@types/bun@1.2.15':
     dependencies:
-      bun-types: 1.2.14
+      bun-types: 1.2.15
 
   '@types/d3-array@3.2.1': {}
 
@@ -9127,7 +9127,7 @@ snapshots:
       base64-js: 1.5.1
       ieee754: 1.2.1
 
-  bun-types@1.2.14:
+  bun-types@1.2.15:
     dependencies:
       '@types/node': 22.15.19
 
@@ -9463,12 +9463,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.43.1(@neondatabase/serverless@1.0.0)(@prisma/client@6.8.2(prisma@6.8.2(typescript@5.8.3))(typescript@5.8.3))(@types/pg@8.15.2)(bun-types@1.2.14)(kysely@0.28.2)(prisma@6.8.2(typescript@5.8.3)):
+  drizzle-orm@0.43.1(@neondatabase/serverless@1.0.0)(@prisma/client@6.8.2(prisma@6.8.2(typescript@5.8.3))(typescript@5.8.3))(@types/pg@8.15.2)(bun-types@1.2.15)(kysely@0.28.2)(prisma@6.8.2(typescript@5.8.3)):
     optionalDependencies:
       '@neondatabase/serverless': 1.0.0
       '@prisma/client': 6.8.2(prisma@6.8.2(typescript@5.8.3))(typescript@5.8.3)
       '@types/pg': 8.15.2
-      bun-types: 1.2.14
+      bun-types: 1.2.15
       kysely: 0.28.2
       prisma: 6.8.2(typescript@5.8.3)
 
