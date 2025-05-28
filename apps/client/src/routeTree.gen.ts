@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/_dashboard/route'
 import { Route as AuthRouteImport } from './routes/_auth/route'
 import { Route as IndexImport } from './routes/index'
+import { Route as DashboardUsersImport } from './routes/_dashboard/users'
 import { Route as DashboardSettingsImport } from './routes/_dashboard/settings'
 import { Route as DashboardLogsImport } from './routes/_dashboard/logs'
 import { Route as DashboardDashboardImport } from './routes/_dashboard/dashboard'
@@ -39,6 +40,12 @@ const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardUsersRoute = DashboardUsersImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 
 const DashboardSettingsRoute = DashboardSettingsImport.update({
@@ -170,6 +177,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSettingsImport
       parentRoute: typeof DashboardRouteImport
     }
+    '/_dashboard/users': {
+      id: '/_dashboard/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof DashboardUsersImport
+      parentRoute: typeof DashboardRouteImport
+    }
   }
 }
 
@@ -196,6 +210,7 @@ interface DashboardRouteRouteChildren {
   DashboardDashboardRoute: typeof DashboardDashboardRoute
   DashboardLogsRoute: typeof DashboardLogsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
+  DashboardUsersRoute: typeof DashboardUsersRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
@@ -205,6 +220,7 @@ const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardDashboardRoute: DashboardDashboardRoute,
   DashboardLogsRoute: DashboardLogsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
+  DashboardUsersRoute: DashboardUsersRoute,
 }
 
 const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
@@ -222,6 +238,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardDashboardRoute
   '/logs': typeof DashboardLogsRoute
   '/settings': typeof DashboardSettingsRoute
+  '/users': typeof DashboardUsersRoute
 }
 
 export interface FileRoutesByTo {
@@ -235,6 +252,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardDashboardRoute
   '/logs': typeof DashboardLogsRoute
   '/settings': typeof DashboardSettingsRoute
+  '/users': typeof DashboardUsersRoute
 }
 
 export interface FileRoutesById {
@@ -250,6 +268,7 @@ export interface FileRoutesById {
   '/_dashboard/dashboard': typeof DashboardDashboardRoute
   '/_dashboard/logs': typeof DashboardLogsRoute
   '/_dashboard/settings': typeof DashboardSettingsRoute
+  '/_dashboard/users': typeof DashboardUsersRoute
 }
 
 export interface FileRouteTypes {
@@ -265,6 +284,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/logs'
     | '/settings'
+    | '/users'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -277,6 +297,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/logs'
     | '/settings'
+    | '/users'
   id:
     | '__root__'
     | '/'
@@ -290,6 +311,7 @@ export interface FileRouteTypes {
     | '/_dashboard/dashboard'
     | '/_dashboard/logs'
     | '/_dashboard/settings'
+    | '/_dashboard/users'
   fileRoutesById: FileRoutesById
 }
 
@@ -338,7 +360,8 @@ export const routeTree = rootRoute
         "/_dashboard/cost-analysis",
         "/_dashboard/dashboard",
         "/_dashboard/logs",
-        "/_dashboard/settings"
+        "/_dashboard/settings",
+        "/_dashboard/users"
       ]
     },
     "/_auth/login": {
@@ -371,6 +394,10 @@ export const routeTree = rootRoute
     },
     "/_dashboard/settings": {
       "filePath": "_dashboard/settings.tsx",
+      "parent": "/_dashboard"
+    },
+    "/_dashboard/users": {
+      "filePath": "_dashboard/users.tsx",
       "parent": "/_dashboard"
     }
   }

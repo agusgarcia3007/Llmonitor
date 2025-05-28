@@ -7,6 +7,7 @@ import {
   // IconFlask,
   IconKey,
   IconSettings,
+  IconUsers,
 } from "@tabler/icons-react";
 import * as React from "react";
 
@@ -112,6 +113,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
+        {session?.user?.role === "admin" && (
+          <SidebarMenu className="mt-4">
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link to="/users">
+                  <IconUsers className="mr-2" />
+                  <span>Users</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        )}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
