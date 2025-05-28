@@ -7,8 +7,12 @@ import {
   createExpressMiddleware,
   ExpressMiddlewareOptions,
 } from "./middleware/express";
-import { LLMonitorConfig, LLMEvent } from "./types";
+import { LLMonitorConfig as BaseLLMonitorConfig, LLMEvent } from "./types";
 import OpenAI from "openai";
+
+export interface LLMonitorConfig extends BaseLLMonitorConfig {
+  baseURL?: string;
+}
 
 export class LLMonitor {
   private client: LLMonitorClient;

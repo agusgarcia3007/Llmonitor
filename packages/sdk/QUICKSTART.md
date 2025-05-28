@@ -26,7 +26,8 @@ import OpenAI from "openai";
 
 // Initialize monitor
 const monitor = new LLMonitor({
-  apiKey: "llm_your_api_key_here",
+  apiKey: "your-api-key", // Get this from your LLMonitor dashboard
+  // baseURL es opcional, por defecto https://api.llmonitor.io
 });
 
 // Wrap your OpenAI client

@@ -17,6 +17,7 @@ import OpenAI from "openai";
 // 1. Initialize LLMonitor
 const monitor = new LLMonitor({
   apiKey: "your-api-key", // Get this from your LLMonitor dashboard
+  // baseURL es opcional, por defecto https://api.llmonitor.io
 });
 
 // 2. Wrap your LLM client
@@ -111,7 +112,7 @@ const result = await model.generateContent("Explain machine learning");
 ```typescript
 const monitor = new LLMonitor({
   apiKey: "llm_...", // Required: Your LLMonitor API key
-  baseURL: "https://api.llmonitor.com", // Optional: Custom endpoint
+  // baseURL es opcional, por defecto https://api.llmonitor.io
   sessionId: "user-123", // Optional: Group requests by session
   versionTag: "v1.2.0", // Optional: Track different versions
   debug: true, // Optional: Enable debug logging

@@ -1,0 +1,211 @@
+name: Publish Packages (Advanced)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "packages/**"
+  workflow_dispatch:
+    inputs:
+      force_publish:
+        description: "Force publish all packages"
+        required: false
+        default: false
+        type: boolean
+      version_bump:
+        description: "Version bump type"
+        required: false
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+env:
+  NODE_VERSION: "18"
+  PNPM_VERSION: "8"
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      sdk-changed: ${{ steps.changes.outputs.sdk }}
+      langchain-changed: ${{ steps.changes.outputs.langchain }}
+      react-changed: ${{ steps.changes.outputs.react }}
+      any-changed: ${{ steps.changes.outputs.any }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changes
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            sdk:
+              - 'packages/sdk/**'
+            langchain:
+              - 'packages/langchain/**'
+            react:
+              - 'packages/react/**'
+            any:
+              - 'packages/**'
+
+  version-and-publish:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.any-changed == 'true' || github.event.inputs.force_publish == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package:
+          [
+            {
+              name: "sdk",
+              path: "packages/sdk",
+              changed: "${{ needs.detect-changes.outputs.sdk-changed }}",
+            },
+            {
+              name: "langchain",
+              path: "packages/langchain",
+              changed: "${{ needs.detect-changes.outputs.langchain-changed }}",
+            },
+            {
+              name: "react",
+              path: "packages/react",
+              changed: "${{ needs.detect-changes.outputs.react-changed }}",
+            },
+          ]
+    steps:
+      - name: Skip if no changes
+        if: matrix.package.changed != 'true' && github.event.inputs.force_publish != 'true'
+        run: |
+          echo "No changes detected for ${{ matrix.package.name }}, skipping..."
+          exit 0
+
+      - name: Checkout
+        if: matrix.package.changed == 'true' || github.event.inputs.force_publish == 'true'
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        if: matrix.package.changed == 'true' || github.event.inputs.force_publish == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Setup pnpm
+        if: matrix.package.changed == 'true' || github.event.inputs.force_publish == 'true'
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        if: matrix.package.changed == 'true' || github.event.inputs.force_publish == 'true'
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        if: matrix.package.changed == 'true' || github.event.inputs.force_publish == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        if: matrix.package.changed == 'true' || github.event.inputs.force_publish == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Build package
+        if: matrix.package.changed == 'true' || github.event.inputs.force_publish == 'true'
+        run: |
+          cd ${{ matrix.package.path }}
+          pnpm run build
+
+      - name: Run tests (if available)
+        if: matrix.package.changed == 'true' || github.event.inputs.force_publish == 'true'
+        run: |
+          cd ${{ matrix.package.path }}
+          if npm run | grep -q "test"; then
+            pnpm run test
+          else
+            echo "No tests found for ${{ matrix.package.name }}"
+          fi
+
+      - name: Check if package exists on npm
+        if: matrix.package.changed == 'true' || github.event.inputs.force_publish == 'true'
+        id: check-version
+        run: |
+          cd ${{ matrix.package.path }}
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+
+          if npm view "$PACKAGE_NAME@$CURRENT_VERSION" version 2>/dev/null; then
+            echo "version-exists=true" >> $GITHUB_OUTPUT
+            echo "Version $CURRENT_VERSION already exists on npm"
+          else
+            echo "version-exists=false" >> $GITHUB_OUTPUT
+            echo "Version $CURRENT_VERSION does not exist on npm"
+          fi
+
+      - name: Bump version
+        if: (matrix.package.changed == 'true' || github.event.inputs.force_publish == 'true') && steps.check-version.outputs.version-exists == 'true'
+        run: |
+          cd ${{ matrix.package.path }}
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          VERSION_BUMP="${{ github.event.inputs.version_bump || 'patch' }}"
+          npm version $VERSION_BUMP --no-git-tag-version
+
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "Bumped version to $NEW_VERSION"
+
+      - name: Publish to npm
+        if: matrix.package.changed == 'true' || github.event.inputs.force_publish == 'true'
+        run: |
+          cd ${{ matrix.package.path }}
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create git tag
+        if: matrix.package.changed == 'true' || github.event.inputs.force_publish == 'true'
+        run: |
+          cd ${{ matrix.package.path }}
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          TAG_NAME="${PACKAGE_NAME}@${VERSION}"
+
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a "$TAG_NAME" -m "Release $TAG_NAME"
+          git push origin "$TAG_NAME"
+
+  notify-success:
+    needs: [detect-changes, version-and-publish]
+    if: always() && needs.version-and-publish.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify success
+        run: |
+          echo "✅ Package publishing completed successfully!"
+          echo "Published packages:"
+          if [ "${{ needs.detect-changes.outputs.sdk-changed }}" == "true" ]; then
+            echo "- @llmonitor/sdk"
+          fi
+          if [ "${{ needs.detect-changes.outputs.langchain-changed }}" == "true" ]; then
+            echo "- @llmonitor/langchain"
+          fi
+          if [ "${{ needs.detect-changes.outputs.react-changed }}" == "true" ]; then
+            echo "- @llmonitor/react"
+          fi

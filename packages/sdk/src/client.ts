@@ -7,7 +7,7 @@ export class LLMonitorClient {
 
   constructor(config: LLMonitorConfig) {
     this.config = {
-      baseURL: "http://localhost:4444",
+      baseURL: "https://api.llmonitor.io",
       debug: false,
       enabled: true,
       ...config,
@@ -61,7 +61,7 @@ export class LLMonitorClient {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${this.config.apiKey}`,
+          "x-api-key": this.config.apiKey,
         },
         body: JSON.stringify(event),
       });

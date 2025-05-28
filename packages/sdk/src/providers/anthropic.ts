@@ -12,6 +12,7 @@ interface AnthropicMessageCreateParams {
   temperature?: number;
   max_tokens?: number;
   stream?: boolean;
+  system?: string;
 }
 
 interface AnthropicResponse {
