@@ -1,26 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { useLLMEventsQuery } from "@/services/llm-events/query";
-import { useApiKeysQuery } from "@/services/api-keys/query";
-import type { GetEventsParams, LLMEvent } from "@/types";
-import { createFileRoute } from "@tanstack/react-router";
-import {
-  type ColumnDef,
-  type ColumnFiltersState,
-  type SortingState,
-} from "@tanstack/react-table";
-import { formatDistance } from "date-fns";
-import { ArrowUpDown } from "lucide-react";
-import { useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogTrigger,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Eye } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import {
   Select,
   SelectContent,
@@ -28,6 +14,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useApiKeysQuery } from "@/services/api-keys/query";
+import {
+  llmEventsQueryOptions,
+  useLLMEventsQuery,
+} from "@/services/llm-events/query";
+import type { GetEventsParams, LLMEvent } from "@/types";
+import { useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import {
+  type ColumnDef,
+  type ColumnFiltersState,
+  type SortingState,
+} from "@tanstack/react-table";
+import { formatDistance } from "date-fns";
+import { ArrowUpDown, Eye } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_dashboard/logs")({
   component: LogsPage,
@@ -40,6 +43,7 @@ export function LogsPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [selectedApiKey, setSelectedApiKey] = useState<string>("all");
   const { data: apiKeys } = useApiKeysQuery();
+  const queryClient = useQueryClient();
 
   const params = useMemo<GetEventsParams>(() => {
     if (sorting.length > 0) {
@@ -70,6 +74,20 @@ export function LogsPage() {
   }, [pagination, sorting, columnFilters, selectedApiKey]);
 
   const { data, isLoading } = useLLMEventsQuery(params);
+
+  useEffect(() => {
+    if (data) {
+      const nextPage = pagination.page + 1;
+      if (nextPage <= Math.ceil(data.pagination.total / pagination.pageSize)) {
+        const nextPageParams = {
+          ...params,
+          offset: nextPage * pagination.pageSize - pagination.pageSize,
+        };
+
+        queryClient.prefetchQuery(llmEventsQueryOptions(nextPageParams));
+      }
+    }
+  }, [data, pagination.page, pagination.pageSize, params, queryClient]);
 
   const columns = useMemo<ColumnDef<LLMEvent>[]>(
     () => [
