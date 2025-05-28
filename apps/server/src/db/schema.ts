@@ -113,7 +113,7 @@ export const invitation = pgTable("invitation", {
 });
 
 export const llm_event = pgTable("llm_event", {
-  id: serial("id").primaryKey(),
+  id: text("id").primaryKey(),
   organization_id: text("organization_id")
     .notNull()
     .references(() => organization.id, { onDelete: "cascade" }),

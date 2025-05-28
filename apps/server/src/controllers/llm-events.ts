@@ -51,6 +51,7 @@ export const logEvent = async (c: Context) => {
     );
 
   const insert = await db.insert(llm_event).values({
+    id: crypto.randomUUID(),
     ...data,
     cost_usd: calculatedCost,
     organization_id: organizationId,

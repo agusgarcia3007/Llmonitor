@@ -43,6 +43,13 @@
       "when": 1748028002929,
       "tag": "0005_peaceful_malcolm_colcord",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1748402187355,
+      "tag": "0006_thin_glorian",
+      "breakpoints": true
     }
   ]
 }

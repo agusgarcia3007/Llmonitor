@@ -1,0 +1,1 @@
+ALTER TABLE "llm_event" ALTER COLUMN "id" SET DATA TYPE text;
