@@ -70,6 +70,8 @@ export const getEvents = async (c: Context) => {
     allowedSortFields as unknown as string[]
   );
 
+  const organizationId = session.activeOrganizationId;
+
   const orderBy =
     order === SORT_ORDER.ASC
       ? asc(sortFieldMap[sort as keyof typeof sortFieldMap])
@@ -79,14 +81,14 @@ export const getEvents = async (c: Context) => {
     db
       .select()
       .from(llm_event)
-      .where(eq(llm_event.organization_id, session.organizationId))
+      .where(eq(llm_event.organization_id, organizationId))
       .orderBy(orderBy)
       .limit(limit)
       .offset(offset),
     db
       .select({ count: count() })
       .from(llm_event)
-      .where(eq(llm_event.organization_id, session.organizationId)),
+      .where(eq(llm_event.organization_id, organizationId)),
   ]);
 
   return c.json({
