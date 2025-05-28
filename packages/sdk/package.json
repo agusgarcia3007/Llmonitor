@@ -1,6 +1,6 @@
 {
   "name": "@llmonitor/sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Universal LLM observability & cost intelligence - Monitor OpenAI, Anthropic, Google AI, Cohere and more",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
