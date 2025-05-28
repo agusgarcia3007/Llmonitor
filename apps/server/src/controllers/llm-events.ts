@@ -6,6 +6,7 @@ import { parseQueryParams, createSortHelpers } from "@/lib/query-params";
 import { desc, asc, eq, count } from "drizzle-orm";
 import { SORT_ORDER } from "@/lib/endpoint-builder";
 import { calculateCost } from "@/lib/cost-calculator";
+import { getActiveOrganization } from "@/lib/utils";
 
 const SORTABLE_FIELDS = [
   "created_at",
@@ -27,6 +28,19 @@ export const logEvent = async (c: Context) => {
   const session = await c.get("session");
   const data = LogLlmEventSchema.parse(body);
 
+  let organizationId = session.organizationId;
+  if (!organizationId && session.userId) {
+    const org = await getActiveOrganization(session.userId);
+    organizationId = org?.id;
+  }
+
+  if (!organizationId) {
+    return c.json(
+      { success: false, message: "No organization found for this user" },
+      400
+    );
+  }
+
   const calculatedCost =
     data.cost_usd ||
     calculateCost(
@@ -39,7 +53,7 @@ export const logEvent = async (c: Context) => {
   const insert = await db.insert(llm_event).values({
     ...data,
     cost_usd: calculatedCost,
-    organization_id: session.organizationId,
+    organization_id: organizationId,
   });
 
   return c.json({
