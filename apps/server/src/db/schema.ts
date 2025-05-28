@@ -112,6 +112,11 @@ export const invitation = pgTable("invitation", {
     .references(() => user.id, { onDelete: "cascade" }),
 });
 
+export type LLMEventMetadata = {
+  apiKey?: string;
+  [key: string]: unknown;
+};
+
 export const llm_event = pgTable("llm_event", {
   id: text("id").primaryKey(),
   organization_id: text("organization_id")
@@ -132,7 +137,7 @@ export const llm_event = pgTable("llm_event", {
   cost_usd: real("cost_usd"),
   score: integer("score"),
   version_tag: text("version_tag"),
-  metadata: json("metadata"),
+  metadata: json("metadata").$type<LLMEventMetadata>(),
   created_at: timestamp("created_at")
     .$defaultFn(() => new Date())
     .notNull(),

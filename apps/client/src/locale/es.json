@@ -269,6 +269,8 @@
     "latency": "Latencia (ms)",
     "cost": "Costo",
     "createdAt": "Creado",
-    "metadata": "Metadata"
+    "metadata": "Metadata",
+    "selectApiKey": "Seleccionar API Key",
+    "allApiKeys": "Todas las API Keys"
   }
 }

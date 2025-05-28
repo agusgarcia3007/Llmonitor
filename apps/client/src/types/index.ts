@@ -36,6 +36,7 @@ export interface GetEventsParams {
   offset?: number;
   sort?: string;
   order?: "asc" | "desc";
+  apiKey?: string;
 }
 
 export type Locale = "en" | "es";

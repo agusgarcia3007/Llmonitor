@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { useLLMEventsQuery } from "@/services/llm-events/query";
+import { useApiKeysQuery } from "@/services/api-keys/query";
 import type { GetEventsParams, LLMEvent } from "@/types";
 import { createFileRoute } from "@tanstack/react-router";
 import {
@@ -20,6 +21,13 @@ import {
 } from "@/components/ui/dialog";
 import { Eye } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const Route = createFileRoute("/_dashboard/logs")({
   component: LogsPage,
@@ -30,6 +38,8 @@ export function LogsPage() {
   const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [selectedApiKey, setSelectedApiKey] = useState<string>("all");
+  const { data: apiKeys } = useApiKeysQuery();
 
   const params = useMemo<GetEventsParams>(() => {
     if (sorting.length > 0) {
@@ -38,6 +48,7 @@ export function LogsPage() {
         order: sorting[0].desc ? "desc" : "asc",
         limit: pagination.pageSize,
         offset: (pagination.page - 1) * pagination.pageSize,
+        apiKey: selectedApiKey !== "all" ? selectedApiKey : undefined,
       };
     }
 
@@ -54,8 +65,9 @@ export function LogsPage() {
       ...filters,
       limit: pagination.pageSize,
       offset: (pagination.page - 1) * pagination.pageSize,
+      apiKey: selectedApiKey !== "all" ? selectedApiKey : undefined,
     };
-  }, [pagination, sorting, columnFilters]);
+  }, [pagination, sorting, columnFilters, selectedApiKey]);
 
   const { data, isLoading } = useLLMEventsQuery(params);
 
@@ -245,7 +257,24 @@ export function LogsPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Logs</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Logs</h1>
+        <div className="w-[200px]">
+          <Select value={selectedApiKey} onValueChange={setSelectedApiKey}>
+            <SelectTrigger>
+              <SelectValue placeholder={t("logsTable.selectApiKey")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("logsTable.allApiKeys")}</SelectItem>
+              {apiKeys?.data?.map((apiKey) => (
+                <SelectItem key={apiKey.id} value={apiKey.id}>
+                  {apiKey.name || t("apiKeys.noName")}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
       <DataTable
         columns={columns}
         data={tableData}

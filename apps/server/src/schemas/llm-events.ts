@@ -16,5 +16,8 @@ export const LogLlmEventSchema = z.object({
   version_tag: z.string().optional(),
   session_id: z.string().optional(),
   request_id: z.string().optional(),
-  metadata: z.any().optional(),
+  metadata: z
+    .record(z.string(), z.unknown())
+    .and(z.object({ apiKey: z.string().optional() }))
+    .optional(),
 });
