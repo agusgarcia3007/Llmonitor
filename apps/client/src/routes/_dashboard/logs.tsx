@@ -12,6 +12,13 @@ import {
 import { formatDistance } from "date-fns";
 import { ArrowUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Eye } from "lucide-react";
 
 export const Route = createFileRoute("/_dashboard/logs")({
   component: LogsPage,
@@ -84,6 +91,18 @@ export function LogsPage() {
       {
         accessorKey: "provider",
         header: "Provider",
+        cell: ({ row }) => {
+          const provider = row.getValue("provider") as string;
+          const bgDict: Record<string, string> = {
+            openai: "bg-green-200 text-green-800",
+            anthropic: "bg-orange-200 text-orange-800",
+          };
+          return (
+            <Badge variant="secondary" className={bgDict[provider]}>
+              {provider}
+            </Badge>
+          );
+        },
       },
       {
         accessorKey: "status",
@@ -110,6 +129,20 @@ export function LogsPage() {
 
           return <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>;
         },
+      },
+      {
+        accessorKey: "prompt",
+        header: "Prompt",
+        cell: ({ row }) => (
+          <PromptCell prompt={row.getValue("prompt") as string} />
+        ),
+      },
+      {
+        accessorKey: "completion",
+        header: "Respuesta",
+        cell: ({ row }) => (
+          <CompletionCell completion={row.getValue("completion") as string} />
+        ),
       },
       {
         accessorKey: "prompt_tokens",
@@ -174,6 +207,11 @@ export function LogsPage() {
           );
         },
       },
+      {
+        accessorKey: "metadata",
+        header: "Metadata",
+        cell: ({ row }) => <MetadataCell metadata={row.getValue("metadata")} />,
+      },
     ],
     []
   );
@@ -205,6 +243,87 @@ export function LogsPage() {
         searchColumn="model"
         searchPlaceholder="Filter by model..."
       />
+    </div>
+  );
+}
+
+function PromptCell({ prompt }: { prompt: string }) {
+  const [open, setOpen] = useState(false);
+  const hasText = typeof prompt === "string" && prompt.trim().length > 0;
+  return (
+    <div className="flex items-center gap-2">
+      <div className="line-clamp-1 max-w-[200px]">{hasText ? prompt : "-"}</div>
+      {hasText && (
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
+              <Eye className="w-4 h-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle>Prompt</DialogTitle>
+            <code className="whitespace-pre-wrap bg-muted rounded p-2 text-sm max-h-[60vh] overflow-auto">
+              {prompt}
+            </code>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
+  );
+}
+
+function CompletionCell({ completion }: { completion: string }) {
+  const [open, setOpen] = useState(false);
+  const hasText =
+    typeof completion === "string" && completion.trim().length > 0;
+  return (
+    <div className="flex items-center gap-2">
+      <div className="line-clamp-1 max-w-[200px]">
+        {hasText ? completion : "-"}
+      </div>
+      {hasText && (
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
+              <Eye className="w-4 h-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle>Respuesta</DialogTitle>
+            <code className="whitespace-pre-wrap bg-muted rounded p-2 text-sm max-h-[60vh] overflow-auto">
+              {completion}
+            </code>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
+  );
+}
+
+function MetadataCell({ metadata }: { metadata: unknown }) {
+  const [open, setOpen] = useState(false);
+  const isEmpty =
+    !metadata ||
+    (typeof metadata === "object" &&
+      Object.keys(metadata as object).length === 0);
+  if (isEmpty) {
+    return <span>-</span>;
+  }
+  return (
+    <div className="flex items-center">
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
+            <Eye className="w-4 h-4" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogTitle>Metadata</DialogTitle>
+          <pre className="whitespace-pre-wrap text-xs max-h-[60vh] overflow-auto bg-muted rounded p-2">
+            {JSON.stringify(metadata, null, 2)}
+          </pre>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -95,7 +95,7 @@ function App() {
     <LLMonitorProvider
       config={{
         apiKey: process.env.REACT_APP_LLMONITOR_API_KEY,
-        baseURL: "https://api.llmonitor.com",
+        baseURL: "https://api.llmonitor.io",
         debug: process.env.NODE_ENV === "development",
         sessionId: getCurrentUser()?.id,
         versionTag: "v2.1.0",

@@ -18,6 +18,15 @@ export class LLMonitor {
   private client: LLMonitorClient;
 
   constructor(config: LLMonitorConfig) {
+    if (
+      !config.apiKey ||
+      typeof config.apiKey !== "string" ||
+      !config.apiKey.trim()
+    ) {
+      throw new Error(
+        "LLMonitor: Missing API key. Please provide a valid apiKey in the LLMonitor config. You can get your API key from the LLMonitor dashboard."
+      );
+    }
     this.client = new LLMonitorClient(config);
   }
 

@@ -27,7 +27,6 @@ import { LLMonitor } from "@llmonitor/sdk";
 
 const monitor = new LLMonitor({
   apiKey: "your-api-key", // Required: Get from dashboard
-  baseURL: "https://api.llmonitor.com", // Optional: Custom endpoint
   sessionId: "user-123", // Optional: Session tracking
   versionTag: "v1.0.0", // Optional: Version tracking
   debug: false, // Optional: Enable debug logs
@@ -282,7 +281,7 @@ You can use environment variables for configuration:
 
 ```bash
 LLMONITOR_API_KEY=your-api-key
-LLMONITOR_BASE_URL=https://api.llmonitor.com
+LLMONITOR_BASE_URL=https://api.llmonitor.io
 LLMONITOR_DEBUG=false
 ```
 

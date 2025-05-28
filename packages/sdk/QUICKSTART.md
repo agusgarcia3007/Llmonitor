@@ -10,7 +10,7 @@ npm install @llmonitor/sdk
 
 ## Step 2: Get Your API Key
 
-1. Sign up at [LLMonitor Dashboard](https://app.llmonitor.com)
+1. Sign up at [LLMonitor Dashboard](https://llmonitor.io)
 2. **Organization created automatically** - No setup needed!
 3. Copy your API key from Settings
 
@@ -60,7 +60,7 @@ chatExample();
 ## Step 4: Check Your Dashboard
 
 1. Run your code
-2. Visit [LLMonitor Dashboard](https://app.llmonitor.com)
+2. Visit [LLMonitor Dashboard](https://llmonitor.io)
 3. See your requests, costs, and metrics! 🎉
 
 ## What You'll See
@@ -184,9 +184,9 @@ console.log("Test event sent!");
 
 ## 🤝 Need Help?
 
-- 📖 [Full Documentation](https://docs.llmonitor.com)
+- 📖 [Full Documentation](https://docs.llmonitor.io)
 - 💬 [Discord Community](https://discord.gg/llmonitor)
 - 🐛 [GitHub Issues](https://github.com/llmonitor/llmonitor/issues)
-- 📧 [Email Support](mailto:support@llmonitor.com)
+- 📧 [Email Support](mailto:agusgarcia3007@gmail.com)
 
 Happy monitoring! 🚀

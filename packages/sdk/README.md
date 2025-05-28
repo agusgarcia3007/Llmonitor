@@ -39,7 +39,7 @@ That's it! Every request is now automatically tracked with:
 
 ## 🏃‍♂️ Get Your API Key
 
-1. **Sign up** at [LLMonitor Dashboard](https://app.llmonitor.com)
+1. **Sign up** at [LLMonitor Dashboard](https://llmonitor.io)
 2. **Organization created automatically** - No setup needed!
 3. **Copy your API key** from Settings
 
@@ -246,10 +246,9 @@ const monitor = new LLMonitor(config);
 
 ## 📚 Links
 
-- [Dashboard](https://app.llmonitor.com) - View your metrics
-- [Documentation](https://docs.llmonitor.com) - Complete guides
-- [GitHub](https://github.com/llmonitor/llmonitor) - Source code
-- [Discord](https://discord.gg/llmonitor) - Community support
+- [Dashboard](https://llmonitor.io) - View your metrics
+- [Documentation](https://docs.llmonitor.io) - Complete guides
+- [GitHub](https://github.com/agusgarcia3007/LLMonitor) - Source code
 
 ## 🤝 Contributing
 
