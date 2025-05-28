@@ -255,5 +255,19 @@
       "deleted": "API key deleted",
       "copied": "API key copied to clipboard"
     }
+  },
+  "logsTable": {
+    "id": "ID",
+    "model": "Model",
+    "provider": "Provider",
+    "status": "Status",
+    "prompt": "Prompt",
+    "completion": "Completion",
+    "promptTokens": "Prompt Tokens",
+    "completionTokens": "Completion Tokens",
+    "latency": "Latency (ms)",
+    "cost": "Cost",
+    "createdAt": "Created At",
+    "metadata": "Metadata"
   }
 }

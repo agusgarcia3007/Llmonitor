@@ -256,5 +256,19 @@
       "deleted": "Clave API eliminada",
       "copied": "Clave API copiada al portapapeles"
     }
+  },
+  "logsTable": {
+    "id": "ID",
+    "model": "Modelo",
+    "provider": "Proveedor",
+    "status": "Estado",
+    "prompt": "Prompt",
+    "completion": "Respuesta",
+    "promptTokens": "Tokens Prompt",
+    "completionTokens": "Tokens Respuesta",
+    "latency": "Latencia (ms)",
+    "cost": "Costo",
+    "createdAt": "Creado",
+    "metadata": "Metadata"
   }
 }

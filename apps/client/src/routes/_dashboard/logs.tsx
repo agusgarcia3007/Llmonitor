@@ -19,12 +19,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Eye } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_dashboard/logs")({
   component: LogsPage,
 });
 
 export function LogsPage() {
+  const { t } = useTranslation();
   const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -67,7 +69,7 @@ export function LogsPage() {
             className="flex items-center gap-2"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            ID
+            {t("logsTable.id")}
             <ArrowUpDown className="h-4 w-4" />
           </Button>
         ),
@@ -83,14 +85,14 @@ export function LogsPage() {
             className="flex items-center gap-2"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Model
+            {t("logsTable.model")}
             <ArrowUpDown className="h-4 w-4" />
           </Button>
         ),
       },
       {
         accessorKey: "provider",
-        header: "Provider",
+        header: t("logsTable.provider"),
         cell: ({ row }) => {
           const provider = row.getValue("provider") as string;
           const bgDict: Record<string, string> = {
@@ -106,7 +108,7 @@ export function LogsPage() {
       },
       {
         accessorKey: "status",
-        header: "Status",
+        header: t("logsTable.status"),
         cell: ({ row }) => {
           const status = row.getValue("status") as number;
           const statusMap: Record<
@@ -132,25 +134,25 @@ export function LogsPage() {
       },
       {
         accessorKey: "prompt",
-        header: "Prompt",
+        header: t("logsTable.prompt"),
         cell: ({ row }) => (
           <PromptCell prompt={row.getValue("prompt") as string} />
         ),
       },
       {
         accessorKey: "completion",
-        header: "Respuesta",
+        header: t("logsTable.completion"),
         cell: ({ row }) => (
           <CompletionCell completion={row.getValue("completion") as string} />
         ),
       },
       {
         accessorKey: "prompt_tokens",
-        header: "Prompt Tokens",
+        header: t("logsTable.promptTokens"),
       },
       {
         accessorKey: "completion_tokens",
-        header: "Completion Tokens",
+        header: t("logsTable.completionTokens"),
       },
       {
         accessorKey: "latency_ms",
@@ -160,7 +162,7 @@ export function LogsPage() {
             className="flex items-center gap-2"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Latency (ms)
+            {t("logsTable.latency")}
             <ArrowUpDown className="h-4 w-4" />
           </Button>
         ),
@@ -177,7 +179,7 @@ export function LogsPage() {
             className="flex items-center gap-2"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Cost
+            {t("logsTable.cost")}
             <ArrowUpDown className="h-4 w-4" />
           </Button>
         ),
@@ -194,7 +196,7 @@ export function LogsPage() {
             className="flex items-center gap-2"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Created At
+            {t("logsTable.createdAt")}
             <ArrowUpDown className="h-4 w-4" />
           </Button>
         ),
@@ -209,11 +211,11 @@ export function LogsPage() {
       },
       {
         accessorKey: "metadata",
-        header: "Metadata",
+        header: t("logsTable.metadata"),
         cell: ({ row }) => <MetadataCell metadata={row.getValue("metadata")} />,
       },
     ],
-    []
+    [t]
   );
 
   // Metadatos para la tabla
