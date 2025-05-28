@@ -99,11 +99,12 @@ export function LogsPage() {
           > = {
             200: { label: "Success", variant: "default" },
             400: { label: "Error", variant: "destructive" },
+            500: { label: "Error", variant: "destructive" },
             // Agregar otros estados según sea necesario
           };
 
           const statusInfo = statusMap[status] || {
-            label: `Status ${status}`,
+            label: `${status}`,
             variant: "outline",
           };
 
@@ -149,7 +150,7 @@ export function LogsPage() {
         ),
         cell: ({ row }) => {
           const cost = row.getValue("cost_usd") as number;
-          return cost ? `$${cost.toFixed(4)}` : "-";
+          return cost ? `$${cost.toFixed(6)}` : "-";
         },
       },
       {
