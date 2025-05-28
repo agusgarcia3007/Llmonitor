@@ -13,27 +13,44 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   useCreateApiKey,
   useDeleteApiKey,
 } from "@/services/api-keys/mutations";
 import { useApiKeysQuery } from "@/services/api-keys/query";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
 import { Copy, Key, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Skeleton } from "@/components/ui/skeleton";
+import { z } from "zod";
 
 export const Route = createFileRoute("/_dashboard/api-keys")({
   component: ApiKeysPage,
 });
 
+const formSchema = z.object({
+  keyName: z.string().min(1, { message: "apiKeys.input.placeholder" }),
+});
+
 function ApiKeysPage() {
   const { t } = useTranslation();
-  const [newKeyName, setNewKeyName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { keyName: "" },
+  });
   const { data, isLoading } = useApiKeysQuery();
   const {
     data: createdKey,
@@ -42,11 +59,6 @@ function ApiKeysPage() {
   } = useCreateApiKey();
   const { mutateAsync: deleteApiKey, isPending: isDeleting } =
     useDeleteApiKey();
-
-  const handleCreateKey = async () => {
-    await createApiKey(newKeyName);
-    setIsOpen(true);
-  };
 
   const handleDeleteKey = async (keyId: string) => {
     await deleteApiKey(keyId);
@@ -69,20 +81,39 @@ function ApiKeysPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
-            <div className="flex gap-2">
-              <Input
-                placeholder={t("apiKeys.input.placeholder")}
-                value={newKeyName}
-                onChange={(e) => setNewKeyName(e.target.value)}
-                disabled={isCreating}
-              />
-              <Button onClick={handleCreateKey} isLoading={isCreating}>
-                <Plus className="size-4" />
-                {isCreating
-                  ? t("apiKeys.button.creating")
-                  : t("apiKeys.button.create")}
-              </Button>
-            </div>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(async (values) => {
+                  await createApiKey(values.keyName);
+                  setIsOpen(true);
+                  form.reset();
+                })}
+                className="flex gap-2 w-full"
+              >
+                <FormField
+                  name="keyName"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormControl>
+                        <Input
+                          placeholder={t("apiKeys.input.placeholder")}
+                          {...field}
+                          disabled={isCreating}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" isLoading={isCreating}>
+                  <Plus className="size-4" />
+                  {isCreating
+                    ? t("apiKeys.button.creating")
+                    : t("apiKeys.button.create")}
+                </Button>
+              </form>
+            </Form>
             {createdKey && (
               <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
                 <DialogContent>
