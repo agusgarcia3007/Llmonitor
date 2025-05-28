@@ -78,7 +78,7 @@ export const getEvents = async (c: Context) => {
       ? asc(sortFieldMap[sort as keyof typeof sortFieldMap])
       : desc(sortFieldMap[sort as keyof typeof sortFieldMap]);
 
-  const [events] = await Promise.all([
+  const [events, countResult] = await Promise.all([
     db
       .select()
       .from(llm_event)
@@ -91,12 +91,13 @@ export const getEvents = async (c: Context) => {
       .from(llm_event)
       .where(eq(llm_event.organization_id, organizationId)),
   ]);
+  const total = countResult[0]?.count ?? 0;
 
   return c.json({
     success: true,
     data: events,
     pagination: {
-      total: Number(count),
+      total: Number(total),
       limit,
       offset,
     },
