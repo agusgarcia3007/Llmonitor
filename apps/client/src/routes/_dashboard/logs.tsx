@@ -136,14 +136,22 @@ export function LogsPage() {
         accessorKey: "prompt",
         header: t("logsTable.prompt"),
         cell: ({ row }) => (
-          <PromptCell prompt={row.getValue("prompt") as string} />
+          <TableExpandableCell
+            value={row.getValue("prompt")}
+            type="text"
+            modalTitle={t("logsTable.prompt")}
+          />
         ),
       },
       {
         accessorKey: "completion",
         header: t("logsTable.completion"),
         cell: ({ row }) => (
-          <CompletionCell completion={row.getValue("completion") as string} />
+          <TableExpandableCell
+            value={row.getValue("completion")}
+            type="text"
+            modalTitle={t("logsTable.completion")}
+          />
         ),
       },
       {
@@ -212,7 +220,13 @@ export function LogsPage() {
       {
         accessorKey: "metadata",
         header: t("logsTable.metadata"),
-        cell: ({ row }) => <MetadataCell metadata={row.getValue("metadata")} />,
+        cell: ({ row }) => (
+          <TableExpandableCell
+            value={row.getValue("metadata")}
+            type="json"
+            modalTitle={t("logsTable.metadata")}
+          />
+        ),
       },
     ],
     [t]
@@ -249,70 +263,30 @@ export function LogsPage() {
   );
 }
 
-function PromptCell({ prompt }: { prompt: string }) {
-  const [open, setOpen] = useState(false);
-  const hasText = typeof prompt === "string" && prompt.trim().length > 0;
-  return (
-    <div className="flex items-center gap-2">
-      <div className="line-clamp-1 max-w-[200px]">{hasText ? prompt : "-"}</div>
-      {hasText && (
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
-              <Eye className="w-4 h-4" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogTitle>Prompt</DialogTitle>
-            <code className="whitespace-pre-wrap bg-muted rounded p-2 text-sm max-h-[60vh] overflow-auto">
-              {prompt}
-            </code>
-          </DialogContent>
-        </Dialog>
-      )}
-    </div>
-  );
-}
-
-function CompletionCell({ completion }: { completion: string }) {
-  const [open, setOpen] = useState(false);
-  const hasText =
-    typeof completion === "string" && completion.trim().length > 0;
-  return (
-    <div className="flex items-center gap-2">
-      <div className="line-clamp-1 max-w-[200px]">
-        {hasText ? completion : "-"}
-      </div>
-      {hasText && (
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
-              <Eye className="w-4 h-4" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogTitle>Respuesta</DialogTitle>
-            <code className="whitespace-pre-wrap bg-muted rounded p-2 text-sm max-h-[60vh] overflow-auto">
-              {completion}
-            </code>
-          </DialogContent>
-        </Dialog>
-      )}
-    </div>
-  );
-}
-
-function MetadataCell({ metadata }: { metadata: unknown }) {
+function TableExpandableCell({
+  value,
+  type,
+  modalTitle,
+}: {
+  value: unknown;
+  type: "text" | "json";
+  modalTitle: string;
+}) {
   const [open, setOpen] = useState(false);
   const isEmpty =
-    !metadata ||
-    (typeof metadata === "object" &&
-      Object.keys(metadata as object).length === 0);
+    value == null ||
+    (typeof value === "string" && value.trim().length === 0) ||
+    (type === "json" &&
+      typeof value === "object" &&
+      Object.keys(value as object).length === 0);
   if (isEmpty) {
     return <span>-</span>;
   }
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-2">
+      <div className="line-clamp-1 max-w-[200px]">
+        {type === "json" ? JSON.stringify(value) : (value as string)}
+      </div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
@@ -320,10 +294,16 @@ function MetadataCell({ metadata }: { metadata: unknown }) {
           </Button>
         </DialogTrigger>
         <DialogContent>
-          <DialogTitle>Metadata</DialogTitle>
-          <pre className="whitespace-pre-wrap text-xs max-h-[60vh] overflow-auto bg-muted rounded p-2">
-            {JSON.stringify(metadata, null, 2)}
-          </pre>
+          <DialogTitle>{modalTitle}</DialogTitle>
+          {type === "json" ? (
+            <pre className="whitespace-pre-wrap text-xs max-h-[60vh] overflow-auto bg-muted rounded p-2">
+              {JSON.stringify(value, null, 2)}
+            </pre>
+          ) : (
+            <code className="whitespace-pre-wrap bg-muted rounded p-2 text-sm max-h-[60vh] overflow-auto">
+              {value as string}
+            </code>
+          )}
         </DialogContent>
       </Dialog>
     </div>
