@@ -139,9 +139,31 @@
     "next": "Siguiente",
     "previous": "Anterior",
     "first": "Primera",
-    "last": "Última",
-    "show": "Mostrar",
-    "entries": "Entradas"
+    "last": "Últimos {{days}} días",
+    "day": "día"
+  },
+  "dashboard": {
+    "stats": {
+      "totalEvents": "Total de Eventos",
+      "totalCost": "Costo Total",
+      "avgLatency": "Latencia Promedio",
+      "errorRate": "Tasa de Error",
+      "active": "Activo",
+      "apiCallsTracked": "Llamadas API Registradas",
+      "tokenCosts": "Costos de Tokens",
+      "optimizeSavings": "Optimiza para aumentar ahorros",
+      "good": "Bueno",
+      "slow": "Lento",
+      "responseTime": "Tiempo de Respuesta",
+      "monitorExperience": "Monitorea para una experiencia de usuario consistente",
+      "healthy": "Saludable",
+      "high": "Alto",
+      "apiFailureRate": "Tasa de Fallos API",
+      "keepBelow": "Mantén por debajo del 5% para fiabilidad",
+      "topModels": "Modelos Principales por Uso",
+      "mostFrequent": "Modelos usados con mayor frecuencia",
+      "calls": "llamadas"
+    }
   },
   "landing": {
     "badge": "Plataforma de Observabilidad para IA",
@@ -155,7 +177,6 @@
     "features": {
       "badge": "Capacidades Potentes",
       "title": "Visibilidad completa de tus operaciones de IA",
-      "subtitle": "Herramientas completas para entender, optimizar y depurar tus interacciones con LLM",
       "analytics": {
         "title": "Analítica Avanzada de Prompts",
         "description": "Captura el contexto completo de cada solicitud LLM con métricas detalladas sobre entradas, salidas, latencia, códigos de estado y consumo de tokens."

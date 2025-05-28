@@ -8,6 +8,7 @@ import {
 } from "@tabler/icons-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -34,6 +35,7 @@ export const Route = createFileRoute("/_dashboard/dashboard")({
 });
 
 export function Dashboard() {
+  const { t } = useTranslation();
   const [days, setDays] = useState(30);
   const { data: stats, isLoading } = useDashboardStatsQuery(days);
 
@@ -47,7 +49,7 @@ export function Dashboard() {
   return (
     <div className="space-y-6 py-4 px-4 lg:px-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">LLM Analytics Dashboard</h1>
+        <h1 className="text-2xl font-bold">{t("landing.dashboard.title")}</h1>
         <Select
           value={days.toString()}
           onValueChange={(value) => setDays(parseInt(value))}
@@ -56,9 +58,9 @@ export function Dashboard() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="7">Last 7 days</SelectItem>
-            <SelectItem value="30">Last 30 days</SelectItem>
-            <SelectItem value="90">Last 90 days</SelectItem>
+            <SelectItem value="7">{t("common.last", { days: 7 })}</SelectItem>
+            <SelectItem value="30">{t("common.last", { days: 30 })}</SelectItem>
+            <SelectItem value="90">{t("common.last", { days: 90 })}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -68,7 +70,7 @@ export function Dashboard() {
           <CardHeader>
             <CardDescription className="flex items-center gap-2">
               <IconActivity className="h-4 w-4" />
-              Total Events
+              {t("dashboard.stats.totalEvents")}
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
               {isLoading ? (
@@ -80,15 +82,18 @@ export function Dashboard() {
             <CardAction>
               <Badge variant="outline">
                 <IconTrendingUp />
-                Active
+                {t("dashboard.stats.active")}
               </Badge>
             </CardAction>
           </CardHeader>
           <CardFooter className="flex-col items-start gap-1.5 text-sm">
             <div className="line-clamp-1 flex gap-2 font-medium">
-              LLM API calls tracked <IconActivity className="size-4" />
+              {t("dashboard.stats.apiCallsTracked")}{" "}
+              <IconActivity className="size-4" />
             </div>
-            <div className="text-muted-foreground">Last {days} days</div>
+            <div className="text-muted-foreground">
+              {t("common.last", { days })}
+            </div>
           </CardFooter>
         </Card>
 
@@ -96,7 +101,7 @@ export function Dashboard() {
           <CardHeader>
             <CardDescription className="flex items-center gap-2">
               <IconCurrency className="h-4 w-4" />
-              Total Cost
+              {t("dashboard.stats.totalCost")}
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
               {isLoading ? (
@@ -111,17 +116,20 @@ export function Dashboard() {
                 {isLoading ? (
                   <Skeleton className="h-4 w-12 ml-1" />
                 ) : (
-                  `$${(overview.totalCost / days).toFixed(2)}/day`
+                  `$${(overview.totalCost / days).toFixed(2)}/${t(
+                    "common.day"
+                  )}`
                 )}
               </Badge>
             </CardAction>
           </CardHeader>
           <CardFooter className="flex-col items-start gap-1.5 text-sm">
             <div className="line-clamp-1 flex gap-2 font-medium">
-              Token costs across providers <IconCurrency className="size-4" />
+              {t("dashboard.stats.tokenCosts")}{" "}
+              <IconCurrency className="size-4" />
             </div>
             <div className="text-muted-foreground">
-              Optimize for better savings
+              {t("dashboard.stats.optimizeSavings")}
             </div>
           </CardFooter>
         </Card>
@@ -130,7 +138,7 @@ export function Dashboard() {
           <CardHeader>
             <CardDescription className="flex items-center gap-2">
               <IconClock className="h-4 w-4" />
-              Avg Latency
+              {t("dashboard.stats.avgLatency")}
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
               {isLoading ? (
@@ -148,16 +156,19 @@ export function Dashboard() {
                 ) : (
                   <IconTrendingDown />
                 )}
-                {overview.avgLatency < 1000 ? "Good" : "Slow"}
+                {overview.avgLatency < 1000
+                  ? t("dashboard.stats.good")
+                  : t("dashboard.stats.slow")}
               </Badge>
             </CardAction>
           </CardHeader>
           <CardFooter className="flex-col items-start gap-1.5 text-sm">
             <div className="line-clamp-1 flex gap-2 font-medium">
-              Response time performance <IconClock className="size-4" />
+              {t("dashboard.stats.responseTime")}{" "}
+              <IconClock className="size-4" />
             </div>
             <div className="text-muted-foreground">
-              Monitor for user experience
+              {t("dashboard.stats.monitorExperience")}
             </div>
           </CardFooter>
         </Card>
@@ -166,7 +177,7 @@ export function Dashboard() {
           <CardHeader>
             <CardDescription className="flex items-center gap-2">
               <IconAlertTriangle className="h-4 w-4" />
-              Error Rate
+              {t("dashboard.stats.errorRate")}
             </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
               {isLoading ? (
@@ -186,16 +197,19 @@ export function Dashboard() {
                 ) : (
                   <IconTrendingDown />
                 )}
-                {(overview.errorRate ?? 0) < 5 ? "Healthy" : "High"}
+                {(overview.errorRate ?? 0) < 5
+                  ? t("dashboard.stats.healthy")
+                  : t("dashboard.stats.high")}
               </Badge>
             </CardAction>
           </CardHeader>
           <CardFooter className="flex-col items-start gap-1.5 text-sm">
             <div className="line-clamp-1 flex gap-2 font-medium">
-              API failure rate <IconAlertTriangle className="size-4" />
+              {t("dashboard.stats.apiFailureRate")}{" "}
+              <IconAlertTriangle className="size-4" />
             </div>
             <div className="text-muted-foreground">
-              Keep below 5% for reliability
+              {t("dashboard.stats.keepBelow")}
             </div>
           </CardFooter>
         </Card>
@@ -204,8 +218,10 @@ export function Dashboard() {
       {(stats?.topModels && stats.topModels.length > 0) || isLoading ? (
         <Card>
           <CardHeader>
-            <CardTitle>Top Models by Usage</CardTitle>
-            <CardDescription>Most frequently used LLM models</CardDescription>
+            <CardTitle>{t("dashboard.stats.topModels")}</CardTitle>
+            <CardDescription>
+              {t("dashboard.stats.mostFrequent")}
+            </CardDescription>
           </CardHeader>
           <div className="p-6 pt-0">
             <div className="space-y-4">
@@ -252,7 +268,7 @@ export function Dashboard() {
                           </div>
                           <div className="text-right">
                             <div className="font-medium">
-                              {model.count} calls
+                              {model.count} {t("dashboard.stats.calls")}
                             </div>
                             <div className="text-sm text-muted-foreground">
                               ${model.cost.toFixed(4)}

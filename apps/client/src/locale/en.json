@@ -139,9 +139,31 @@
     "next": "Next",
     "previous": "Previous",
     "first": "First",
-    "last": "Last",
-    "show": "Show",
-    "entries": "Entries"
+    "last": "Last {{days}} days",
+    "day": "day"
+  },
+  "dashboard": {
+    "stats": {
+      "totalEvents": "Total Events",
+      "totalCost": "Total Cost",
+      "avgLatency": "Avg Latency",
+      "errorRate": "Error Rate",
+      "active": "Active",
+      "apiCallsTracked": "API Calls Tracked",
+      "tokenCosts": "Token Costs",
+      "optimizeSavings": "Optimize to increase savings",
+      "good": "Good",
+      "slow": "Slow",
+      "responseTime": "Response Time",
+      "monitorExperience": "Monitor for consistent user experience",
+      "healthy": "Healthy",
+      "high": "High",
+      "apiFailureRate": "API Failure Rate",
+      "keepBelow": "Keep below 5% for reliability",
+      "topModels": "Top Models by Usage",
+      "mostFrequent": "Most frequently used models",
+      "calls": "calls"
+    }
   },
   "landing": {
     "badge": "AI Observability Platform",
