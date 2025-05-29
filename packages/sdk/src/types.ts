@@ -15,6 +15,7 @@ export interface LLMEvent {
   session_id?: string;
   request_id?: string;
   metadata?: any;
+  projectId?: string;
 }
 
 export interface LLMonitorConfig {
@@ -25,6 +26,7 @@ export interface LLMonitorConfig {
   sessionId?: string;
   versionTag?: string;
   metadata?: Record<string, any>;
+  projectId?: string;
 }
 
 export interface ProviderOptions {

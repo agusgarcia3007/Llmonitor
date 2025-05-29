@@ -7,7 +7,7 @@ export class LLMonitorClient {
 
   constructor(config: LLMonitorConfig) {
     this.config = {
-      baseURL: "https://api.llmonitor.io",
+      baseURL: "http://localhost:4444",
       debug: false,
       enabled: true,
       ...config,
@@ -31,6 +31,7 @@ export class LLMonitorClient {
         ...this.config.metadata,
         ...event.metadata,
       },
+      projectId: event.projectId || this.config.projectId,
     };
 
     this.queue.push(enrichedEvent);

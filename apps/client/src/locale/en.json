@@ -293,5 +293,22 @@
     "metadata": "Metadata",
     "selectApiKey": "Select API Key",
     "allApiKeys": "All API Keys"
+  },
+  "organization": {
+    "copy": "Copy",
+    "copied": "Copied",
+    "projects": "Projects",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add_project": "Add project",
+    "save": "Save",
+    "create": "Create",
+    "name": "Name",
+    "logo_url": "Logo URL",
+    "name_required": "Name is required",
+    "delete_project_title": "Delete project?",
+    "delete_project_desc": "This action will delete the project and everything associated. Are you sure?",
+    "cancel": "Cancel",
+    "copy_id": "Copy ID"
   }
 }

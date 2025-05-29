@@ -29,7 +29,8 @@ export const logEvent = async (c: Context) => {
   const data = LogLlmEventSchema.parse(body);
   const apiKey = c.req.header("x-api-key");
 
-  let organizationId = session.organizationId;
+  let organizationId =
+    body.projectId || body.organizationId || session.organizationId;
   if (!organizationId && session.userId) {
     const org = await getActiveOrganization(session.userId);
     organizationId = org?.id;
@@ -40,6 +41,27 @@ export const logEvent = async (c: Context) => {
       { success: false, message: "No organization found for this user" },
       400
     );
+  }
+
+  if (session.userId && organizationId) {
+    const member = await db
+      .select()
+      .from(require("@/db/schema").member)
+      .where(
+        and(
+          eq(require("@/db/schema").member.userId, session.userId),
+          eq(require("@/db/schema").member.organizationId, organizationId)
+        )
+      );
+    if (!member.length) {
+      return c.json(
+        {
+          success: false,
+          message: "User is not a member of this organization",
+        },
+        403
+      );
+    }
   }
 
   const calculatedCost =

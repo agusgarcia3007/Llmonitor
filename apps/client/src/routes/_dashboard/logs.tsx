@@ -275,22 +275,24 @@ export function LogsPage() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 gap-4">
         <h1 className="text-2xl font-bold">Logs</h1>
-        <div className="w-[200px]">
-          <Select value={selectedApiKey} onValueChange={setSelectedApiKey}>
-            <SelectTrigger>
-              <SelectValue placeholder={t("logsTable.selectApiKey")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("logsTable.allApiKeys")}</SelectItem>
-              {apiKeys?.data?.map((apiKey) => (
-                <SelectItem key={apiKey.id} value={apiKey.id}>
-                  {apiKey.name || t("apiKeys.noName")}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="flex gap-2 items-center">
+          <div className="w-[200px]">
+            <Select value={selectedApiKey} onValueChange={setSelectedApiKey}>
+              <SelectTrigger>
+                <SelectValue placeholder={t("logsTable.selectApiKey")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("logsTable.allApiKeys")}</SelectItem>
+                {apiKeys?.data?.map((apiKey) => (
+                  <SelectItem key={apiKey.id} value={apiKey.id}>
+                    {apiKey.name || t("apiKeys.noName")}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
       <DataTable

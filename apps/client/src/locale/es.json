@@ -293,5 +293,22 @@
     "metadata": "Metadata",
     "selectApiKey": "Seleccionar API Key",
     "allApiKeys": "Todas las API Keys"
+  },
+  "organization": {
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "projects": "Proyectos",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "add_project": "Agregar proyecto",
+    "save": "Guardar",
+    "create": "Crear",
+    "name": "Nombre",
+    "logo_url": "Logo URL",
+    "name_required": "Nombre es requerido",
+    "delete_project_title": "¿Eliminar proyecto?",
+    "delete_project_desc": "Esta acción eliminará el proyecto y todo lo asociado. ¿Estás seguro?",
+    "cancel": "Cancelar",
+    "copy_id": "Copiar ID"
   }
 }

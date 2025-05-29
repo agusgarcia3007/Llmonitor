@@ -12,6 +12,7 @@ import OpenAI from "openai";
 
 export interface LLMonitorConfig extends BaseLLMonitorConfig {
   baseURL?: string;
+  applicationId?: string;
 }
 
 export class LLMonitor {
