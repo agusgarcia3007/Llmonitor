@@ -7,7 +7,7 @@ export class LLMonitorClient {
 
   constructor(config: LLMonitorConfig) {
     this.config = {
-      baseURL: "http://localhost:4444",
+      baseURL: "https://api.llmonitor.io",
       debug: false,
       enabled: true,
       ...config,
