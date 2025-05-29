@@ -11,12 +11,14 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@better-auth/stripe": "^1.2.8",
     "@neondatabase/serverless": "^1.0.0",
     "better-auth": "^1.2.8",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.43.1",
     "hono": "^4.7.10",
     "resend": "^4.5.1",
+    "stripe": "^18.2.0",
     "zod": "^3.24.4"
   },
   "devDependencies": {

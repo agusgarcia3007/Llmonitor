@@ -50,6 +50,13 @@
       "when": 1748402187355,
       "tag": "0006_thin_glorian",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1748483695921,
+      "tag": "0007_charming_boomerang",
+      "breakpoints": true
     }
   ]
 }

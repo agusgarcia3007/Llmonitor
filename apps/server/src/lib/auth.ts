@@ -1,12 +1,18 @@
 import { db } from "@/db";
 import * as schema from "@/db/schema";
+import { stripe } from "@better-auth/stripe";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, apiKey, openAPI, organization } from "better-auth/plugins";
 import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
+import Stripe from "stripe";
 import { TRUSTED_ORIGINS } from "./constants";
 import { getActiveOrganization } from "./utils";
+
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2025-05-28.basil",
+});
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -31,7 +37,17 @@ export const auth = betterAuth({
     },
   },
 
-  plugins: [organization(), admin(), apiKey(), openAPI()],
+  plugins: [
+    organization(),
+    admin(),
+    apiKey(),
+    openAPI(),
+    stripe({
+      stripeClient,
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
+      createCustomerOnSignUp: true,
+    }),
+  ],
 
   databaseHooks: {
     session: {
