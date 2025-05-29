@@ -38,11 +38,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -137,29 +132,20 @@ export function OrganizationSwitcher() {
               </Avatar>
               <span className="flex flex-col font-semibold">
                 {activeOrganization.name}
-                <Tooltip>
-                  <TooltipTrigger
-                    asChild
-                    onPointerDown={(e) => e.stopPropagation()}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleCopyId(activeOrganization.id);
-                    }}
-                  >
-                    <div
-                      className="text-[10px] text-muted-foreground font-mono truncate cursor-pointer hover:underline"
-                      tabIndex={0}
-                      title={activeOrganization.id}
-                      aria-label={t("organization.copy_id")}
-                    >
-                      {activeOrganization.id}
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">
-                    {t("organization.copy")}
-                  </TooltipContent>
-                </Tooltip>
+                <div
+                  className="text-[10px] text-muted-foreground font-mono truncate cursor-pointer hover:underline"
+                  tabIndex={0}
+                  title={activeOrganization.id}
+                  aria-label={t("organization.copy_id")}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleCopyId(activeOrganization.id);
+                  }}
+                >
+                  {activeOrganization.id}
+                </div>
               </span>
               <ChevronDown className="w-4 h-4" />
             </SidebarMenuButton>
@@ -191,29 +177,20 @@ export function OrganizationSwitcher() {
                   </Avatar>
                   <div className="flex flex-col min-w-0">
                     <span className="truncate">{org.name}</span>
-                    <Tooltip>
-                      <TooltipTrigger
-                        asChild
-                        onPointerDown={(e) => e.stopPropagation()}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleCopyId(org.id);
-                        }}
-                      >
-                        <span
-                          className="text-[10px] text-muted-foreground font-mono truncate cursor-pointer hover:underline"
-                          tabIndex={0}
-                          title={org.id}
-                          aria-label={t("organization.copy_id")}
-                        >
-                          {org.id}
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top">
-                        {t("organization.copy")}
-                      </TooltipContent>
-                    </Tooltip>
+                    <span
+                      className="text-[10px] text-muted-foreground font-mono truncate cursor-pointer hover:underline"
+                      tabIndex={0}
+                      title={org.id}
+                      aria-label={t("organization.copy_id")}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleCopyId(org.id);
+                      }}
+                    >
+                      {org.id}
+                    </span>
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenu>
