@@ -309,6 +309,9 @@
     "delete_project_title": "¿Eliminar proyecto?",
     "delete_project_desc": "Esta acción eliminará el proyecto y todo lo asociado. ¿Estás seguro?",
     "cancel": "Cancelar",
-    "copy_id": "Copiar ID"
+    "copy_id": "Copiar ID",
+    "empty_title": "Aún no tienes proyectos",
+    "empty_description": "Crea tu primer proyecto para comenzar.",
+    "empty_action": "Crear proyecto"
   }
 }

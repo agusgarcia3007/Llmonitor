@@ -309,6 +309,9 @@
     "delete_project_title": "Delete project?",
     "delete_project_desc": "This action will delete the project and everything associated. Are you sure?",
     "cancel": "Cancel",
-    "copy_id": "Copy ID"
+    "copy_id": "Copy ID",
+    "empty_title": "No projects yet",
+    "empty_description": "Create your first project to get started.",
+    "empty_action": "Create project"
   }
 }
