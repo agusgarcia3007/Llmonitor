@@ -224,7 +224,7 @@ export function OrganizationSwitcher() {
                 <Plus className="size-4" />
               </div>
               <div className="font-medium text-muted-foreground">
-                {t("add_project")}
+                {t("organization.add_project")}
               </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
