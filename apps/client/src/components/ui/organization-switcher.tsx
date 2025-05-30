@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,15 +7,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -26,20 +15,12 @@ import { authClient } from "@/lib/auth-client";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, Plus, MoreVertical } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogAction,
-  AlertDialogCancel,
-} from "@/components/ui/alert-dialog";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { CreateProjectDialog } from "@/components/project/create-project-dialog";
+import { EditProjectDialog } from "@/components/project/edit-project-dialog";
+import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 
 type Organization = { id: string; name: string; logo?: string | null };
 
@@ -49,55 +30,20 @@ export function OrganizationSwitcher() {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
-  const [modalOpen, setModalOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editOrg, setEditOrg] = useState<Organization | null>(null);
   const [deleteOrg, setDeleteOrg] = useState<Organization | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const form = useForm<{ name: string; logo: string }>({
-    defaultValues: { name: "", logo: "" },
-  });
-
-  const openCreate = () => {
-    setEditOrg(null);
-    form.reset({ name: "", logo: "" });
-    setModalOpen(true);
-  };
 
   const openEdit = (org: Organization) => {
     setEditOrg(org);
-    form.reset({ name: org.name, logo: org.logo || "" });
-    setModalOpen(true);
+    setEditModalOpen(true);
   };
 
-  const handleSave = async (values: { name: string; logo: string }) => {
-    setLoading(true);
-    try {
-      if (editOrg) {
-        await authClient.organization.update({
-          data: { name: values.name, logo: values.logo },
-          organizationId: editOrg.id,
-        });
-      } else {
-        await authClient.organization.create({
-          name: values.name,
-          slug: values.name.toLowerCase().replace(/\s+/g, "-"),
-          logo: values.logo,
-        });
-      }
-      queryClient.invalidateQueries({ queryKey: ["llm-events"], exact: false });
-      queryClient.invalidateQueries({
-        queryKey: ["dashboard-stats"],
-        exact: false,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["organizations"],
-        exact: false,
-      });
-      setModalOpen(false);
-    } finally {
-      setLoading(false);
-    }
+  const openDelete = (org: Organization) => {
+    setDeleteOrg(org);
+    setDeleteModalOpen(true);
   };
 
   const handleOrgChange = async (org: { id: string }) => {
@@ -169,7 +115,10 @@ export function OrganizationSwitcher() {
             sideOffset={4}
           >
             {isEmpty ? (
-              <DropdownMenuItem className="gap-2 p-2" onClick={openCreate}>
+              <DropdownMenuItem
+                className="gap-2 p-2"
+                onClick={() => setCreateModalOpen(true)}
+              >
                 <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                   <Plus className="size-4" />
                 </div>
@@ -231,7 +180,7 @@ export function OrganizationSwitcher() {
                           Editar
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => setDeleteOrg(org)}
+                          onClick={() => openDelete(org)}
                           className="text-destructive"
                         >
                           Eliminar
@@ -241,7 +190,10 @@ export function OrganizationSwitcher() {
                   </div>
                 ))}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="gap-2 p-2" onClick={openCreate}>
+                <DropdownMenuItem
+                  className="gap-2 p-2"
+                  onClick={() => setCreateModalOpen(true)}
+                >
                   <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                     <Plus className="size-4" />
                   </div>
@@ -254,111 +206,26 @@ export function OrganizationSwitcher() {
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
-      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent>
-          <DialogTitle>
-            {editOrg ? t("organization.edit") : t("organization.create")}
-          </DialogTitle>
-          <Form {...form}>
-            <form
-              className="space-y-4"
-              onSubmit={form.handleSubmit(handleSave)}
-            >
-              <FormField
-                control={form.control}
-                name="name"
-                rules={{ required: t("organization.name_required") }}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("organization.name")}</FormLabel>
-                    <FormControl>
-                      <Input {...field} autoFocus />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="logo"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("organization.logo_url")}</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="https://..." />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setModalOpen(false)}
-                >
-                  {t("organization.cancel")}
-                </Button>
-                <Button type="submit" disabled={loading}>
-                  {editOrg ? t("organization.save") : t("organization.create")}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-      <AlertDialog
-        open={!!deleteOrg}
+
+      <CreateProjectDialog
+        open={createModalOpen}
+        onOpenChange={setCreateModalOpen}
+      />
+
+      <EditProjectDialog
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
+        organization={editOrg}
+      />
+
+      <DeleteProjectDialog
+        open={deleteModalOpen}
         onOpenChange={(open) => {
+          setDeleteModalOpen(open);
           if (!open) setDeleteOrg(null);
         }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {t("organization.delete_project_title")}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("organization.delete_project_desc")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteOrg(null)}>
-              {t("organization.cancel")}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={async () => {
-                if (deleteOrg) {
-                  setLoading(true);
-                  try {
-                    await authClient.organization.delete({
-                      organizationId: deleteOrg.id,
-                    });
-                    queryClient.invalidateQueries({
-                      queryKey: ["llm-events"],
-                      exact: false,
-                    });
-                    queryClient.invalidateQueries({
-                      queryKey: ["dashboard-stats"],
-                      exact: false,
-                    });
-                    queryClient.invalidateQueries({
-                      queryKey: ["organizations"],
-                      exact: false,
-                    });
-                  } finally {
-                    setLoading(false);
-                    setDeleteOrg(null);
-                  }
-                }
-              }}
-              className="bg-destructive text-white hover:bg-destructive/90"
-            >
-              Eliminar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        organization={deleteOrg}
+      />
     </SidebarMenu>
   );
 }

@@ -6,6 +6,7 @@ import {
   IconLogout,
   IconNotification,
   IconUserCircle,
+  IconLanguage,
 } from "@tabler/icons-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,6 +17,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -26,6 +30,7 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 export function NavUser({
   user,
@@ -38,6 +43,7 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   const handleLogout = async () => {
     await authClient.signOut({
@@ -49,6 +55,10 @@ export function NavUser({
         },
       },
     });
+  };
+
+  const handleLanguageChange = (language: string) => {
+    i18n.changeLanguage(language);
   };
 
   return (
@@ -101,21 +111,41 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <IconUserCircle />
-                Account
+                {t("common.account")}
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <IconCreditCard />
-                Billing
+                {t("common.billing")}
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <IconNotification />
-                Notifications
+                {t("common.notifications")}
               </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <IconLanguage />
+                  {t("common.language")}
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem
+                    onClick={() => handleLanguageChange("en")}
+                    className={i18n.language === "en" ? "bg-accent" : ""}
+                  >
+                    English
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleLanguageChange("es")}
+                    className={i18n.language === "es" ? "bg-accent" : ""}
+                  >
+                    Español
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <IconLogout />
-              Log out
+              {t("common.logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -4,6 +4,7 @@ import {
 } from "@/components/ui/advanced-filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
 import {
   Dialog,
@@ -289,28 +290,38 @@ export function LogsPage() {
   );
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-4 gap-4">
-        <h1 className="text-2xl font-bold">Logs</h1>
+    <div className="space-y-6 px-4 lg:px-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold">{t("logs.title", "Logs")}</h1>
+          <p className="text-muted-foreground">
+            {t("logs.description", "View and analyze your LLM events and logs")}
+          </p>
+        </div>
       </div>
-      <DataTable
-        columns={columns}
-        data={tableData}
-        meta={meta}
-        isLoading={isLoading}
-        onPaginationChange={(page, pageSize) =>
-          setPagination({ page, pageSize })
-        }
-        onSortingChange={setSorting}
-        onFiltersChange={handleFiltersChange}
-        filtersConfig={filtersConfig}
-        filtersButton={
-          <Button variant="outline" size="sm">
-            <ListFilter className="w-4 h-4" />
-            Filters
-          </Button>
-        }
-      />
+
+      <Card>
+        <CardContent>
+          <DataTable
+            columns={columns}
+            data={tableData}
+            meta={meta}
+            isLoading={isLoading}
+            onPaginationChange={(page, pageSize) =>
+              setPagination({ page, pageSize })
+            }
+            onSortingChange={setSorting}
+            onFiltersChange={handleFiltersChange}
+            filtersConfig={filtersConfig}
+            filtersButton={
+              <Button variant="outline" size="sm">
+                <ListFilter className="w-4 h-4" />
+                Filters
+              </Button>
+            }
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }
