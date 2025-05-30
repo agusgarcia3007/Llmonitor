@@ -20,19 +20,17 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   type ColumnDef,
-  type SortingState,
   type ColumnFiltersState,
+  type SortingState,
 } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
-import { ArrowUpDown, Eye, FilterIcon } from "lucide-react";
+import { ArrowUpDown, Eye, ListFilter } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_dashboard/logs")({
   component: LogsPage,
 });
-
-type FiltersState = Record<string, unknown>;
 
 export function LogsPage() {
   const { t } = useTranslation();
@@ -44,14 +42,13 @@ export function LogsPage() {
   const queryClient = useQueryClient();
 
   const params = useMemo<GetEventsParams>(() => {
-    const filters: FiltersState = { ...appliedFilters };
     return {
-      ...filters,
       limit: pagination.pageSize,
       offset: (pagination.page - 1) * pagination.pageSize,
       sort: sorting[0]?.id,
       order: sorting[0]?.desc ? "desc" : "asc",
-    };
+      ...appliedFilters,
+    } as GetEventsParams;
   }, [pagination, sorting, appliedFilters]);
 
   const { data, isLoading } = useLLMEventsQuery(params);
@@ -191,7 +188,11 @@ export function LogsPage() {
             variant: "outline",
           };
 
-          return <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>;
+          return (
+            <Badge variant={statusInfo.variant}>
+              {status} {statusInfo.label}
+            </Badge>
+          );
         },
       },
       {
@@ -312,7 +313,7 @@ export function LogsPage() {
         filtersConfig={filtersConfig}
         filtersButton={
           <Button variant="outline" size="sm">
-            <FilterIcon className="w-4 h-4 mr-2" />
+            <ListFilter className="w-4 h-4" />
             Filters
           </Button>
         }

@@ -39,10 +39,9 @@ export enum FieldType {
 }
 
 interface AdvancedFiltersProps {
-  filters: Record<string, unknown>;
+  appliedFilters: Record<string, unknown>;
   onChange: (filters: Record<string, unknown>) => void;
   fields: AdvancedFilterField[];
-  onApply?: () => void;
 }
 
 const createFormSchema = (fields: AdvancedFilterField[]) => {
@@ -163,11 +162,77 @@ const cleanFieldValue = (
   }
 };
 
+const transformFiltersForBackend = (
+  filters: Record<string, unknown>,
+  fields: AdvancedFilterField[]
+): Record<string, unknown> => {
+  const backendFilters: Record<string, unknown> = {};
+
+  Object.entries(filters).forEach(([key, value]) => {
+    const field = fields.find((f) => f.id === key);
+    if (!field || value === undefined || value === null) return;
+
+    switch (field.type) {
+      case FieldType.TEXT:
+      case FieldType.NUMBER:
+        if (value && String(value).trim() !== "") {
+          backendFilters[key] = value;
+        }
+        break;
+
+      case FieldType.SELECT: {
+        const selectValue = value as Option[];
+        if (selectValue && selectValue.length > 0) {
+          backendFilters[key] = selectValue.map((option) => option.value);
+        }
+        break;
+      }
+
+      case FieldType.DATE_RANGE: {
+        const dateRange = value as DateRange;
+        if (dateRange?.from) {
+          backendFilters[`${key}From`] = dateRange.from.toISOString();
+        }
+        if (dateRange?.to) {
+          backendFilters[`${key}To`] = dateRange.to.toISOString();
+        }
+        break;
+      }
+
+      case FieldType.SLIDER: {
+        const sliderValue = value as number[];
+        if (sliderValue && sliderValue.length === 2) {
+          if (key === "latency_ms") {
+            if (sliderValue[0] !== field.min) {
+              backendFilters["latencyMin"] = sliderValue[0];
+            }
+            if (sliderValue[1] !== field.max) {
+              backendFilters["latencyMax"] = sliderValue[1];
+            }
+          } else if (key === "cost_usd") {
+            if (sliderValue[0] !== field.min) {
+              backendFilters["costMin"] = sliderValue[0];
+            }
+            if (sliderValue[1] !== field.max) {
+              backendFilters["costMax"] = sliderValue[1];
+            }
+          } else {
+            backendFilters[`${key}Min`] = sliderValue[0];
+            backendFilters[`${key}Max`] = sliderValue[1];
+          }
+        }
+        break;
+      }
+    }
+  });
+
+  return backendFilters;
+};
+
 export function AdvancedFilters({
-  filters,
+  appliedFilters,
   onChange,
   fields,
-  onApply,
 }: AdvancedFiltersProps) {
   const { t } = useTranslation();
   const schema = React.useMemo(() => createFormSchema(fields), [fields]);
@@ -175,21 +240,26 @@ export function AdvancedFilters({
     undefined
   );
 
-  // Estado para controlar los popovers de fecha
+  const [pendingFilters, setPendingFilters] = React.useState<
+    Record<string, unknown>
+  >({});
+
   const [datePopoverStates, setDatePopoverStates] = React.useState<
     Record<string, boolean>
   >({});
 
   const form = useForm({
     resolver: zodResolver(schema),
-    defaultValues: getDefaultValues(fields, filters),
+    defaultValues: getDefaultValues(fields, appliedFilters),
   });
 
   React.useEffect(() => {
-    form.reset(getDefaultValues(fields, filters));
-  }, [filters, fields, form]);
+    const newDefaults = getDefaultValues(fields, appliedFilters);
+    form.reset(newDefaults);
+    setPendingFilters({});
+  }, [appliedFilters, fields, form]);
 
-  const handleFormChange = React.useCallback(
+  const handleInternalChange = React.useCallback(
     (values: Record<string, unknown>) => {
       const cleanedValues: Record<string, unknown> = {};
 
@@ -203,9 +273,9 @@ export function AdvancedFilters({
         }
       });
 
-      onChange(cleanedValues);
+      setPendingFilters(cleanedValues);
     },
-    [fields, onChange]
+    [fields]
   );
 
   const handleDebouncedChange = React.useCallback(
@@ -215,10 +285,10 @@ export function AdvancedFilters({
       }
 
       debounceTimeoutRef.current = setTimeout(() => {
-        handleFormChange({ ...form.getValues(), [fieldId]: value });
+        handleInternalChange({ ...form.getValues(), [fieldId]: value });
       }, 300);
     },
-    [form, handleFormChange]
+    [form, handleInternalChange]
   );
 
   const setDatePopoverOpen = React.useCallback(
@@ -227,6 +297,17 @@ export function AdvancedFilters({
     },
     []
   );
+
+  const handleApply = React.useCallback(() => {
+    const backendFilters = transformFiltersForBackend(pendingFilters, fields);
+    onChange(backendFilters);
+  }, [pendingFilters, fields, onChange]);
+
+  const handleClear = React.useCallback(() => {
+    form.reset(getDefaultValues(fields, {}));
+    setPendingFilters({});
+    onChange({});
+  }, [form, fields, onChange]);
 
   const renderField = (field: AdvancedFilterField) => {
     switch (field.type) {
@@ -316,7 +397,7 @@ export function AdvancedFilters({
                     value={formField.value || []}
                     onChange={(selected) => {
                       formField.onChange(selected);
-                      handleFormChange({
+                      handleInternalChange({
                         ...form.getValues(),
                         [field.id]: selected,
                       });
@@ -389,14 +470,10 @@ export function AdvancedFilters({
                       selected={formField.value}
                       onSelect={(range) => {
                         formField.onChange(range);
-                        handleFormChange({
+                        handleInternalChange({
                           ...form.getValues(),
                           [field.id]: range,
                         });
-                        // Only close if both dates are selected
-                        if (range?.from && range?.to) {
-                          setDatePopoverOpen(field.id, false);
-                        }
                       }}
                       numberOfMonths={2}
                     />
@@ -431,7 +508,7 @@ export function AdvancedFilters({
                     }
                     onValueChange={(value) => {
                       formField.onChange(value);
-                      handleFormChange({
+                      handleInternalChange({
                         ...form.getValues(),
                         [field.id]: value,
                       });
@@ -457,13 +534,14 @@ export function AdvancedFilters({
         <div className="space-y-4">
           {fields.map((field) => renderField(field))}
         </div>
-        {onApply && (
-          <div className="flex justify-end pt-2">
-            <Button type="button" variant="default" onClick={onApply}>
-              {t("dataTableFilter.advancedFilters.apply")}
-            </Button>
-          </div>
-        )}
+        <div className="flex justify-between pt-2">
+          <Button type="button" variant="outline" onClick={handleClear}>
+            {t("dataTableFilter.clear")}
+          </Button>
+          <Button type="button" variant="default" onClick={handleApply}>
+            {t("dataTableFilter.advancedFilters.apply")}
+          </Button>
+        </div>
       </form>
     </Form>
   );

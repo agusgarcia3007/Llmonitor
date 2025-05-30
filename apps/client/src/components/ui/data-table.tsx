@@ -95,7 +95,7 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [pendingFilters, setPendingFilters] = React.useState<
+  const [appliedFilters, setAppliedFilters] = React.useState<
     Record<string, unknown>
   >({});
 
@@ -132,11 +132,15 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const handleApplyFilters = () => {
-    if (onFiltersChange) {
-      onFiltersChange(columnFilters, pendingFilters);
-    }
-  };
+  const handleFiltersChange = React.useCallback(
+    (filters: Record<string, unknown>) => {
+      setAppliedFilters(filters);
+      if (onFiltersChange) {
+        onFiltersChange(columnFilters, filters);
+      }
+    },
+    [columnFilters, onFiltersChange]
+  );
 
   // Loading state UI
   if (isLoading) {
@@ -187,12 +191,14 @@ export function DataTable<TData, TValue>({
         <div className="mb-2 flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>{filtersButton}</DropdownMenuTrigger>
-            <DropdownMenuContent className="p-4 w-[320px]">
+            <DropdownMenuContent
+              className="p-4 w-[320px]"
+              onCloseAutoFocus={(e) => e.preventDefault()}
+            >
               <AdvancedFilters
-                filters={pendingFilters}
-                onChange={setPendingFilters}
+                appliedFilters={appliedFilters}
+                onChange={handleFiltersChange}
                 fields={filtersConfig}
-                onApply={handleApplyFilters}
               />
             </DropdownMenuContent>
           </DropdownMenu>
