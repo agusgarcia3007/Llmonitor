@@ -41,7 +41,8 @@ export type LLMProvider =
   | "anthropic"
   | "google"
   | "cohere"
-  | "custom";
+  | "custom"
+  | "deepseek";
 
 export interface TokenUsage {
   prompt_tokens?: number;

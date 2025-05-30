@@ -1,5 +1,5 @@
 {
-  "name": "@llmonitor/sdk",
+  "name": "llmonitor",
   "version": "0.1.2",
   "description": "Universal LLM observability & cost intelligence - Monitor OpenAI, Anthropic, Google AI, Cohere and more",
   "main": "./dist/index.js",
@@ -14,8 +14,7 @@
   },
   "files": [
     "dist",
-    "README.md",
-    "QUICKSTART.md"
+    "README.md"
   ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",

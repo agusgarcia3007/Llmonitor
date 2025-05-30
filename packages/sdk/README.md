@@ -1,4 +1,4 @@
-# @llmonitor/sdk
+# llmonitor
 
 **Model-agnostic LLM Observability & Cost Intelligence**
 
@@ -7,11 +7,11 @@ Monitor, track, and optimize your LLM usage across any provider with just 3 line
 ## 🚀 Quick Start
 
 ```bash
-npm install @llmonitor/sdk
+npm install llmonitor
 ```
 
 ```typescript
-import { LLMonitor } from "@llmonitor/sdk";
+import { LLMonitor } from "llmonitor";
 import OpenAI from "openai";
 
 // 1. Initialize LLMonitor
@@ -54,19 +54,20 @@ That's it! Every request is now automatically tracked with:
 
 ## 🎯 Supported Providers
 
-| Provider      | Support | Auto-Pricing | Models                 |
-| ------------- | ------- | ------------ | ---------------------- |
-| **OpenAI**    | ✅ Full | ✅           | GPT-4, GPT-3.5, GPT-4o |
-| **Anthropic** | ✅ Full | ✅           | Claude-3, Claude-3.5   |
-| **Google AI** | ✅ Full | ✅           | Gemini Pro, Flash      |
-| **Cohere**    | ✅ Full | ✅           | Command, Command-R     |
+| Provider      | Support | Auto-Pricing | Models                           |
+| ------------- | ------- | ------------ | -------------------------------- |
+| **OpenAI**    | ✅ Full | ✅           | GPT-4, GPT-3.5, GPT-4o           |
+| **Anthropic** | ✅ Full | ✅           | Claude-3, Claude-3.5             |
+| **Google AI** | ✅ Full | ✅           | Gemini Pro, Flash                |
+| **Cohere**    | ✅ Full | ✅           | Command, Command-R               |
+| **DeepSeek**  | ✅ Full | ✅           | deepseek-chat, deepseek-reasoner |
 
 ## 📖 Provider Examples
 
 ### OpenAI
 
 ```typescript
-import { LLMonitor } from "@llmonitor/sdk";
+import { LLMonitor } from "llmonitor";
 import OpenAI from "openai";
 
 const monitor = new LLMonitor({ apiKey: "llm_..." });
@@ -81,7 +82,7 @@ const response = await openai.chat.completions.create({
 ### Anthropic
 
 ```typescript
-import { LLMonitor } from "@llmonitor/sdk";
+import { LLMonitor } from "llmonitor";
 import Anthropic from "@anthropic-ai/sdk";
 
 const monitor = new LLMonitor({ apiKey: "llm_..." });
@@ -97,7 +98,7 @@ const response = await anthropic.messages.create({
 ### Google AI
 
 ```typescript
-import { LLMonitor } from "@llmonitor/sdk";
+import { LLMonitor } from "llmonitor";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const monitor = new LLMonitor({ apiKey: "llm_..." });
@@ -105,6 +106,61 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const model = monitor.google(genAI.getGenerativeModel({ model: "gemini-pro" }));
 
 const result = await model.generateContent("Explain machine learning");
+```
+
+### DeepSeek
+
+```typescript
+import { LLMonitor } from "llmonitor";
+import DeepSeek from "deepseek-openai";
+
+const monitor = new LLMonitor({ apiKey: "llm_..." });
+const deepseek = monitor.deepseek(
+  new DeepSeek({ apiKey: "your-deepseek-key" })
+);
+
+const response = await deepseek.chat.completions.create({
+  model: "deepseek-chat",
+  messages: [{ role: "user", content: "What is DeepSeek?" }],
+});
+```
+
+## 🧑‍💻 CommonJS (require) usage
+
+Si usas Node.js clásico o una API vieja:
+
+```js
+const { LLMonitor } = require("llmonitor");
+const OpenAI = require("openai");
+
+const monitor = new LLMonitor({ apiKey: "llm_..." });
+const openai = monitor.openai(new OpenAI());
+
+openai.chat.completions
+  .create({
+    model: "gpt-4",
+    messages: [{ role: "user", content: "Hello!" }],
+  })
+  .then(console.log);
+```
+
+También funciona con DeepSeek:
+
+```js
+const { LLMonitor } = require("llmonitor");
+const DeepSeek = require("deepseek-openai");
+
+const monitor = new LLMonitor({ apiKey: "llm_..." });
+const deepseek = monitor.deepseek(
+  new DeepSeek({ apiKey: "your-deepseek-key" })
+);
+
+deepseek.chat.completions
+  .create({
+    model: "deepseek-chat",
+    messages: [{ role: "user", content: "What is DeepSeek?" }],
+  })
+  .then(console.log);
 ```
 
 ## ⚙️ Configuration

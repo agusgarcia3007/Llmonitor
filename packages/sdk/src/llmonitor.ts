@@ -1,14 +1,17 @@
+import OpenAI from "openai";
 import { LLMonitorClient } from "./client";
-import { OpenAIWrapper } from "./providers/openai";
-import { AnthropicWrapper } from "./providers/anthropic";
-import { GoogleWrapper } from "./providers/google";
-import { CohereWrapper } from "./providers/cohere";
 import {
   createExpressMiddleware,
   ExpressMiddlewareOptions,
 } from "./middleware/express";
+import {
+  AnthropicWrapper,
+  CohereWrapper,
+  DeepSeekWrapper,
+  GoogleWrapper,
+  OpenAIWrapper,
+} from "./providers";
 import { LLMonitorConfig as BaseLLMonitorConfig, LLMEvent } from "./types";
-import OpenAI from "openai";
 
 export interface LLMonitorConfig extends BaseLLMonitorConfig {
   baseURL?: string;
@@ -49,6 +52,10 @@ export class LLMonitor {
 
   cohere(cohereClient: any): CohereWrapper {
     return new CohereWrapper(cohereClient, this.client);
+  }
+
+  deepseek(deepseekClient: any): DeepSeekWrapper {
+    return new DeepSeekWrapper(deepseekClient, this.client);
   }
 
   express(options: Omit<ExpressMiddlewareOptions, keyof LLMonitorConfig> = {}) {

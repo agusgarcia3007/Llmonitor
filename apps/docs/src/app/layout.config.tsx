@@ -1,4 +1,4 @@
-import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
+import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 
 /**
  * Shared layout configurations
@@ -11,29 +11,18 @@ export const baseOptions: BaseLayoutProps = {
   nav: {
     title: (
       <>
-        <span className="size-6 rounded-full bg-gradient-to-br from-fd-primary to-fd-secondary" />
-        LLMonitor
+        <svg
+          width="24"
+          height="24"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="Logo"
+        >
+          <circle cx={12} cy={12} r={12} fill="currentColor" />
+        </svg>
+        My App
       </>
     ),
-    url: "/",
   },
   // see https://fumadocs.dev/docs/ui/navigation/links
-  links: [
-    {
-      text: "Documentation",
-      url: "/docs",
-      active: "nested-url",
-    },
-    {
-      text: "Dashboard",
-      url: "https://llmonitor.ai",
-      external: true,
-    },
-    {
-      text: "GitHub",
-      url: "https://github.com/agusgarcia3007/Llmonitor",
-      external: true,
-    },
-  ],
-  githubUrl: "https://github.com/agusgarcia3007/Llmonitor",
+  links: [],
 };
