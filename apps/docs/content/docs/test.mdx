@@ -1,17 +1,57 @@
 ---
-title: Components
-description: Components
+title: Integration Examples
+description: How @client, @server, and @sdk connect in LLMonitor
 ---
 
-## Code Block
+# Integration Examples
 
-```js
-console.log('Hello World');
+Below are practical examples showing how the main packages of the app connect and interact.
+
+## 1. Logging events from the backend (@server)
+
+You can use the SDK in your backend to log custom events:
+
+```ts
+import { LLMonitor } from "@llmonitor/sdk";
+
+const monitor = new LLMonitor({ apiKey: process.env.LLMONITOR_API_KEY });
+
+export async function logUserLogin(userId: string) {
+  await monitor.logEvent({
+    type: "user_login",
+    userId,
+    timestamp: Date.now(),
+  });
+}
 ```
 
-## Cards
+## 2. Consuming the API from the frontend (@client)
 
-<Cards>
-  <Card title="Learn more about Next.js" href="https://nextjs.org/docs" />
-  <Card title="Learn more about Fumadocs" href="https://fumadocs.vercel.app" />
-</Cards>
+The frontend can fetch metrics or data from your backend:
+
+```ts
+import axios from "axios";
+
+async function getUserMetrics(userId: string) {
+  const res = await axios.get(`/api/metrics?userId=${userId}`);
+  return res.data;
+}
+```
+
+## 3. Handling webhooks in @server
+
+You can receive events from LLMonitor Cloud using webhooks:
+
+```ts
+import express from "express";
+const app = express();
+
+app.post("/webhook/llmonitor", (req, res) => {
+  // Process event received from LLMonitor Cloud
+  res.status(200).send("OK");
+});
+```
+
+---
+
+See the reference for each package for more details and advanced options.
