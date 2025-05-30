@@ -1,6 +1,6 @@
 {
   "name": "@llmonitor/sdk",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Universal LLM observability & cost intelligence - Monitor OpenAI, Anthropic, Google AI, Cohere and more",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -14,14 +14,15 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "postinstall.js"
   ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build",
-    "release": "npm version patch && standard-version",
+    "release": "standard-version",
     "postinstall": "node postinstall.js"
   },
   "keywords": [
