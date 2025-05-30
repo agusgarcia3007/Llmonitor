@@ -325,5 +325,41 @@
     "empty_title": "No projects yet",
     "empty_description": "Create your first project to get started.",
     "empty_action": "Create project"
+  },
+  "costAnalysis": {
+    "title": "Cost Analysis",
+    "description": "Deep dive into your LLM spending patterns",
+    "exportCSV": "Export CSV",
+    "noDataAvailable": "No data available",
+    "costByProvider": {
+      "title": "Cost by Provider",
+      "description": "Spending breakdown across different LLM providers"
+    },
+    "topCostlyRequests": {
+      "title": "Top Costly Requests",
+      "description": "Individual requests with highest token costs"
+    },
+    "costTrend": {
+      "title": "Cost Trend",
+      "description": "Daily spending pattern over the selected period"
+    },
+    "emptyState": {
+      "costData": {
+        "title": "No cost data available",
+        "description": "Start making LLM requests to see provider costs"
+      },
+      "expensiveRequests": {
+        "title": "No expensive requests yet",
+        "description": "Costly requests will appear here as you use the API"
+      },
+      "trendData": {
+        "title": "No cost trend data",
+        "description": "Daily cost patterns will show here over time"
+      }
+    },
+    "requestDetails": {
+      "requests": "requests",
+      "tokens": "tokens"
+    }
   }
 }

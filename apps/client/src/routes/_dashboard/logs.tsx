@@ -18,11 +18,7 @@ import {
 import type { GetEventsParams, LLMEvent } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  type ColumnDef,
-  type ColumnFiltersState,
-  type SortingState,
-} from "@tanstack/react-table";
+import { type ColumnDef, type SortingState } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
 import { ArrowUpDown, Eye, ListFilter } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -107,10 +103,7 @@ export function LogsPage() {
       }
     : undefined;
 
-  const handleFiltersChange = (
-    columnFilters: ColumnFiltersState,
-    advancedFilters: Record<string, unknown>
-  ) => {
+  const handleFiltersChange = (advancedFilters: Record<string, unknown>) => {
     setAppliedFilters(advancedFilters);
     setPagination((prev) => ({ ...prev, page: 1 }));
   };

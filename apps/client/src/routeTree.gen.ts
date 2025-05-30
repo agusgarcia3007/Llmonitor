@@ -15,7 +15,6 @@ import { Route as DashboardRouteImport } from './routes/_dashboard/route'
 import { Route as AuthRouteImport } from './routes/_auth/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardUsersImport } from './routes/_dashboard/users'
-import { Route as DashboardSettingsImport } from './routes/_dashboard/settings'
 import { Route as DashboardLogsImport } from './routes/_dashboard/logs'
 import { Route as DashboardDashboardImport } from './routes/_dashboard/dashboard'
 import { Route as DashboardCostAnalysisImport } from './routes/_dashboard/cost-analysis'
@@ -45,12 +44,6 @@ const IndexRoute = IndexImport.update({
 const DashboardUsersRoute = DashboardUsersImport.update({
   id: '/users',
   path: '/users',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
-
-const DashboardSettingsRoute = DashboardSettingsImport.update({
-  id: '/settings',
-  path: '/settings',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 
@@ -170,13 +163,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLogsImport
       parentRoute: typeof DashboardRouteImport
     }
-    '/_dashboard/settings': {
-      id: '/_dashboard/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof DashboardSettingsImport
-      parentRoute: typeof DashboardRouteImport
-    }
     '/_dashboard/users': {
       id: '/_dashboard/users'
       path: '/users'
@@ -209,7 +195,6 @@ interface DashboardRouteRouteChildren {
   DashboardCostAnalysisRoute: typeof DashboardCostAnalysisRoute
   DashboardDashboardRoute: typeof DashboardDashboardRoute
   DashboardLogsRoute: typeof DashboardLogsRoute
-  DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardUsersRoute: typeof DashboardUsersRoute
 }
 
@@ -219,7 +204,6 @@ const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardCostAnalysisRoute: DashboardCostAnalysisRoute,
   DashboardDashboardRoute: DashboardDashboardRoute,
   DashboardLogsRoute: DashboardLogsRoute,
-  DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardUsersRoute: DashboardUsersRoute,
 }
 
@@ -237,7 +221,6 @@ export interface FileRoutesByFullPath {
   '/cost-analysis': typeof DashboardCostAnalysisRoute
   '/dashboard': typeof DashboardDashboardRoute
   '/logs': typeof DashboardLogsRoute
-  '/settings': typeof DashboardSettingsRoute
   '/users': typeof DashboardUsersRoute
 }
 
@@ -251,7 +234,6 @@ export interface FileRoutesByTo {
   '/cost-analysis': typeof DashboardCostAnalysisRoute
   '/dashboard': typeof DashboardDashboardRoute
   '/logs': typeof DashboardLogsRoute
-  '/settings': typeof DashboardSettingsRoute
   '/users': typeof DashboardUsersRoute
 }
 
@@ -267,7 +249,6 @@ export interface FileRoutesById {
   '/_dashboard/cost-analysis': typeof DashboardCostAnalysisRoute
   '/_dashboard/dashboard': typeof DashboardDashboardRoute
   '/_dashboard/logs': typeof DashboardLogsRoute
-  '/_dashboard/settings': typeof DashboardSettingsRoute
   '/_dashboard/users': typeof DashboardUsersRoute
 }
 
@@ -283,7 +264,6 @@ export interface FileRouteTypes {
     | '/cost-analysis'
     | '/dashboard'
     | '/logs'
-    | '/settings'
     | '/users'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -296,7 +276,6 @@ export interface FileRouteTypes {
     | '/cost-analysis'
     | '/dashboard'
     | '/logs'
-    | '/settings'
     | '/users'
   id:
     | '__root__'
@@ -310,7 +289,6 @@ export interface FileRouteTypes {
     | '/_dashboard/cost-analysis'
     | '/_dashboard/dashboard'
     | '/_dashboard/logs'
-    | '/_dashboard/settings'
     | '/_dashboard/users'
   fileRoutesById: FileRoutesById
 }
@@ -360,7 +338,6 @@ export const routeTree = rootRoute
         "/_dashboard/cost-analysis",
         "/_dashboard/dashboard",
         "/_dashboard/logs",
-        "/_dashboard/settings",
         "/_dashboard/users"
       ]
     },
@@ -390,10 +367,6 @@ export const routeTree = rootRoute
     },
     "/_dashboard/logs": {
       "filePath": "_dashboard/logs.tsx",
-      "parent": "/_dashboard"
-    },
-    "/_dashboard/settings": {
-      "filePath": "_dashboard/settings.tsx",
       "parent": "/_dashboard"
     },
     "/_dashboard/users": {

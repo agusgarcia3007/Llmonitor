@@ -204,13 +204,7 @@ export function AlertsPage() {
         </Dialog>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={tableData}
-        isLoading={isLoading}
-        searchColumn="name"
-        searchPlaceholder="Filter by alert name..."
-      />
+      <DataTable columns={columns} data={tableData} isLoading={isLoading} />
 
       {editingAlert && (
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>

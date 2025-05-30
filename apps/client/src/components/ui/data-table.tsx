@@ -66,10 +66,7 @@ interface DataTableProps<TData, TValue> {
   };
   onPaginationChange?: (page: number, pageSize: number) => void;
   onSortingChange?: (sorting: SortingState) => void;
-  onFiltersChange?: (
-    filters: ColumnFiltersState,
-    advancedFilters: Record<string, unknown>
-  ) => void;
+  onFiltersChange?: (advancedFilters: Record<string, unknown>) => void;
   pageSizeOptions?: number[];
   isLoading?: boolean;
   filtersConfig?: AdvancedFilterField[];
@@ -136,10 +133,10 @@ export function DataTable<TData, TValue>({
     (filters: Record<string, unknown>) => {
       setAppliedFilters(filters);
       if (onFiltersChange) {
-        onFiltersChange(columnFilters, filters);
+        onFiltersChange(filters);
       }
     },
-    [columnFilters, onFiltersChange]
+    [onFiltersChange]
   );
 
   // Loading state UI

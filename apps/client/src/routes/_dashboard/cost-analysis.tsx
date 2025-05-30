@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,12 +20,14 @@ import type { CostAnalysis } from "@/types/analytics";
 import { IconCurrency, IconDownload } from "@tabler/icons-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_dashboard/cost-analysis")({
   component: CostAnalysisPage,
 });
 
 export function CostAnalysisPage() {
+  const { t } = useTranslation();
   const [days, setDays] = useState(30);
   const { data: analysis, isLoading } = useCostAnalysisQuery(days);
 
@@ -73,10 +76,10 @@ export function CostAnalysisPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <IconCurrency className="h-4 w-4" />
-                Cost by Provider
+                {t("costAnalysis.costByProvider.title")}
               </CardTitle>
               <CardDescription>
-                Spending breakdown across different LLM providers
+                {t("costAnalysis.costByProvider.description")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -105,9 +108,9 @@ export function CostAnalysisPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Top Costly Requests</CardTitle>
+              <CardTitle>{t("costAnalysis.topCostlyRequests.title")}</CardTitle>
               <CardDescription>
-                Individual requests with highest token costs
+                {t("costAnalysis.topCostlyRequests.description")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -136,9 +139,9 @@ export function CostAnalysisPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Cost Trend</CardTitle>
+            <CardTitle>{t("costAnalysis.costTrend.title")}</CardTitle>
             <CardDescription>
-              Daily spending pattern over the selected period
+              {t("costAnalysis.costTrend.description")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -165,7 +168,7 @@ export function CostAnalysisPage() {
   if (!analysis) {
     return (
       <div className="flex justify-center items-center h-64">
-        No data available
+        {t("costAnalysis.noDataAvailable")}
       </div>
     );
   }
@@ -174,9 +177,9 @@ export function CostAnalysisPage() {
     <div className="space-y-6 px-4 lg:px-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold">Cost Analysis</h1>
+          <h1 className="text-2xl font-bold">{t("costAnalysis.title")}</h1>
           <p className="text-muted-foreground">
-            Deep dive into your LLM spending patterns
+            {t("costAnalysis.description")}
           </p>
         </div>
         <div className="flex gap-2">
@@ -188,9 +191,13 @@ export function CostAnalysisPage() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="7">Last 7 days</SelectItem>
-              <SelectItem value="30">Last 30 days</SelectItem>
-              <SelectItem value="90">Last 90 days</SelectItem>
+              <SelectItem value="7">{t("common.last", { days: 7 })}</SelectItem>
+              <SelectItem value="30">
+                {t("common.last", { days: 30 })}
+              </SelectItem>
+              <SelectItem value="90">
+                {t("common.last", { days: 90 })}
+              </SelectItem>
             </SelectContent>
           </Select>
           <Button
@@ -200,7 +207,7 @@ export function CostAnalysisPage() {
             disabled={isLoading || !analysis}
           >
             <IconDownload className="h-4 w-4 mr-2" />
-            Export CSV
+            {t("costAnalysis.exportCSV")}
           </Button>
         </div>
       </div>
@@ -210,10 +217,10 @@ export function CostAnalysisPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <IconCurrency className="h-4 w-4" />
-              Cost by Provider
+              {t("costAnalysis.costByProvider.title")}
             </CardTitle>
             <CardDescription>
-              Spending breakdown across different LLM providers
+              {t("costAnalysis.costByProvider.description")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -242,7 +249,8 @@ export function CostAnalysisPage() {
                               {provider.provider}
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              {provider.count} requests
+                              {provider.count}{" "}
+                              {t("costAnalysis.requestDetails.requests")}
                             </div>
                           </div>
                         </div>
@@ -262,10 +270,10 @@ export function CostAnalysisPage() {
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <IconCurrency className="h-12 w-12 text-muted-foreground/50 mb-4" />
                   <p className="text-sm text-muted-foreground font-medium">
-                    No cost data available
+                    {t("costAnalysis.emptyState.costData.title")}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Start making LLM requests to see provider costs
+                    {t("costAnalysis.emptyState.costData.description")}
                   </p>
                 </div>
               )}
@@ -275,9 +283,9 @@ export function CostAnalysisPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Top Costly Requests</CardTitle>
+            <CardTitle>{t("costAnalysis.topCostlyRequests.title")}</CardTitle>
             <CardDescription>
-              Individual requests with highest token costs
+              {t("costAnalysis.topCostlyRequests.description")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -292,15 +300,15 @@ export function CostAnalysisPage() {
                       className="flex items-center justify-between"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center text-xs font-medium">
+                        <Badge variant="outline" className="bg-primary/10">
                           ${request.cost_usd.toFixed(3)}
-                        </div>
+                        </Badge>
                         <div>
                           <div className="font-medium">{request.model}</div>
                           <div className="text-sm text-muted-foreground">
                             {request.provider} •{" "}
                             {request.prompt_tokens + request.completion_tokens}{" "}
-                            tokens
+                            {t("costAnalysis.requestDetails.tokens")}
                           </div>
                         </div>
                       </div>
@@ -315,10 +323,10 @@ export function CostAnalysisPage() {
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <IconCurrency className="h-12 w-12 text-muted-foreground/50 mb-4" />
                   <p className="text-sm text-muted-foreground font-medium">
-                    No expensive requests yet
+                    {t("costAnalysis.emptyState.expensiveRequests.title")}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Costly requests will appear here as you use the API
+                    {t("costAnalysis.emptyState.expensiveRequests.description")}
                   </p>
                 </div>
               )}
@@ -329,9 +337,9 @@ export function CostAnalysisPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Cost Trend</CardTitle>
+          <CardTitle>{t("costAnalysis.costTrend.title")}</CardTitle>
           <CardDescription>
-            Daily spending pattern over the selected period
+            {t("costAnalysis.costTrend.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -349,7 +357,7 @@ export function CostAnalysisPage() {
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="text-sm text-muted-foreground">
-                        {day.count} requests
+                        {day.count} {t("costAnalysis.requestDetails.requests")}
                       </div>
                       <div className="font-medium">${day.cost.toFixed(2)}</div>
                     </div>
@@ -359,10 +367,10 @@ export function CostAnalysisPage() {
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <IconCurrency className="h-12 w-12 text-muted-foreground/50 mb-4" />
                 <p className="text-sm text-muted-foreground font-medium">
-                  No cost trend data
+                  {t("costAnalysis.emptyState.trendData.title")}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Daily cost patterns will show here over time
+                  {t("costAnalysis.emptyState.trendData.description")}
                 </p>
               </div>
             )}
