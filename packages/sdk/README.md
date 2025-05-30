@@ -110,13 +110,18 @@ const result = await model.generateContent("Explain machine learning");
 
 ### DeepSeek
 
+DeepSeek is fully compatible with the OpenAI SDK. You just need to use the OpenAI SDK and set the `baseURL` to DeepSeek along with your DeepSeek API key. You can use the models `deepseek-chat` or `deepseek-reasoner`.
+
 ```typescript
 import { LLMonitor } from "llmonitor";
-import DeepSeek from "deepseek-openai";
+import OpenAI from "openai";
 
 const monitor = new LLMonitor({ apiKey: "llm_..." });
 const deepseek = monitor.deepseek(
-  new DeepSeek({ apiKey: "your-deepseek-key" })
+  new OpenAI({
+    apiKey: "your-deepseek-key",
+    baseURL: "https://api.deepseek.com",
+  })
 );
 
 const response = await deepseek.chat.completions.create({
@@ -124,6 +129,8 @@ const response = await deepseek.chat.completions.create({
   messages: [{ role: "user", content: "What is DeepSeek?" }],
 });
 ```
+
+> **Note:** You can use any client compatible with the OpenAI API, just make sure to set the `baseURL` to `https://api.deepseek.com` and use your DeepSeek API key. More details in the [official DeepSeek documentation](https://api-docs.deepseek.com/).
 
 ## 🧑‍💻 CommonJS (require) usage
 
