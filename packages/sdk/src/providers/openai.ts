@@ -33,6 +33,15 @@ export class OpenAIWrapper {
           let error: Error | null = null;
 
           try {
+            if (
+              typeof params.model === "string" &&
+              (params.model.startsWith("deepseek-chat") ||
+                params.model.startsWith("deepseek-reasoner"))
+            ) {
+              console.warn(
+                "[LLMonitor] Warning: You are using a DeepSeek model with the OpenAI wrapper. For correct analytics and cost tracking, use monitor.deepseek(...) instead of monitor.openai(...)."
+              );
+            }
             const result = await this.client.chat.completions.create(params);
             if ("choices" in result && !("controller" in result)) {
               response = result as ChatCompletion;

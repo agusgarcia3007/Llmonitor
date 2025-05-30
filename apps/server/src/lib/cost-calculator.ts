@@ -36,6 +36,10 @@ export const PROVIDER_PRICING: Record<
     "mistral-medium-latest": { inputTokens: 2.7e-6, outputTokens: 8.1e-6 },
     "mistral-small-latest": { inputTokens: 1e-6, outputTokens: 3e-6 },
   },
+  deepseek: {
+    "deepseek-chat": { inputTokens: 0.07e-3, outputTokens: 1.1e-3 },
+    "deepseek-reasoner": { inputTokens: 0.14e-3, outputTokens: 2.19e-3 },
+  },
 };
 
 export function calculateCost(
