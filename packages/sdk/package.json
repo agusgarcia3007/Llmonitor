@@ -14,16 +14,14 @@
   },
   "files": [
     "dist",
-    "README.md",
-    "postinstall.js"
+    "README.md"
   ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build",
-    "release": "standard-version",
-    "postinstall": "node postinstall.js"
+    "release": "standard-version"
   },
   "keywords": [
     "llm",

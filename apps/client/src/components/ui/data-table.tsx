@@ -11,8 +11,11 @@ import {
 } from "@tanstack/react-table";
 import * as React from "react";
 
+import {
+  AdvancedFilters,
+  type AdvancedFilterField,
+} from "@/components/ui/advanced-filters";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -35,6 +38,11 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Reusable interface for server-side data
 export interface PaginatedResult<T> {
@@ -58,11 +66,14 @@ interface DataTableProps<TData, TValue> {
   };
   onPaginationChange?: (page: number, pageSize: number) => void;
   onSortingChange?: (sorting: SortingState) => void;
-  onFiltersChange?: (filters: ColumnFiltersState) => void;
+  onFiltersChange?: (
+    filters: ColumnFiltersState,
+    advancedFilters: Record<string, unknown>
+  ) => void;
   pageSizeOptions?: number[];
-  searchColumn?: string;
-  searchPlaceholder?: string;
   isLoading?: boolean;
+  filtersConfig?: AdvancedFilterField[];
+  filtersButton?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
@@ -73,9 +84,9 @@ export function DataTable<TData, TValue>({
   onSortingChange,
   onFiltersChange,
   pageSizeOptions = [10, 20, 30, 40, 50],
-  searchColumn,
-  searchPlaceholder = "Filter...",
   isLoading = false,
+  filtersConfig,
+  filtersButton,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -84,44 +95,15 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [pendingFilters, setPendingFilters] = React.useState<
+    Record<string, unknown>
+  >({});
 
-  // Debounced search handler
-  const debouncedSearchHandler = React.useCallback(
-    (value: string, column: string) => {
-      const timeoutId = setTimeout(() => {
-        setColumnFilters((prev) => {
-          const newFilters = prev.filter((filter) => filter.id !== column);
-          if (value) {
-            newFilters.push({
-              id: column,
-              value,
-            });
-          }
-          if (onFiltersChange) {
-            onFiltersChange(newFilters);
-          }
-          return newFilters;
-        });
-      }, 300);
-
-      return () => clearTimeout(timeoutId);
-    },
-    [onFiltersChange]
-  );
-
-  // Handle sorting changes
   React.useEffect(() => {
     if (onSortingChange) {
       onSortingChange(sorting);
     }
   }, [sorting, onSortingChange]);
-
-  // Handle filter changes
-  React.useEffect(() => {
-    if (onFiltersChange) {
-      onFiltersChange(columnFilters);
-    }
-  }, [columnFilters, onFiltersChange]);
 
   const table = useReactTable({
     data,
@@ -150,17 +132,16 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const handleApplyFilters = () => {
+    if (onFiltersChange) {
+      onFiltersChange(columnFilters, pendingFilters);
+    }
+  };
+
   // Loading state UI
   if (isLoading) {
     return (
       <div className="space-y-4">
-        {searchColumn && (
-          <div className="flex items-center py-4">
-            <Skeleton className="h-10 w-full max-w-sm" />
-            <Skeleton className="ml-auto h-8 w-24" />
-          </div>
-        )}
-
         <div className="rounded-md border">
           <Table>
             <TableHeader>
@@ -202,19 +183,21 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      {/* Search input */}
-      {searchColumn && (
-        <div className="flex items-center py-4">
-          <Input
-            placeholder={searchPlaceholder}
-            className="max-w-sm"
-            onChange={(e) => {
-              debouncedSearchHandler(e.target.value, searchColumn);
-            }}
-          />
+      {filtersConfig && (
+        <div className="mb-2 flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>{filtersButton}</DropdownMenuTrigger>
+            <DropdownMenuContent className="p-4 w-[320px]">
+              <AdvancedFilters
+                filters={pendingFilters}
+                onChange={setPendingFilters}
+                fields={filtersConfig}
+                onApply={handleApplyFilters}
+              />
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       )}
-
       <div className="rounded-md border">
         <Table>
           <TableHeader>

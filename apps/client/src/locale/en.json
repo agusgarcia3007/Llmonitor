@@ -77,8 +77,20 @@
     "single": "Single",
     "range": "Range",
     "value": "Value",
-    "min": "Min",
-    "max": "Max",
+    "min": "Minimum",
+    "max": "Maximum",
+    "advancedFilters": {
+      "apply": "Apply Filters",
+      "placeholder": {
+        "text": "Filter by {{field}}",
+        "number": "Filter by {{field}}",
+        "select": "Select {{field}}",
+        "dateRange": "Select date range"
+      },
+      "empty": {
+        "select": "No options found"
+      }
+    },
     "filters.option.is": "is",
     "filters.option.isNot": "is not",
     "filters.option.isAnyOf": "is any of",

@@ -1,3 +1,7 @@
+import {
+  FieldType,
+  type AdvancedFilterField,
+} from "@/components/ui/advanced-filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
@@ -8,14 +12,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useApiKeysQuery } from "@/services/api-keys/query";
-import {
   llmEventsQueryOptions,
   useLLMEventsQuery,
 } from "@/services/llm-events/query";
@@ -24,11 +20,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   type ColumnDef,
-  type ColumnFiltersState,
   type SortingState,
+  type ColumnFiltersState,
 } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
-import { ArrowUpDown, Eye } from "lucide-react";
+import { ArrowUpDown, Eye, FilterIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -36,42 +32,27 @@ export const Route = createFileRoute("/_dashboard/logs")({
   component: LogsPage,
 });
 
+type FiltersState = Record<string, unknown>;
+
 export function LogsPage() {
   const { t } = useTranslation();
   const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [selectedApiKey, setSelectedApiKey] = useState<string>("all");
-  const { data: apiKeys } = useApiKeysQuery();
+  const [appliedFilters, setAppliedFilters] = useState<Record<string, unknown>>(
+    {}
+  );
   const queryClient = useQueryClient();
 
   const params = useMemo<GetEventsParams>(() => {
-    if (sorting.length > 0) {
-      return {
-        sort: sorting[0].id,
-        order: sorting[0].desc ? "desc" : "asc",
-        limit: pagination.pageSize,
-        offset: (pagination.page - 1) * pagination.pageSize,
-        apiKey: selectedApiKey !== "all" ? selectedApiKey : undefined,
-      };
-    }
-
-    const filters: Record<string, string> = {};
-    if (columnFilters.length > 0) {
-      columnFilters.forEach((filter) => {
-        if (filter.id === "model" || filter.id === "provider") {
-          filters[filter.id] = filter.value as string;
-        }
-      });
-    }
-
+    const filters: FiltersState = { ...appliedFilters };
     return {
       ...filters,
       limit: pagination.pageSize,
       offset: (pagination.page - 1) * pagination.pageSize,
-      apiKey: selectedApiKey !== "all" ? selectedApiKey : undefined,
+      sort: sorting[0]?.id,
+      order: sorting[0]?.desc ? "desc" : "asc",
     };
-  }, [pagination, sorting, columnFilters, selectedApiKey]);
+  }, [pagination, sorting, appliedFilters]);
 
   const { data, isLoading } = useLLMEventsQuery(params);
 
@@ -83,11 +64,59 @@ export function LogsPage() {
           ...params,
           offset: nextPage * pagination.pageSize - pagination.pageSize,
         };
-
         queryClient.prefetchQuery(llmEventsQueryOptions(nextPageParams));
       }
     }
   }, [data, pagination.page, pagination.pageSize, params, queryClient]);
+
+  const filtersConfig: AdvancedFilterField[] = [
+    {
+      id: "model",
+      label: "Model",
+      type: FieldType.TEXT,
+    },
+    {
+      id: "provider",
+      label: "Provider",
+      type: FieldType.SELECT,
+      options: ["openai", "anthropic", "deepseek"],
+    },
+    { id: "date", label: "Date", type: FieldType.DATE_RANGE },
+    {
+      id: "latency_ms",
+      label: "Latency (ms)",
+      type: FieldType.SLIDER,
+      min: 0,
+      max: 10000,
+      step: 100,
+    },
+    {
+      id: "cost_usd",
+      label: "Cost (USD)",
+      type: FieldType.SLIDER,
+      min: 0,
+      max: 10,
+      step: 0.01,
+    },
+  ];
+
+  const tableData = data?.data || [];
+  const meta = data
+    ? {
+        page: Math.floor(data.pagination.offset / data.pagination.limit) + 1,
+        pageSize: data.pagination.limit,
+        pageCount: Math.ceil(data.pagination.total / data.pagination.limit),
+        total: data.pagination.total,
+      }
+    : undefined;
+
+  const handleFiltersChange = (
+    columnFilters: ColumnFiltersState,
+    advancedFilters: Record<string, unknown>
+  ) => {
+    setAppliedFilters(advancedFilters);
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  };
 
   const columns = useMemo<ColumnDef<LLMEvent>[]>(
     () => [
@@ -155,7 +184,6 @@ export function LogsPage() {
             200: { label: "Success", variant: "default" },
             400: { label: "Error", variant: "destructive" },
             500: { label: "Error", variant: "destructive" },
-            // Agregar otros estados según sea necesario
           };
 
           const statusInfo = statusMap[status] || {
@@ -266,38 +294,10 @@ export function LogsPage() {
     [t]
   );
 
-  // Metadatos para la tabla
-  const tableData = data?.data || [];
-  const meta = data
-    ? {
-        page: Math.floor(data.pagination.offset / data.pagination.limit) + 1,
-        pageSize: data.pagination.limit,
-        pageCount: Math.ceil(data.pagination.total / data.pagination.limit),
-        total: data.pagination.total,
-      }
-    : undefined;
-
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4 gap-4">
         <h1 className="text-2xl font-bold">Logs</h1>
-        <div className="flex gap-2 items-center">
-          <div className="w-[200px]">
-            <Select value={selectedApiKey} onValueChange={setSelectedApiKey}>
-              <SelectTrigger>
-                <SelectValue placeholder={t("logsTable.selectApiKey")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("logsTable.allApiKeys")}</SelectItem>
-                {apiKeys?.data?.map((apiKey) => (
-                  <SelectItem key={apiKey.id} value={apiKey.id}>
-                    {apiKey.name || t("apiKeys.noName")}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
       </div>
       <DataTable
         columns={columns}
@@ -308,9 +308,14 @@ export function LogsPage() {
           setPagination({ page, pageSize })
         }
         onSortingChange={setSorting}
-        onFiltersChange={setColumnFilters}
-        searchColumn="model"
-        searchPlaceholder="Filter by model..."
+        onFiltersChange={handleFiltersChange}
+        filtersConfig={filtersConfig}
+        filtersButton={
+          <Button variant="outline" size="sm">
+            <FilterIcon className="w-4 h-4 mr-2" />
+            Filters
+          </Button>
+        }
       />
     </div>
   );

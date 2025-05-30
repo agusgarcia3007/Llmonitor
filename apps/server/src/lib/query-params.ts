@@ -1,5 +1,7 @@
 import { Context } from "hono";
 import { SORT_ORDER } from "./endpoint-builder";
+import { eq, sql } from "drizzle-orm";
+import { llm_event } from "@/db/schema";
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
@@ -55,4 +57,63 @@ export function createSortHelpers<
       fields.map((f) => [f, table[f]])
     ) as Record<K[number], any>,
   };
+}
+
+export function parseEventFilters(c: Context) {
+  const q = c.req.query();
+  return {
+    model: q["model"] ?? undefined,
+    provider: q["provider"] ?? undefined,
+    status: q["status"] ? Number(q["status"]) : undefined,
+    version_tag: q["version_tag"] ?? undefined,
+    session_id: q["session_id"] ?? undefined,
+    latencyMin: q["latencyMin"] ? Number(q["latencyMin"]) : undefined,
+    latencyMax: q["latencyMax"] ? Number(q["latencyMax"]) : undefined,
+    costMin: q["costMin"] ? Number(q["costMin"]) : undefined,
+    costMax: q["costMax"] ? Number(q["costMax"]) : undefined,
+  };
+}
+
+export function buildEventWhereConditions({
+  organizationId,
+  apiKey,
+  filters,
+}: {
+  organizationId: string;
+  apiKey?: string;
+  filters: ReturnType<typeof parseEventFilters>;
+}) {
+  const whereConditions = [eq(llm_event.organization_id, organizationId)];
+
+  if (apiKey) {
+    whereConditions.push(sql`metadata->>'apiKey' = ${apiKey}`);
+  }
+  if (filters.model) {
+    whereConditions.push(eq(llm_event.model, filters.model));
+  }
+  if (filters.provider) {
+    whereConditions.push(eq(llm_event.provider, filters.provider));
+  }
+  if (filters.status !== undefined) {
+    whereConditions.push(eq(llm_event.status, filters.status));
+  }
+  if (filters.version_tag) {
+    whereConditions.push(eq(llm_event.version_tag, filters.version_tag));
+  }
+  if (filters.session_id) {
+    whereConditions.push(eq(llm_event.session_id, filters.session_id));
+  }
+  if (filters.latencyMin !== undefined) {
+    whereConditions.push(sql`${llm_event.latency_ms} >= ${filters.latencyMin}`);
+  }
+  if (filters.latencyMax !== undefined) {
+    whereConditions.push(sql`${llm_event.latency_ms} <= ${filters.latencyMax}`);
+  }
+  if (filters.costMin !== undefined) {
+    whereConditions.push(sql`${llm_event.cost_usd} >= ${filters.costMin}`);
+  }
+  if (filters.costMax !== undefined) {
+    whereConditions.push(sql`${llm_event.cost_usd} <= ${filters.costMax}`);
+  }
+  return whereConditions;
 }

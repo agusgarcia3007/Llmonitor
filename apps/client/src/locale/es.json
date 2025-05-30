@@ -79,6 +79,18 @@
     "value": "Valor",
     "min": "Mínimo",
     "max": "Máximo",
+    "advancedFilters": {
+      "apply": "Aplicar Filtros",
+      "placeholder": {
+        "text": "Filtrar por {{field}}",
+        "number": "Filtrar por {{field}}",
+        "select": "Seleccionar {{field}}",
+        "dateRange": "Seleccionar rango de fechas"
+      },
+      "empty": {
+        "select": "No se encontraron opciones"
+      }
+    },
     "filters.option.is": "es",
     "filters.option.isNot": "no es",
     "filters.option.isAnyOf": "es alguno de",

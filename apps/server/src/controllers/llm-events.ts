@@ -2,7 +2,12 @@ import { Context } from "hono";
 import { LogLlmEventSchema } from "../schemas/llm-events";
 import { db } from "@/db";
 import { llm_event, type LLMEventMetadata } from "@/db/schema";
-import { parseQueryParams, createSortHelpers } from "@/lib/query-params";
+import {
+  parseQueryParams,
+  createSortHelpers,
+  parseEventFilters,
+  buildEventWhereConditions,
+} from "@/lib/query-params";
 import { desc, asc, eq, count, and, sql } from "drizzle-orm";
 import { SORT_ORDER } from "@/lib/endpoint-builder";
 import { calculateCost } from "@/lib/cost-calculator";
@@ -100,6 +105,7 @@ export const getEvents = async (c: Context) => {
     allowedSortFields as unknown as string[]
   );
   const apiKey = c.req.query("apiKey");
+  const filters = parseEventFilters(c);
 
   const organizationId = session.activeOrganizationId;
 
@@ -108,11 +114,11 @@ export const getEvents = async (c: Context) => {
       ? asc(sortFieldMap[sort as keyof typeof sortFieldMap])
       : desc(sortFieldMap[sort as keyof typeof sortFieldMap]);
 
-  const whereConditions = [eq(llm_event.organization_id, organizationId)];
-
-  if (apiKey) {
-    whereConditions.push(sql`metadata->>'apiKey' = ${apiKey}`);
-  }
+  const whereConditions = buildEventWhereConditions({
+    organizationId,
+    apiKey,
+    filters,
+  });
 
   const [events, countResult] = await Promise.all([
     db

@@ -37,6 +37,15 @@ export interface GetEventsParams {
   sort?: string;
   order?: "asc" | "desc";
   apiKey?: string;
+  model?: string;
+  provider?: string;
+  status?: number;
+  version_tag?: string;
+  session_id?: string;
+  latencyMin?: number;
+  latencyMax?: number;
+  costMin?: number;
+  costMax?: number;
 }
 
 export type Locale = "en" | "es";
