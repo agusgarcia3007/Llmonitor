@@ -18,6 +18,8 @@
   },
   "workspaces": [
     "client",
-    "server"
+    "server",
+    "sdk",
+    "docs"
   ]
 }

@@ -20,8 +20,8 @@
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "clean": "rm -rf dist",
-    "test": "echo 'Tests coming soon!'",
-    "prepublishOnly": "npm run clean && npm run build"
+    "prepublishOnly": "npm run clean && npm run build",
+    "release": "standard-version"
   },
   "keywords": [
     "llm",
@@ -51,18 +51,22 @@
   "bugs": {
     "url": "https://github.com/llmonitor/llmonitor/issues"
   },
-  "dependencies": {},
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/types": "^19.8.1",
+    "@types/node": "^20.0.0",
+    "husky": "^9.1.7",
+    "standard-version": "^9.5.0",
     "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "@types/node": "^20.0.0"
+    "typescript": "^5.0.0"
   },
   "peerDependencies": {
-    "openai": ">=4.0.0",
     "@anthropic-ai/sdk": ">=0.20.0",
     "@google/generative-ai": ">=0.11.0",
     "cohere-ai": ">=7.0.0",
-    "express": ">=4.0.0"
+    "express": ">=4.0.0",
+    "openai": ">=4.0.0"
   },
   "peerDependenciesMeta": {
     "openai": {
