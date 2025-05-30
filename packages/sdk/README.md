@@ -7,11 +7,11 @@ Monitor, track, and optimize your LLM usage across any provider with just 3 line
 ## 🚀 Quick Start
 
 ```bash
-npm install llmonitor
+npm install @llmonitor/sdk
 ```
 
 ```typescript
-import { LLMonitor } from "llmonitor";
+import { LLMonitor } from "@llmonitor/sdk";
 import OpenAI from "openai";
 
 // 1. Initialize LLMonitor
@@ -28,6 +28,22 @@ const response = await openai.chat.completions.create({
   model: "gpt-4",
   messages: [{ role: "user", content: "Hello!" }],
 });
+```
+
+```js
+// CommonJS (require) usage
+const { LLMonitor } = require("@llmonitor/sdk");
+const OpenAI = require("openai");
+
+const monitor = new LLMonitor({ apiKey: "your-api-key" });
+const openai = monitor.openai(new OpenAI({ apiKey: "your-openai-key" }));
+
+openai.chat.completions
+  .create({
+    model: "gpt-4",
+    messages: [{ role: "user", content: "Hello!" }],
+  })
+  .then(console.log);
 ```
 
 That's it! Every request is now automatically tracked with:
@@ -67,7 +83,7 @@ That's it! Every request is now automatically tracked with:
 ### OpenAI
 
 ```typescript
-import { LLMonitor } from "llmonitor";
+import { LLMonitor } from "@llmonitor/sdk";
 import OpenAI from "openai";
 
 const monitor = new LLMonitor({ apiKey: "llm_..." });
@@ -82,7 +98,7 @@ const response = await openai.chat.completions.create({
 ### Anthropic
 
 ```typescript
-import { LLMonitor } from "llmonitor";
+import { LLMonitor } from "@llmonitor/sdk";
 import Anthropic from "@anthropic-ai/sdk";
 
 const monitor = new LLMonitor({ apiKey: "llm_..." });
@@ -98,7 +114,7 @@ const response = await anthropic.messages.create({
 ### Google AI
 
 ```typescript
-import { LLMonitor } from "llmonitor";
+import { LLMonitor } from "@llmonitor/sdk";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const monitor = new LLMonitor({ apiKey: "llm_..." });
@@ -113,7 +129,7 @@ const result = await model.generateContent("Explain machine learning");
 DeepSeek is fully compatible with the OpenAI SDK. You just need to use the OpenAI SDK and set the `baseURL` to DeepSeek along with your DeepSeek API key. You can use the models `deepseek-chat` or `deepseek-reasoner`.
 
 ```typescript
-import { LLMonitor } from "llmonitor";
+import { LLMonitor } from "@llmonitor/sdk";
 import OpenAI from "openai";
 
 const monitor = new LLMonitor({ apiKey: "llm_..." });
@@ -137,7 +153,7 @@ const response = await deepseek.chat.completions.create({
 Si usas Node.js clásico o una API vieja:
 
 ```js
-const { LLMonitor } = require("llmonitor");
+const { LLMonitor } = require("@llmonitor/sdk");
 const OpenAI = require("openai");
 
 const monitor = new LLMonitor({ apiKey: "llm_..." });
@@ -154,7 +170,7 @@ openai.chat.completions
 También funciona con DeepSeek:
 
 ```js
-const { LLMonitor } = require("llmonitor");
+const { LLMonitor } = require("@llmonitor/sdk");
 const DeepSeek = require("deepseek-openai");
 
 const monitor = new LLMonitor({ apiKey: "llm_..." });
