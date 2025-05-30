@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.12](https://github.com/agusgarcia3007/LLMonitor/compare/v0.1.10...v0.1.12) (2025-05-30)
+
+
+### Features
+
+* add post-installation message for SDK users ([4a69cc2](https://github.com/agusgarcia3007/LLMonitor/commit/4a69cc26dd6242020271831fb71fa5d903332b5c))
+
 ### [0.1.10](https://github.com/agusgarcia3007/LLMonitor/compare/v0.1.8...v0.1.10) (2025-05-30)
 
 ### 0.1.8 (2025-05-30)
