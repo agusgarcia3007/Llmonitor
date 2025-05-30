@@ -128,6 +128,10 @@ export function LogsPage() {
           const bgDict: Record<string, string> = {
             openai: "bg-green-200 text-green-800",
             anthropic: "bg-orange-200 text-orange-800",
+            deepseek: "bg-blue-200 text-blue-800",
+            cohere: "bg-red-200 text-red-800",
+            google: "bg-yellow-200 text-yellow-800",
+            custom: "bg-gray-200 text-gray-800",
           };
           return (
             <Badge variant="secondary" className={bgDict[provider]}>
