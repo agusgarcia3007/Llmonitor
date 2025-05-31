@@ -58,7 +58,7 @@ function ProjectsPage() {
         ) : organizations && organizations.length > 0 ? (
           <>
             {organizations.map((org) => (
-              <Link key={org.id} to="/dashboard">
+              <Link key={org.id} to="/projects/$id" params={{ id: org.id }}>
                 <Card className="cursor-pointer transition-all duration-200 group hover:bg-muted/50">
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
