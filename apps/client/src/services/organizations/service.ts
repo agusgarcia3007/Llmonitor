@@ -8,6 +8,14 @@ export class OrganizationService {
     return data;
   }
 
+  public static async getOrganizationById(organizationId: string) {
+    const { data, error } = await authClient.organization.getFullOrganization({
+      query: { organizationId },
+    });
+    if (error) throw error;
+    return data;
+  }
+
   public static async createOrganization(params: OrganizationParams) {
     const { data, error } = await authClient.organization.create({
       name: params.name,

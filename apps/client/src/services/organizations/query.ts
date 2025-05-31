@@ -8,6 +8,14 @@ export const useGetOrganization = () => {
   });
 };
 
+export const useGetOrganizationById = (organizationId: string) => {
+  return useQuery({
+    queryKey: ["organization", organizationId],
+    queryFn: () => OrganizationService.getOrganizationById(organizationId),
+    enabled: !!organizationId,
+  });
+};
+
 export const useGetOrganizationsList = () => {
   return useQuery({
     queryKey: ["organizations"],

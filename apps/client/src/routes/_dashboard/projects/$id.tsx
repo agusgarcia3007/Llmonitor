@@ -1,25 +1,27 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
-import { useState } from "react";
 import {
+  IconArrowLeft,
   IconBriefcase,
-  IconUsers,
-  IconSettings,
   IconCalendarTime,
-  IconMapPin,
-  IconWorld,
-  IconMail,
   IconEdit,
+  IconMail,
+  IconMapPin,
+  IconSettings,
   IconTrash,
+  IconUsers,
+  IconWorld,
 } from "@tabler/icons-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
-import { Button } from "@/components/ui/button";
+import { EditProjectDialog } from "@/components/project/edit-project-dialog";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useGetOrganization } from "@/services/organizations/query";
-import { EditProjectDialog } from "@/components/project/edit-project-dialog";
+import { cn } from "@/lib/utils";
+import { useGetOrganizationById } from "@/services/organizations/query";
 
 export const Route = createFileRoute("/_dashboard/projects/$id")({
   component: ProjectDetailsPage,
@@ -27,7 +29,8 @@ export const Route = createFileRoute("/_dashboard/projects/$id")({
 
 function ProjectDetailsPage() {
   const { t } = useTranslation();
-  const { data: organization, isLoading } = useGetOrganization();
+  const { id } = Route.useParams();
+  const { data: organization, isLoading } = useGetOrganizationById(id);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   if (isLoading) {
@@ -93,20 +96,24 @@ function ProjectDetailsPage() {
     <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
       {/* Header */}
       <div className="flex items-start justify-between">
-        <div className="flex items-start gap-4">
-          <Avatar className="h-16 w-16">
-            <AvatarImage src={organization.logo || ""} />
-            <AvatarFallback className="text-lg">
-              {getInitials(organization.name)}
-            </AvatarFallback>
-          </Avatar>
+        <div className="flex items-center gap-4">
+          <Link
+            to="/projects"
+            className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
+            params={{ id: organization.id }}
+          >
+            <IconArrowLeft className="h-4 w-4" />
+          </Link>
+
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
               {organization.name}
             </h1>
-            <p className="text-muted-foreground">
-              {organization.slug || "No slug available"}
-            </p>
+            {organization.slug && (
+              <p className="text-muted-foreground">
+                {organization.slug || "No slug available"}
+              </p>
+            )}
             {organization.metadata?.description && (
               <p className="mt-2 text-sm text-muted-foreground">
                 {organization.metadata.description}
@@ -175,16 +182,19 @@ function ProjectDetailsPage() {
                 </p>
                 <div className="flex -space-x-2">
                   {organization.members.slice(0, 5).map((member, index) => (
-                    <Avatar
-                      key={index}
-                      className="h-8 w-8 border-2 border-background"
-                    >
-                      <AvatarFallback className="text-xs">
-                        {member.user?.name
-                          ? getInitials(member.user.name)
-                          : "?"}
-                      </AvatarFallback>
-                    </Avatar>
+                    <span className="flex items-center gap-x-2">
+                      <Avatar
+                        key={index}
+                        className="h-8 w-8 border-2 border-background"
+                      >
+                        <AvatarFallback className="text-xs">
+                          {member.user?.name
+                            ? getInitials(member.user.name)
+                            : "?"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm">{member.user?.name}</span>
+                    </span>
                   ))}
                   {organization.members.length > 5 && (
                     <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-muted text-xs">

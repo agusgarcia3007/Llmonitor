@@ -23,6 +23,7 @@ import { Route as DashboardApiKeysImport } from './routes/_dashboard/api-keys'
 import { Route as DashboardAlertsImport } from './routes/_dashboard/alerts'
 import { Route as AuthSignupImport } from './routes/_auth/signup'
 import { Route as AuthLoginImport } from './routes/_auth/login'
+import { Route as DashboardProjectsIndexImport } from './routes/_dashboard/projects/index'
 import { Route as DashboardProjectsIdImport } from './routes/_dashboard/projects/$id'
 
 // Create/Update Routes
@@ -95,6 +96,12 @@ const AuthLoginRoute = AuthLoginImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => AuthRouteRoute,
+} as any)
+
+const DashboardProjectsIndexRoute = DashboardProjectsIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardProjectsRoute,
 } as any)
 
 const DashboardProjectsIdRoute = DashboardProjectsIdImport.update({
@@ -198,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardProjectsIdImport
       parentRoute: typeof DashboardProjectsImport
     }
+    '/_dashboard/projects/': {
+      id: '/_dashboard/projects/'
+      path: '/'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof DashboardProjectsIndexImport
+      parentRoute: typeof DashboardProjectsImport
+    }
   }
 }
 
@@ -219,10 +233,12 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 
 interface DashboardProjectsRouteChildren {
   DashboardProjectsIdRoute: typeof DashboardProjectsIdRoute
+  DashboardProjectsIndexRoute: typeof DashboardProjectsIndexRoute
 }
 
 const DashboardProjectsRouteChildren: DashboardProjectsRouteChildren = {
   DashboardProjectsIdRoute: DashboardProjectsIdRoute,
+  DashboardProjectsIndexRoute: DashboardProjectsIndexRoute,
 }
 
 const DashboardProjectsRouteWithChildren =
@@ -265,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof DashboardProjectsRouteWithChildren
   '/users': typeof DashboardUsersRoute
   '/projects/$id': typeof DashboardProjectsIdRoute
+  '/projects/': typeof DashboardProjectsIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -277,9 +294,9 @@ export interface FileRoutesByTo {
   '/cost-analysis': typeof DashboardCostAnalysisRoute
   '/dashboard': typeof DashboardDashboardRoute
   '/logs': typeof DashboardLogsRoute
-  '/projects': typeof DashboardProjectsRouteWithChildren
   '/users': typeof DashboardUsersRoute
   '/projects/$id': typeof DashboardProjectsIdRoute
+  '/projects': typeof DashboardProjectsIndexRoute
 }
 
 export interface FileRoutesById {
@@ -297,6 +314,7 @@ export interface FileRoutesById {
   '/_dashboard/projects': typeof DashboardProjectsRouteWithChildren
   '/_dashboard/users': typeof DashboardUsersRoute
   '/_dashboard/projects/$id': typeof DashboardProjectsIdRoute
+  '/_dashboard/projects/': typeof DashboardProjectsIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -314,6 +332,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/users'
     | '/projects/$id'
+    | '/projects/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -325,9 +344,9 @@ export interface FileRouteTypes {
     | '/cost-analysis'
     | '/dashboard'
     | '/logs'
-    | '/projects'
     | '/users'
     | '/projects/$id'
+    | '/projects'
   id:
     | '__root__'
     | '/'
@@ -343,6 +362,7 @@ export interface FileRouteTypes {
     | '/_dashboard/projects'
     | '/_dashboard/users'
     | '/_dashboard/projects/$id'
+    | '/_dashboard/projects/'
   fileRoutesById: FileRoutesById
 }
 
@@ -427,7 +447,8 @@ export const routeTree = rootRoute
       "filePath": "_dashboard/projects.tsx",
       "parent": "/_dashboard",
       "children": [
-        "/_dashboard/projects/$id"
+        "/_dashboard/projects/$id",
+        "/_dashboard/projects/"
       ]
     },
     "/_dashboard/users": {
@@ -436,6 +457,10 @@ export const routeTree = rootRoute
     },
     "/_dashboard/projects/$id": {
       "filePath": "_dashboard/projects/$id.tsx",
+      "parent": "/_dashboard/projects"
+    },
+    "/_dashboard/projects/": {
+      "filePath": "_dashboard/projects/index.tsx",
       "parent": "/_dashboard/projects"
     }
   }
