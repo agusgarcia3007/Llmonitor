@@ -31,6 +31,8 @@ export const auth = betterAuth({
     crossSubDomainCookies: { enabled: true },
   },
   session: {
+    expiresIn: 60 * 60 * 24 * 30, // 30 days
+    updateAge: 60 * 60 * 24 * 7,
     cookieCache: {
       enabled: true,
       maxAge: 5 * 60,

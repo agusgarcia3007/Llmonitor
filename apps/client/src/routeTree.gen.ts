@@ -15,6 +15,7 @@ import { Route as DashboardRouteImport } from './routes/_dashboard/route'
 import { Route as AuthRouteImport } from './routes/_auth/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardUsersImport } from './routes/_dashboard/users'
+import { Route as DashboardProjectsImport } from './routes/_dashboard/projects'
 import { Route as DashboardLogsImport } from './routes/_dashboard/logs'
 import { Route as DashboardDashboardImport } from './routes/_dashboard/dashboard'
 import { Route as DashboardCostAnalysisImport } from './routes/_dashboard/cost-analysis'
@@ -44,6 +45,12 @@ const IndexRoute = IndexImport.update({
 const DashboardUsersRoute = DashboardUsersImport.update({
   id: '/users',
   path: '/users',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+
+const DashboardProjectsRoute = DashboardProjectsImport.update({
+  id: '/projects',
+  path: '/projects',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 
@@ -163,6 +170,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLogsImport
       parentRoute: typeof DashboardRouteImport
     }
+    '/_dashboard/projects': {
+      id: '/_dashboard/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof DashboardProjectsImport
+      parentRoute: typeof DashboardRouteImport
+    }
     '/_dashboard/users': {
       id: '/_dashboard/users'
       path: '/users'
@@ -195,6 +209,7 @@ interface DashboardRouteRouteChildren {
   DashboardCostAnalysisRoute: typeof DashboardCostAnalysisRoute
   DashboardDashboardRoute: typeof DashboardDashboardRoute
   DashboardLogsRoute: typeof DashboardLogsRoute
+  DashboardProjectsRoute: typeof DashboardProjectsRoute
   DashboardUsersRoute: typeof DashboardUsersRoute
 }
 
@@ -204,6 +219,7 @@ const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardCostAnalysisRoute: DashboardCostAnalysisRoute,
   DashboardDashboardRoute: DashboardDashboardRoute,
   DashboardLogsRoute: DashboardLogsRoute,
+  DashboardProjectsRoute: DashboardProjectsRoute,
   DashboardUsersRoute: DashboardUsersRoute,
 }
 
@@ -221,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/cost-analysis': typeof DashboardCostAnalysisRoute
   '/dashboard': typeof DashboardDashboardRoute
   '/logs': typeof DashboardLogsRoute
+  '/projects': typeof DashboardProjectsRoute
   '/users': typeof DashboardUsersRoute
 }
 
@@ -234,6 +251,7 @@ export interface FileRoutesByTo {
   '/cost-analysis': typeof DashboardCostAnalysisRoute
   '/dashboard': typeof DashboardDashboardRoute
   '/logs': typeof DashboardLogsRoute
+  '/projects': typeof DashboardProjectsRoute
   '/users': typeof DashboardUsersRoute
 }
 
@@ -249,6 +267,7 @@ export interface FileRoutesById {
   '/_dashboard/cost-analysis': typeof DashboardCostAnalysisRoute
   '/_dashboard/dashboard': typeof DashboardDashboardRoute
   '/_dashboard/logs': typeof DashboardLogsRoute
+  '/_dashboard/projects': typeof DashboardProjectsRoute
   '/_dashboard/users': typeof DashboardUsersRoute
 }
 
@@ -264,6 +283,7 @@ export interface FileRouteTypes {
     | '/cost-analysis'
     | '/dashboard'
     | '/logs'
+    | '/projects'
     | '/users'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -276,6 +296,7 @@ export interface FileRouteTypes {
     | '/cost-analysis'
     | '/dashboard'
     | '/logs'
+    | '/projects'
     | '/users'
   id:
     | '__root__'
@@ -289,6 +310,7 @@ export interface FileRouteTypes {
     | '/_dashboard/cost-analysis'
     | '/_dashboard/dashboard'
     | '/_dashboard/logs'
+    | '/_dashboard/projects'
     | '/_dashboard/users'
   fileRoutesById: FileRoutesById
 }
@@ -338,6 +360,7 @@ export const routeTree = rootRoute
         "/_dashboard/cost-analysis",
         "/_dashboard/dashboard",
         "/_dashboard/logs",
+        "/_dashboard/projects",
         "/_dashboard/users"
       ]
     },
@@ -367,6 +390,10 @@ export const routeTree = rootRoute
     },
     "/_dashboard/logs": {
       "filePath": "_dashboard/logs.tsx",
+      "parent": "/_dashboard"
+    },
+    "/_dashboard/projects": {
+      "filePath": "_dashboard/projects.tsx",
       "parent": "/_dashboard"
     },
     "/_dashboard/users": {

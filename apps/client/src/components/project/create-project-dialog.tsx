@@ -9,12 +9,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { authClient } from "@/lib/auth-client";
-import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { useCreateOrganization } from "@/services/organizations/mutations";
 
 interface CreateProjectDialogProps {
   open: boolean;
@@ -26,37 +24,24 @@ export function CreateProjectDialog({
   onOpenChange,
 }: CreateProjectDialogProps) {
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  const [loading, setLoading] = useState(false);
+  const createOrganization = useCreateOrganization();
 
   const form = useForm<{ name: string; logo: string }>({
     defaultValues: { name: "", logo: "" },
   });
 
   const handleSave = async (values: { name: string; logo: string }) => {
-    setLoading(true);
     try {
-      await authClient.organization.create({
+      await createOrganization.mutateAsync({
         name: values.name,
         slug: values.name.toLowerCase().replace(/\s+/g, "-"),
         logo: values.logo,
       });
       toast.success(t("projects.projectCreated"));
-      queryClient.invalidateQueries({ queryKey: ["llm-events"], exact: false });
-      queryClient.invalidateQueries({
-        queryKey: ["dashboard-stats"],
-        exact: false,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["organizations"],
-        exact: false,
-      });
       onOpenChange(false);
       form.reset({ name: "", logo: "" });
     } catch {
       toast.error(t("common.error"));
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -101,7 +86,7 @@ export function CreateProjectDialog({
               >
                 {t("common.cancel")}
               </Button>
-              <Button type="submit" disabled={loading}>
+              <Button type="submit" isLoading={createOrganization.isPending}>
                 {t("common.create")}
               </Button>
             </div>

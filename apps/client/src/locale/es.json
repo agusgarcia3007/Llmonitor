@@ -154,6 +154,18 @@
     "last": "Últimos {{days}} días",
     "day": "día"
   },
+  "navigation": {
+    "dashboard": "Panel",
+    "projects": "Proyectos",
+    "logs": "Registros",
+    "costAnalysis": "Análisis de Costos",
+    "alerts": "Alertas",
+    "experiments": "Experimentos",
+    "apiKeys": "Claves API",
+    "users": "Usuarios",
+    "settings": "Configuración",
+    "documentation": "Documentación"
+  },
   "dashboard": {
     "stats": {
       "totalEvents": "Total de Eventos",
@@ -297,14 +309,14 @@
     "status": "Estado",
     "prompt": "Prompt",
     "completion": "Respuesta",
-    "promptTokens": "Tokens Prompt",
-    "completionTokens": "Tokens Respuesta",
+    "promptTokens": "Tokens de Prompt",
+    "completionTokens": "Tokens de Respuesta",
     "latency": "Latencia (ms)",
     "cost": "Costo",
-    "createdAt": "Creado",
-    "metadata": "Metadata",
-    "selectApiKey": "Seleccionar API Key",
-    "allApiKeys": "Todas las API Keys"
+    "createdAt": "Creado en",
+    "metadata": "Metadatos",
+    "selectApiKey": "Seleccionar Clave API",
+    "allApiKeys": "Todas las Claves API"
   },
   "organization": {
     "copy": "Copiar",
@@ -360,6 +372,51 @@
     "requestDetails": {
       "requests": "solicitudes",
       "tokens": "tokens"
+    }
+  },
+  "projects": {
+    "title": "Proyectos",
+    "description": "Gestiona tus proyectos y organiza tu monitoreo de IA",
+    "createProject": "Crear Proyecto",
+    "createFirstProject": "Crear tu primer proyecto",
+    "noProjectsTitle": "Aún no tienes proyectos",
+    "noProjectsDescription": "Crea tu primer proyecto para comenzar a organizar tu monitoreo de IA",
+    "projectName": "Nombre del Proyecto",
+    "projectLogo": "Logo del Proyecto",
+    "projectCreated": "Proyecto creado exitosamente",
+    "projectUpdated": "Proyecto actualizado exitosamente",
+    "featurePreview": {
+      "title": "Vista Previa de Proyectos",
+      "description": "Próximamente en LLMonitor",
+      "organize": {
+        "title": "🚀 Organiza tu monitoreo",
+        "description": "Agrupa claves API, registros y análisis por proyecto para mejor organización"
+      },
+      "collaboration": {
+        "title": "👥 Colaboración en equipo",
+        "description": "Invita miembros del equipo y gestiona permisos por proyecto"
+      },
+      "analytics": {
+        "title": "📊 Análisis específicos por proyecto",
+        "description": "Obtén insights y reportes enfocados en proyectos individuales"
+      },
+      "configuration": {
+        "title": "⚙️ Configuraciones personalizadas",
+        "description": "Establece alertas, presupuestos y reglas de monitoreo específicas por proyecto"
+      }
+    },
+    "sample": {
+      "project1": {
+        "title": "Proyecto de Ejemplo 1",
+        "description": "Próximamente - Funciones de gestión de proyectos"
+      },
+      "project2": {
+        "title": "Proyecto de Ejemplo 2",
+        "description": "Próximamente - Colaboración en equipo"
+      },
+      "apiKeys": "Claves API",
+      "events": "Eventos",
+      "cost": "Costo"
     }
   }
 }

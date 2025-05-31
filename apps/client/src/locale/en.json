@@ -154,6 +154,18 @@
     "last": "Last {{days}} days",
     "day": "day"
   },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "logs": "Logs",
+    "costAnalysis": "Cost Analysis",
+    "alerts": "Alerts",
+    "experiments": "Experiments",
+    "apiKeys": "API Keys",
+    "users": "Users",
+    "settings": "Settings",
+    "documentation": "Documentation"
+  },
   "dashboard": {
     "stats": {
       "totalEvents": "Total Events",
@@ -305,6 +317,51 @@
     "metadata": "Metadata",
     "selectApiKey": "Select API Key",
     "allApiKeys": "All API Keys"
+  },
+  "projects": {
+    "title": "Projects",
+    "description": "Manage your projects and organize your AI monitoring",
+    "createProject": "Create Project",
+    "createFirstProject": "Create your first project",
+    "noProjectsTitle": "No projects yet",
+    "noProjectsDescription": "Create your first project to start organizing your AI monitoring",
+    "projectName": "Project Name",
+    "projectLogo": "Project Logo",
+    "projectCreated": "Project created successfully",
+    "projectUpdated": "Project updated successfully",
+    "featurePreview": {
+      "title": "Projects Feature Preview",
+      "description": "Coming soon to LLMonitor",
+      "organize": {
+        "title": "🚀 Organize your monitoring",
+        "description": "Group API keys, logs, and analytics by project for better organization"
+      },
+      "collaboration": {
+        "title": "👥 Team collaboration",
+        "description": "Invite team members and manage permissions per project"
+      },
+      "analytics": {
+        "title": "📊 Project-specific analytics",
+        "description": "Get insights and reports scoped to individual projects"
+      },
+      "configuration": {
+        "title": "⚙️ Custom configurations",
+        "description": "Set project-specific alerts, budgets, and monitoring rules"
+      }
+    },
+    "sample": {
+      "project1": {
+        "title": "Sample Project 1",
+        "description": "Coming soon - Project management features"
+      },
+      "project2": {
+        "title": "Sample Project 2",
+        "description": "Coming soon - Team collaboration"
+      },
+      "apiKeys": "API Keys",
+      "events": "Events",
+      "cost": "Cost"
+    }
   },
   "organization": {
     "copy": "Copy",

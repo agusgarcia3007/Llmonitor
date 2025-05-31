@@ -9,9 +9,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { authClient } from "@/lib/auth-client";
-import { useQueryClient } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { useUpdateOrganization } from "@/services/organizations/mutations";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -34,8 +33,7 @@ export function EditProjectDialog({
   organization,
 }: EditProjectDialogProps) {
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  const [loading, setLoading] = useState(false);
+  const updateOrganization = useUpdateOrganization();
 
   const form = useForm<{ name: string; logo: string }>({
     defaultValues: { name: "", logo: "" },
@@ -53,27 +51,17 @@ export function EditProjectDialog({
   const handleSave = async (values: { name: string; logo: string }) => {
     if (!organization) return;
 
-    setLoading(true);
     try {
-      await authClient.organization.update({
-        data: { name: values.name, logo: values.logo },
-        organizationId: organization.id,
+      await updateOrganization.mutateAsync({
+        id: organization.id,
+        name: values.name,
+        slug: values.name.toLowerCase().replace(/\s+/g, "-"),
+        logo: values.logo,
       });
       toast.success(t("projects.projectUpdated"));
-      queryClient.invalidateQueries({ queryKey: ["llm-events"], exact: false });
-      queryClient.invalidateQueries({
-        queryKey: ["dashboard-stats"],
-        exact: false,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["organizations"],
-        exact: false,
-      });
       onOpenChange(false);
     } catch {
       toast.error(t("common.error"));
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -118,7 +106,7 @@ export function EditProjectDialog({
               >
                 {t("organization.cancel")}
               </Button>
-              <Button type="submit" disabled={loading}>
+              <Button type="submit" isLoading={updateOrganization.isPending}>
                 {t("organization.save")}
               </Button>
             </div>

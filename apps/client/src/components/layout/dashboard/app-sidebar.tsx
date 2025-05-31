@@ -1,5 +1,6 @@
 import {
   IconBell,
+  IconBriefcase,
   IconCurrency,
   IconDashboard,
   IconFileDescription,
@@ -25,63 +26,12 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import { Link } from "@tanstack/react-router";
-
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: IconDashboard,
-    },
-    {
-      title: "Logs",
-      url: "/logs",
-      icon: IconFileDescription,
-    },
-    {
-      title: "Cost Analysis",
-      url: "/cost-analysis",
-      icon: IconCurrency,
-    },
-    {
-      title: "Alerts",
-      url: "/alerts",
-      icon: IconBell,
-    },
-    // {
-    //   title: "Experiments",
-    //   url: "/experiments",
-    //   icon: IconFlask,
-    //   isComingSoon: true,
-    // },
-    {
-      title: "API Keys",
-      url: "/api-keys",
-      icon: IconKey,
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: IconSettings,
-    },
-    {
-      title: "Documentation",
-      url: "/docs",
-      icon: IconHelp,
-      external: true,
-    },
-  ],
-};
+import { useTranslation } from "react-i18next";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session, isPending } = authClient.useSession();
+  const { t } = useTranslation();
+
   const user = session?.user
     ? {
         name: session.user.name || session.user.email,
@@ -89,6 +39,60 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         avatar: session.user.image || "",
       }
     : null;
+
+  const data = {
+    navMain: [
+      {
+        title: t("navigation.dashboard"),
+        url: "/dashboard",
+        icon: IconDashboard,
+      },
+      {
+        title: t("navigation.projects"),
+        url: "/projects",
+        icon: IconBriefcase,
+      },
+      {
+        title: t("navigation.logs"),
+        url: "/logs",
+        icon: IconFileDescription,
+      },
+      {
+        title: t("navigation.costAnalysis"),
+        url: "/cost-analysis",
+        icon: IconCurrency,
+      },
+      {
+        title: t("navigation.alerts"),
+        url: "/alerts",
+        icon: IconBell,
+      },
+      // {
+      //   title: t("navigation.experiments"),
+      //   url: "/experiments",
+      //   icon: IconFlask,
+      //   isComingSoon: true,
+      // },
+      {
+        title: t("navigation.apiKeys"),
+        url: "/api-keys",
+        icon: IconKey,
+      },
+    ],
+    navSecondary: [
+      {
+        title: t("navigation.settings"),
+        url: "/settings",
+        icon: IconSettings,
+      },
+      {
+        title: t("navigation.documentation"),
+        url: "/docs",
+        icon: IconHelp,
+        external: true,
+      },
+    ],
+  };
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -119,7 +123,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <SidebarMenuButton asChild>
                 <Link to="/users">
                   <IconUsers className="mr-2" />
-                  <span>Users</span>
+                  <span>{t("navigation.users")}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
