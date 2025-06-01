@@ -11,7 +11,8 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
   });
 
   if (error) {
-    throw error;
+    console.log(`Error sending email to ${to}:`, error);
+    return;
   }
 
   return data;

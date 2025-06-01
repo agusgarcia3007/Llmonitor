@@ -1,15 +1,31 @@
-import { Resend } from "resend";
 import { siteData } from "./constants";
+import { sendEmail } from "./send-email";
+import * as fs from "fs";
+import * as path from "path";
 
 export class EmailService {
-  private resend: Resend;
-
   constructor() {
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
       throw new Error("RESEND_API_KEY environment variable is required");
     }
-    this.resend = new Resend(apiKey);
+  }
+
+  private loadEmailTemplate(templateName: string): string {
+    const templatePath = path.join(__dirname, "../emails", templateName);
+    return fs.readFileSync(templatePath, "utf-8");
+  }
+
+  private replaceTemplatePlaceholders(
+    template: string,
+    replacements: Record<string, string>
+  ): string {
+    let result = template;
+    for (const [key, value] of Object.entries(replacements)) {
+      const placeholder = `{{${key}}}`;
+      result = result.replace(new RegExp(placeholder, "g"), value);
+    }
+    return result;
   }
 
   async sendAlertEmail(
@@ -23,36 +39,29 @@ export class EmailService {
     try {
       const subject = `🚨 Alert Triggered: ${alertName}`;
 
-      const htmlContent = this.generateAlertEmailHTML({
-        alertName,
+      const metricDisplayName = this.getMetricDisplayName(metric);
+      const formattedActualValue = this.formatMetricValue(metric, actualValue);
+      const formattedThresholdValue = this.formatMetricValue(
         metric,
-        actualValue,
-        thresholdValue,
-        organizationName: organizationName || "Your Organization",
-      });
+        thresholdValue
+      );
+      const orgName = organizationName || "Your Organization";
 
-      const textContent = this.generateAlertEmailText({
+      const template = this.loadEmailTemplate("alert-email.html");
+      const htmlContent = this.replaceTemplatePlaceholders(template, {
         alertName,
-        metric,
-        actualValue,
-        thresholdValue,
-        organizationName: organizationName || "Your Organization",
+        metricDisplayName,
+        formattedActualValue,
+        formattedThresholdValue,
+        organizationName: orgName,
+        metricDisplayNameLower: metricDisplayName.toLowerCase(),
+        timestamp: new Date().toLocaleString(),
+        dashboardUrl: `${siteData.url}/alerts`,
+        settingsUrl: `${siteData.url}/settings/alerts`,
       });
 
-      const result = await this.resend.emails.send({
-        from: `LLMonitor Alerts <alerts@${siteData.url}>`,
-        to: [to],
-        subject,
-        html: htmlContent,
-        text: textContent,
-      });
-
-      if (result.error) {
-        console.error("Error sending alert email:", result.error);
-        return false;
-      }
-
-      console.log(`Alert email sent successfully to ${to}:`, result.data?.id);
+      const result = await sendEmail(to, subject, htmlContent);
+      console.log(`Alert email sent successfully to ${to}:`, result?.id);
       return true;
     } catch (error) {
       console.error("Error sending alert email:", error);
@@ -60,124 +69,36 @@ export class EmailService {
     }
   }
 
-  private generateAlertEmailHTML({
-    alertName,
-    metric,
-    actualValue,
-    thresholdValue,
-    organizationName,
-  }: {
-    alertName: string;
-    metric: string;
-    actualValue: number;
-    thresholdValue: number;
-    organizationName: string;
-  }): string {
-    const metricDisplayName = this.getMetricDisplayName(metric);
-    const formattedActualValue = this.formatMetricValue(metric, actualValue);
-    const formattedThresholdValue = this.formatMetricValue(
-      metric,
-      thresholdValue
-    );
+  async sendInvitationEmail(
+    to: string,
+    organizationName: string,
+    inviterName: string,
+    role: string,
+    invitationId: string
+  ): Promise<boolean> {
+    try {
+      const subject = `You're invited to join ${organizationName} on LLMonitor`;
 
-    return `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Alert Triggered</title>
-        </head>
-        <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
-          <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            
-            <!-- Header -->
-            <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 20px; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">🚨 Alert Triggered</h1>
-            </div>
-            
-            <!-- Content -->
-            <div style="padding: 30px;">
-              <h2 style="color: #333; margin: 0 0 20px 0; font-size: 20px;">${alertName}</h2>
-              
-              <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 16px; margin: 20px 0;">
-                <p style="margin: 0; color: #991b1b; font-weight: 600;">Alert Details:</p>
-                <ul style="margin: 10px 0 0 0; padding-left: 20px; color: #7f1d1d;">
-                  <li><strong>Metric:</strong> ${metricDisplayName}</li>
-                  <li><strong>Current Value:</strong> ${formattedActualValue}</li>
-                  <li><strong>Threshold:</strong> ${formattedThresholdValue}</li>
-                  <li><strong>Organization:</strong> ${organizationName}</li>
-                  <li><strong>Time:</strong> ${new Date().toLocaleString()}</li>
-                </ul>
-              </div>
-              
-              <p style="color: #666; line-height: 1.6; margin: 20px 0;">
-                This alert was triggered because your ${metricDisplayName.toLowerCase()} has exceeded the configured threshold. 
-                Please review your usage and take appropriate action if necessary.
-              </p>
-              
-              <div style="text-align: center; margin: 30px 0;">
-                <a href="${siteData.url}/alerts" 
-                   style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
-                  View Dashboard
-                </a>
-              </div>
-            </div>
-            
-            <!-- Footer -->
-            <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
-              <p style="color: #6b7280; font-size: 14px; margin: 0;">
-                This email was sent by LLMonitor Alert System.<br>
-                <a href="${
-                  siteData.url
-                }/settings/alerts" style="color: #3b82f6;">Manage alert settings</a>
-              </p>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
-  }
+      const acceptUrl = `${siteData.url}/accept-invitation?token=${invitationId}`;
 
-  private generateAlertEmailText({
-    alertName,
-    metric,
-    actualValue,
-    thresholdValue,
-    organizationName,
-  }: {
-    alertName: string;
-    metric: string;
-    actualValue: number;
-    thresholdValue: number;
-    organizationName: string;
-  }): string {
-    const metricDisplayName = this.getMetricDisplayName(metric);
-    const formattedActualValue = this.formatMetricValue(metric, actualValue);
-    const formattedThresholdValue = this.formatMetricValue(
-      metric,
-      thresholdValue
-    );
+      const template = this.loadEmailTemplate("invitation-email.html");
+      const htmlContent = this.replaceTemplatePlaceholders(template, {
+        organizationName,
+        inviterName,
+        role,
+        acceptUrl,
+        timestamp: new Date().toLocaleString(),
+        siteUrl: siteData.url,
+        settingsUrl: `${siteData.url}/settings/invitations`,
+      });
 
-    return `
-ALERT TRIGGERED: ${alertName}
-
-Alert Details:
-- Metric: ${metricDisplayName}
-- Current Value: ${formattedActualValue}
-- Threshold: ${formattedThresholdValue}
-- Organization: ${organizationName}
-- Time: ${new Date().toLocaleString()}
-
-This alert was triggered because your ${metricDisplayName.toLowerCase()} has exceeded the configured threshold.
-Please review your usage and take appropriate action if necessary.
-
-View Dashboard: ${siteData.url}/alerts
-Manage Settings: ${siteData.url}/settings/alerts
-
----
-This email was sent by LLMonitor Alert System.
-    `.trim();
+      const result = await sendEmail(to, subject, htmlContent);
+      console.log(`Invitation email sent successfully to ${to}:`, result?.id);
+      return true;
+    } catch (error) {
+      console.error("Error sending invitation email:", error);
+      return false;
+    }
   }
 
   private getMetricDisplayName(metric: string): string {

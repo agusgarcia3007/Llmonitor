@@ -155,7 +155,8 @@
     "day": "day",
     "created": "Created",
     "lastUpdated": "Last Updated",
-    "more": "more"
+    "more": "more",
+    "goBack": "Go Back"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -382,7 +383,38 @@
       "apiKeys": "API Keys",
       "events": "Events",
       "cost": "Cost"
-    }
+    },
+    "inviteMember": "Invite Member",
+    "invitationManagement": "Invitation Management",
+    "pending": "pending",
+    "sendNewInvitation": "Send New Invitation",
+    "inviteNewMembersDescription": "Invite new members to join this organization",
+    "emailAddress": "Email Address",
+    "emailPlaceholder": "member@example.com",
+    "selectRole": "Select a role",
+    "roles": {
+      "member": "Member",
+      "admin": "Admin",
+      "owner": "Owner"
+    },
+    "sendInvitation": "Send Invitation",
+    "pendingInvitations": "Pending Invitations",
+    "invitations": "invitations",
+    "role": "Role",
+    "expires": "Expires",
+    "cancelInvitation": "Cancel Invitation",
+    "invitationCanceled": "Invitation canceled",
+    "noPendingInvitations": "No pending invitations",
+    "sendInvitationsDescription": "Send invitations to add new members to your organization",
+    "slug": "Slug",
+    "apiInformation": "API Information",
+    "logo": "Logo",
+    "organizationLogo": "Organization logo",
+    "created": "Created",
+    "membersCount": "members",
+    "unknownUser": "Unknown User",
+    "invitationSentSuccessfully": "Invitation sent successfully!",
+    "andMoreMembers": "And {{count}} more members"
   },
   "organization": {
     "copy": "Copy",

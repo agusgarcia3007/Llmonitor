@@ -59,12 +59,16 @@ function Button({
       disabled={isLoading || disabled}
       {...props}
     >
-      <div className="flex items-center gap-2">
-        {isLoading && <IconLoader3 className="animate-spin" />}
-        <span className="flex items-center gap-2" aria-hidden={isLoading}>
-          {children}
-        </span>
-      </div>
+      {isLoading && size === "icon" ? (
+        <IconLoader3 className="animate-spin" />
+      ) : (
+        <div className="flex items-center gap-2">
+          {isLoading && <IconLoader3 className="animate-spin" />}
+          <span className="flex items-center gap-2" aria-hidden={isLoading}>
+            {children}
+          </span>
+        </div>
+      )}
     </Comp>
   );
 }

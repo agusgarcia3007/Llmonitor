@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invitation to Join - LLMonitor</title>
+    <style>
+      :root {
+        --background: oklch(0.98 0 247.86);
+        --foreground: oklch(0.28 0.04 260.03);
+        --card: oklch(1 0 0);
+        --card-foreground: oklch(0.28 0.04 260.03);
+        --primary: oklch(0.59 0.2 277.12);
+        --primary-foreground: oklch(1 0 0);
+        --secondary: oklch(0.93 0.01 264.53);
+        --secondary-foreground: oklch(0.37 0.03 259.73);
+        --muted: oklch(0.97 0 264.54);
+        --muted-foreground: oklch(0.55 0.02 264.36);
+        --accent: oklch(0.93 0.03 272.79);
+        --accent-foreground: oklch(0.37 0.03 259.73);
+        --border: oklch(0.87 0.01 258.34);
+        --radius: 0.5rem;
+      }
+
+      .dark {
+        --background: oklch(0.21 0.04 265.75);
+        --foreground: oklch(0.93 0.01 255.51);
+        --card: oklch(0.28 0.04 260.03);
+        --card-foreground: oklch(0.93 0.01 255.51);
+        --primary: oklch(0.68 0.16 276.93);
+        --primary-foreground: oklch(0.21 0.04 265.75);
+        --secondary: oklch(0.34 0.03 260.91);
+        --secondary-foreground: oklch(0.87 0.01 258.34);
+        --muted: oklch(0.28 0.04 260.03);
+        --muted-foreground: oklch(0.71 0.02 261.32);
+        --accent: oklch(0.36 0.14 278.7);
+        --accent-foreground: oklch(0.87 0.01 258.34);
+        --border: oklch(0.37 0.04 257.29);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background-color: var(--background);
+        color: var(--foreground);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: var(--card);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: 0 4px 8px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--accent) 100%
+        );
+        padding: 32px 24px;
+        text-align: center;
+      }
+
+      .header h1 {
+        color: var(--primary-foreground);
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+      }
+
+      .content {
+        padding: 32px 24px;
+      }
+
+      .invitation-title {
+        color: var(--foreground);
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 24px;
+        letter-spacing: -0.025em;
+      }
+
+      .invitation-box {
+        background-color: var(--secondary);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin: 24px 0;
+      }
+
+      .invitation-label {
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+
+      .invitation-details {
+        margin: 12px 0 0 0;
+        padding-left: 20px;
+        color: var(--foreground);
+      }
+
+      .invitation-details li {
+        margin-bottom: 6px;
+      }
+
+      .invitation-details strong {
+        font-weight: 600;
+      }
+
+      .description {
+        color: var(--muted-foreground);
+        margin: 24px 0;
+      }
+
+      .cta-container {
+        text-align: center;
+        margin: 32px 0;
+      }
+
+      .cta-button {
+        display: inline-block;
+        background-color: var(--primary);
+        color: var(--primary-foreground);
+        padding: 16px 32px;
+        text-decoration: none;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .organization-info {
+        background-color: var(--accent);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin: 24px 0;
+        border-left: 4px solid var(--primary);
+      }
+
+      .organization-name {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--foreground);
+        margin-bottom: 8px;
+      }
+
+      .organization-description {
+        color: var(--muted-foreground);
+        font-size: 14px;
+      }
+
+      .footer {
+        background-color: var(--muted);
+        padding: 24px;
+        text-align: center;
+        border-top: 1px solid var(--border);
+      }
+
+      .footer p {
+        color: var(--muted-foreground);
+        font-size: 14px;
+        margin: 0 0 8px 0;
+      }
+
+      .footer a {
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+
+      .expiry-notice {
+        background-color: var(--accent);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin: 20px 0;
+        text-align: center;
+      }
+
+      .expiry-notice p {
+        color: var(--accent-foreground);
+        font-size: 14px;
+        margin: 0;
+      }
+
+      @media (max-width: 640px) {
+        .container {
+          margin: 0 16px;
+        }
+
+        .header {
+          padding: 24px 16px;
+        }
+
+        .content {
+          padding: 24px 16px;
+        }
+
+        .footer {
+          padding: 20px 16px;
+        }
+
+        .cta-button {
+          padding: 14px 24px;
+          font-size: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🎉 You're Invited!</h1>
+      </div>
+
+      <div class="content">
+        <div class="organization-info">
+          <div class="organization-name">{{organizationName}}</div>
+          <div class="organization-description">
+            Join this organization on LLMonitor
+          </div>
+        </div>
+
+        <div class="invitation-box">
+          <p class="invitation-label">Invitation Details:</p>
+          <ul class="invitation-details">
+            <li><strong>Role:</strong> {{role}}</li>
+            <li><strong>Invited by:</strong> {{inviterName}}</li>
+            <li><strong>Time:</strong> {{timestamp}}</li>
+          </ul>
+        </div>
+
+        <p class="description">
+          You've been invited to join <strong>{{organizationName}}</strong> on
+          LLMonitor as a <strong>{{role}}</strong>. Click the button below to
+          accept your invitation and start collaborating with your team.
+        </p>
+
+        <div class="cta-container">
+          <a href="{{acceptUrl}}" class="cta-button"> Accept Invitation </a>
+        </div>
+
+        <div class="expiry-notice">
+          <p>
+            ⏰ This invitation will expire in 7 days. Accept it soon to join the
+            organization!
+          </p>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>
+          This email was sent by LLMonitor.<br />
+          <a href="{{siteUrl}}">Visit LLMonitor</a> |
+          <a href="{{settingsUrl}}">Manage invitations</a>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

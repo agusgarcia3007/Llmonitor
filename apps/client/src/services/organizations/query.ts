@@ -16,9 +16,47 @@ export const useGetOrganizationById = (organizationId: string) => {
   });
 };
 
+export const useGetOrganizationBySlug = (organizationSlug: string) => {
+  return useQuery({
+    queryKey: ["organization", "slug", organizationSlug],
+    queryFn: () => OrganizationService.getOrganizationBySlug(organizationSlug),
+    enabled: !!organizationSlug,
+  });
+};
+
 export const useGetOrganizationsList = () => {
   return useQuery({
     queryKey: ["organizations"],
     queryFn: OrganizationService.getOrganizationsList,
+  });
+};
+
+export const useCheckSlug = (slug: string) => {
+  return useQuery({
+    queryKey: ["organization", "checkSlug", slug],
+    queryFn: () => OrganizationService.checkSlug(slug),
+    enabled: !!slug,
+  });
+};
+
+export const useGetInvitation = (invitationId: string) => {
+  return useQuery({
+    queryKey: ["invitation", invitationId],
+    queryFn: () => OrganizationService.getInvitation(invitationId),
+    enabled: !!invitationId,
+  });
+};
+
+export const useListInvitations = (organizationId?: string) => {
+  return useQuery({
+    queryKey: ["invitations", organizationId],
+    queryFn: () => OrganizationService.listInvitations(organizationId),
+  });
+};
+
+export const useGetActiveMember = () => {
+  return useQuery({
+    queryKey: ["activeMember"],
+    queryFn: OrganizationService.getActiveMember,
   });
 };

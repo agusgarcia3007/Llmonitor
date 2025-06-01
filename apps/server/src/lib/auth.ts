@@ -9,11 +9,13 @@ import { eq } from "drizzle-orm";
 import Stripe from "stripe";
 import { TRUSTED_ORIGINS } from "./constants";
 import { getActiveOrganization } from "./utils";
+import { EmailService } from "./email-service";
 
 const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-05-28.basil",
 });
 
+const emailService = new EmailService();
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg", // or "mysql", "sqlite"
@@ -40,7 +42,32 @@ export const auth = betterAuth({
   },
 
   plugins: [
-    organization(),
+    organization({
+      cancelPendingInvitationsOnReInvite: true,
+      sendInvitationEmail: async (invitation, request) => {
+        try {
+          const organizationName = invitation.organization.name;
+          const inviterName =
+            invitation.inviter.user.name ||
+            invitation.inviter.user.email ||
+            "Someone";
+
+          await emailService.sendInvitationEmail(
+            invitation.email,
+            organizationName,
+            inviterName,
+            invitation.role,
+            invitation.id
+          );
+
+          console.log(
+            `Invitation email sent to ${invitation.email} for organization ${organizationName}`
+          );
+        } catch (error) {
+          console.error("Failed to send invitation email:", error);
+        }
+      },
+    }),
     admin(),
     apiKey(),
     openAPI(),

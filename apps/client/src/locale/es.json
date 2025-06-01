@@ -155,7 +155,8 @@
     "day": "día",
     "created": "Creado",
     "lastUpdated": "Última Actualización",
-    "more": "más"
+    "more": "más",
+    "goBack": "Volver"
   },
   "navigation": {
     "dashboard": "Panel",
@@ -438,6 +439,37 @@
       "apiKeys": "Claves API",
       "events": "Eventos",
       "cost": "Costo"
-    }
+    },
+    "inviteMember": "Invitar Miembro",
+    "invitationManagement": "Gestión de Invitaciones",
+    "pending": "pendientes",
+    "sendNewInvitation": "Enviar Nueva Invitación",
+    "inviteNewMembersDescription": "Invita nuevos miembros a unirse a esta organización",
+    "emailAddress": "Dirección de Email",
+    "emailPlaceholder": "miembro@ejemplo.com",
+    "selectRole": "Seleccionar un rol",
+    "roles": {
+      "member": "Miembro",
+      "admin": "Administrador",
+      "owner": "Propietario"
+    },
+    "sendInvitation": "Enviar Invitación",
+    "pendingInvitations": "Invitaciones Pendientes",
+    "invitations": "invitaciones",
+    "role": "Rol",
+    "expires": "Expira",
+    "cancelInvitation": "Cancelar Invitación",
+    "invitationCanceled": "Invitación cancelada",
+    "noPendingInvitations": "Sin invitaciones pendientes",
+    "sendInvitationsDescription": "Envía invitaciones para agregar nuevos miembros a tu organización",
+    "slug": "Slug",
+    "apiInformation": "Información de API",
+    "logo": "Logo",
+    "organizationLogo": "Logo de la organización",
+    "created": "Creado",
+    "membersCount": "miembros",
+    "unknownUser": "Usuario Desconocido",
+    "invitationSentSuccessfully": "¡Invitación enviada exitosamente!",
+    "andMoreMembers": "Y {{count}} miembros más"
   }
 }
