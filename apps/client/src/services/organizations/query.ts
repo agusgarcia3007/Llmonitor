@@ -60,3 +60,12 @@ export const useGetActiveMember = () => {
     queryFn: OrganizationService.getActiveMember,
   });
 };
+
+export const useGetInvitationByToken = (token: string) => {
+  return useQuery({
+    queryKey: ["invitation", "token", token],
+    queryFn: () => OrganizationService.getInvitationByToken(token),
+    enabled: !!token,
+    retry: false,
+  });
+};

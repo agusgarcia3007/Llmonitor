@@ -166,4 +166,20 @@ export class OrganizationService {
     if (error) throw error;
     return data;
   }
+
+  public static async rejectInvitation(invitationId: string) {
+    const { data, error } = await authClient.organization.cancelInvitation({
+      invitationId,
+    });
+    if (error) throw error;
+    return data;
+  }
+
+  public static async getInvitationByToken(token: string) {
+    const { data, error } = await authClient.organization.getInvitation({
+      query: { id: token },
+    });
+    if (error) throw error;
+    return data;
+  }
 }

@@ -23,6 +23,7 @@ import { Route as DashboardApiKeysImport } from './routes/_dashboard/api-keys'
 import { Route as DashboardAlertsImport } from './routes/_dashboard/alerts'
 import { Route as AuthSignupImport } from './routes/_auth/signup'
 import { Route as AuthLoginImport } from './routes/_auth/login'
+import { Route as AuthAcceptInvitationImport } from './routes/_auth/accept-invitation'
 import { Route as DashboardProjectsIndexImport } from './routes/_dashboard/projects/index'
 import { Route as DashboardProjectsIdImport } from './routes/_dashboard/projects/$id'
 
@@ -98,6 +99,12 @@ const AuthLoginRoute = AuthLoginImport.update({
   getParentRoute: () => AuthRouteRoute,
 } as any)
 
+const AuthAcceptInvitationRoute = AuthAcceptInvitationImport.update({
+  id: '/accept-invitation',
+  path: '/accept-invitation',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+
 const DashboardProjectsIndexRoute = DashboardProjectsIndexImport.update({
   id: '/',
   path: '/',
@@ -134,6 +141,13 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRoute
+    }
+    '/_auth/accept-invitation': {
+      id: '/_auth/accept-invitation'
+      path: '/accept-invitation'
+      fullPath: '/accept-invitation'
+      preLoaderRoute: typeof AuthAcceptInvitationImport
+      parentRoute: typeof AuthRouteImport
     }
     '/_auth/login': {
       id: '/_auth/login'
@@ -218,11 +232,13 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AuthRouteRouteChildren {
+  AuthAcceptInvitationRoute: typeof AuthAcceptInvitationRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthAcceptInvitationRoute: AuthAcceptInvitationRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
 }
@@ -271,6 +287,7 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof DashboardRouteRouteWithChildren
+  '/accept-invitation': typeof AuthAcceptInvitationRoute
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
   '/alerts': typeof DashboardAlertsRoute
@@ -287,6 +304,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof DashboardRouteRouteWithChildren
+  '/accept-invitation': typeof AuthAcceptInvitationRoute
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
   '/alerts': typeof DashboardAlertsRoute
@@ -304,6 +322,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_dashboard': typeof DashboardRouteRouteWithChildren
+  '/_auth/accept-invitation': typeof AuthAcceptInvitationRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/signup': typeof AuthSignupRoute
   '/_dashboard/alerts': typeof DashboardAlertsRoute
@@ -322,6 +341,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | ''
+    | '/accept-invitation'
     | '/login'
     | '/signup'
     | '/alerts'
@@ -337,6 +357,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | ''
+    | '/accept-invitation'
     | '/login'
     | '/signup'
     | '/alerts'
@@ -352,6 +373,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_auth'
     | '/_dashboard'
+    | '/_auth/accept-invitation'
     | '/_auth/login'
     | '/_auth/signup'
     | '/_dashboard/alerts'
@@ -399,6 +421,7 @@ export const routeTree = rootRoute
     "/_auth": {
       "filePath": "_auth/route.tsx",
       "children": [
+        "/_auth/accept-invitation",
         "/_auth/login",
         "/_auth/signup"
       ]
@@ -414,6 +437,10 @@ export const routeTree = rootRoute
         "/_dashboard/projects",
         "/_dashboard/users"
       ]
+    },
+    "/_auth/accept-invitation": {
+      "filePath": "_auth/accept-invitation.tsx",
+      "parent": "/_auth"
     },
     "/_auth/login": {
       "filePath": "_auth/login.tsx",

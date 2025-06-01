@@ -23,13 +23,16 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session, isPending } = authClient.useSession();
+  const { open } = useSidebar();
   const { t } = useTranslation();
 
   const user = session?.user
@@ -67,12 +70,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "/alerts",
         icon: IconBell,
       },
-      // {
-      //   title: t("navigation.experiments"),
-      //   url: "/experiments",
-      //   icon: IconFlask,
-      //   isComingSoon: true,
-      // },
       {
         title: t("navigation.apiKeys"),
         url: "/api-keys",
@@ -107,7 +104,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <img
                   src="/logo.svg"
                   alt="LLMonitor"
-                  className="!size-5 text-primary"
+                  className={cn(
+                    "transition-all duration-300",
+                    !open ? "!size-5" : "!size-7"
+                  )}
                 />
                 <span className="text-base font-semibold">LLMonitor</span>
               </Link>

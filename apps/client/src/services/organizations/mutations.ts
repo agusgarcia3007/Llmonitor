@@ -137,3 +137,16 @@ export const useCancelInvitation = () => {
     },
   });
 };
+
+export const useRejectInvitation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (invitationId: string) =>
+      OrganizationService.rejectInvitation(invitationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["invitations"] });
+      queryClient.invalidateQueries({ queryKey: ["organization"] });
+      queryClient.invalidateQueries({ queryKey: ["organizations"] });
+    },
+  });
+};
