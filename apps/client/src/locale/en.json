@@ -169,7 +169,12 @@
     "previous": "Previous",
     "first": "First",
     "last": "Last {{days}} days",
+    "last24Hours": "Last 24 hours",
+    "last7Days": "Last 7 days",
+    "lastMonth": "Last month",
+    "lastYear": "Last year",
     "day": "day",
+    "days": "days",
     "created": "Created",
     "lastUpdated": "Last Updated",
     "more": "more",
@@ -240,7 +245,10 @@
       "keepBelow": "Keep below 5% for reliability",
       "topModels": "Top Models by Usage",
       "mostFrequent": "Most frequently used models",
-      "calls": "calls"
+      "calls": "calls",
+      "eventsActivity": "Events Activity",
+      "eventsPerHour24h": "Showing events per hour for the last 24 hours",
+      "dailyEventsFor": "Showing daily events for the {{period}}"
     }
   },
   "landing": {

@@ -109,10 +109,10 @@ export function Dashboard() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="1">Last 24 hours</SelectItem>
-            <SelectItem value="7">Last 7 days</SelectItem>
-            <SelectItem value="30">Last month</SelectItem>
-            <SelectItem value="365">Last year</SelectItem>
+            <SelectItem value="1">{t("common.last24Hours")}</SelectItem>
+            <SelectItem value="7">{t("common.last7Days")}</SelectItem>
+            <SelectItem value="30">{t("common.lastMonth")}</SelectItem>
+            <SelectItem value="365">{t("common.lastYear")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -268,13 +268,13 @@ export function Dashboard() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Events Activity</CardTitle>
+            <CardTitle>{t("dashboard.stats.eventsActivity")}</CardTitle>
             <CardDescription>
               {days === 1
-                ? "Showing events per hour for the last 24 hours"
-                : `Showing daily events for the ${getSelectLabel(
-                    days
-                  ).toLowerCase()}`}
+                ? t("dashboard.stats.eventsPerHour24h")
+                : t("dashboard.stats.dailyEventsFor", {
+                    period: getSelectLabel(days).toLowerCase(),
+                  })}
             </CardDescription>
           </CardHeader>
           <CardContent>
