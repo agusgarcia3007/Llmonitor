@@ -34,10 +34,10 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import {
-  useGetInvitationByToken,
   useAcceptInvitation,
   useRejectInvitation,
-} from "@/services/organizations";
+} from "@/services/organizations/mutations";
+import { useGetInvitationByToken } from "@/services/organizations/query";
 
 const signupSchema = z.object({
   name: z.string().min(1, "Name is required"),

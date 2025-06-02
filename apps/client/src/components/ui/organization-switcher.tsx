@@ -53,6 +53,10 @@ export function OrganizationSwitcher() {
       queryKey: ["dashboard-stats"],
       exact: false,
     });
+    queryClient.invalidateQueries({
+      queryKey: ["cost-analysis"],
+      exact: false,
+    });
   };
 
   const handleCopyId = (id: string) => {
@@ -129,7 +133,7 @@ export function OrganizationSwitcher() {
             ) : (
               <>
                 <DropdownMenuLabel className="text-xs text-muted-foreground">
-                  {t("projects")}
+                  {t("navigation.projects")}
                 </DropdownMenuLabel>
                 {organizations.map((org: Organization) => (
                   <div
