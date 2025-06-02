@@ -301,7 +301,7 @@ export function CostAnalysisPage() {
                     >
                       <div className="flex items-center gap-3">
                         <Badge variant="outline" className="bg-primary/10">
-                          ${request.cost_usd.toFixed(3)}
+                          ${request.cost_usd.toFixed(6)}
                         </Badge>
                         <div>
                           <div className="font-medium">{request.model}</div>

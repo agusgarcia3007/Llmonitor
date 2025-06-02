@@ -50,6 +50,15 @@ export const useSetActiveOrganization = () => {
       queryClient.invalidateQueries({ queryKey: ["organization"] });
       queryClient.invalidateQueries({ queryKey: ["organizations"] });
       queryClient.invalidateQueries({ queryKey: ["activeMember"] });
+      queryClient.invalidateQueries({ queryKey: ["llm-events"], exact: false });
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard-stats"],
+        exact: false,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cost-analysis"],
+        exact: false,
+      });
     },
   });
 };
@@ -62,6 +71,15 @@ export const useSetActiveOrganizationBySlug = () => {
       queryClient.invalidateQueries({ queryKey: ["organization"] });
       queryClient.invalidateQueries({ queryKey: ["organizations"] });
       queryClient.invalidateQueries({ queryKey: ["activeMember"] });
+      queryClient.invalidateQueries({ queryKey: ["llm-events"], exact: false });
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard-stats"],
+        exact: false,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cost-analysis"],
+        exact: false,
+      });
     },
   });
 };

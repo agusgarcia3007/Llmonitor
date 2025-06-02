@@ -11,11 +11,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { authClient } from "@/lib/auth-client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useSetActiveOrganization } from "@/services/organizations/mutations";
+import {
+  useGetOrganization,
+  useGetOrganizationsList,
+} from "@/services/organizations/query";
 import { ChevronDown, Plus, MoreVertical } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
+import { Skeleton } from "./skeleton";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { CreateProjectDialog } from "@/components/project/create-project-dialog";
@@ -25,9 +29,18 @@ import { DeleteProjectDialog } from "@/components/project/delete-project-dialog"
 type Organization = { id: string; name: string; logo?: string | null };
 
 export function OrganizationSwitcher() {
-  const { data: organizations } = authClient.useListOrganizations();
-  const { data: activeOrganization } = authClient.useActiveOrganization();
-  const queryClient = useQueryClient();
+  const {
+    data: organizations,
+    isLoading: organizationsLoading,
+    isFetching: organizationsFetching,
+  } = useGetOrganizationsList();
+  const {
+    data: activeOrganization,
+    isLoading: activeOrgLoading,
+    isFetching: activeOrgFetching,
+  } = useGetOrganization();
+  const { mutate: setActiveOrganization, isPending: isChangingOrg } =
+    useSetActiveOrganization();
   const { t } = useTranslation();
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -46,17 +59,8 @@ export function OrganizationSwitcher() {
     setDeleteModalOpen(true);
   };
 
-  const handleOrgChange = async (org: { id: string }) => {
-    await authClient.organization.setActive({ organizationId: org.id });
-    queryClient.invalidateQueries({ queryKey: ["llm-events"], exact: false });
-    queryClient.invalidateQueries({
-      queryKey: ["dashboard-stats"],
-      exact: false,
-    });
-    queryClient.invalidateQueries({
-      queryKey: ["cost-analysis"],
-      exact: false,
-    });
+  const handleOrgChange = (org: { id: string }) => {
+    setActiveOrganization(org.id);
   };
 
   const handleCopyId = (id: string) => {
@@ -65,6 +69,12 @@ export function OrganizationSwitcher() {
   };
 
   const isEmpty = !organizations || organizations.length === 0;
+  const isLoading =
+    organizationsLoading ||
+    activeOrgLoading ||
+    isChangingOrg ||
+    organizationsFetching ||
+    activeOrgFetching;
 
   return (
     <SidebarMenu>
@@ -72,7 +82,16 @@ export function OrganizationSwitcher() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton className="w-fit p-1.5">
-              {isEmpty ? (
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <Skeleton className="size-5 rounded-sm" />
+                  <div className="flex flex-col gap-1">
+                    <Skeleton className="h-3 w-20" />
+                    <Skeleton className="h-2 w-16" />
+                  </div>
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+              ) : isEmpty ? (
                 <>
                   <div className="flex items-center gap-2">
                     <Plus className="w-4 h-4" />
@@ -118,7 +137,20 @@ export function OrganizationSwitcher() {
             side="bottom"
             sideOffset={4}
           >
-            {isEmpty ? (
+            {isLoading ? (
+              <div className="p-2 space-y-2">
+                <Skeleton className="h-4 w-16" />
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center gap-2 p-2">
+                    <Skeleton className="size-5 rounded-sm" />
+                    <div className="flex flex-col gap-1 flex-1">
+                      <Skeleton className="h-3 w-20" />
+                      <Skeleton className="h-2 w-16" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : isEmpty ? (
               <DropdownMenuItem
                 className="gap-2 p-2"
                 onClick={() => setCreateModalOpen(true)}
