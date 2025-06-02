@@ -17,6 +17,7 @@ import { Route as IndexImport } from './routes/index'
 import { Route as DashboardUsersImport } from './routes/_dashboard/users'
 import { Route as DashboardProjectsImport } from './routes/_dashboard/projects'
 import { Route as DashboardLogsImport } from './routes/_dashboard/logs'
+import { Route as DashboardExperimentsImport } from './routes/_dashboard/experiments'
 import { Route as DashboardDashboardImport } from './routes/_dashboard/dashboard'
 import { Route as DashboardCostAnalysisImport } from './routes/_dashboard/cost-analysis'
 import { Route as DashboardApiKeysImport } from './routes/_dashboard/api-keys'
@@ -60,6 +61,12 @@ const DashboardProjectsRoute = DashboardProjectsImport.update({
 const DashboardLogsRoute = DashboardLogsImport.update({
   id: '/logs',
   path: '/logs',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+
+const DashboardExperimentsRoute = DashboardExperimentsImport.update({
+  id: '/experiments',
+  path: '/experiments',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 
@@ -191,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardDashboardImport
       parentRoute: typeof DashboardRouteImport
     }
+    '/_dashboard/experiments': {
+      id: '/_dashboard/experiments'
+      path: '/experiments'
+      fullPath: '/experiments'
+      preLoaderRoute: typeof DashboardExperimentsImport
+      parentRoute: typeof DashboardRouteImport
+    }
     '/_dashboard/logs': {
       id: '/_dashboard/logs'
       path: '/logs'
@@ -265,6 +279,7 @@ interface DashboardRouteRouteChildren {
   DashboardApiKeysRoute: typeof DashboardApiKeysRoute
   DashboardCostAnalysisRoute: typeof DashboardCostAnalysisRoute
   DashboardDashboardRoute: typeof DashboardDashboardRoute
+  DashboardExperimentsRoute: typeof DashboardExperimentsRoute
   DashboardLogsRoute: typeof DashboardLogsRoute
   DashboardProjectsRoute: typeof DashboardProjectsRouteWithChildren
   DashboardUsersRoute: typeof DashboardUsersRoute
@@ -275,6 +290,7 @@ const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardApiKeysRoute: DashboardApiKeysRoute,
   DashboardCostAnalysisRoute: DashboardCostAnalysisRoute,
   DashboardDashboardRoute: DashboardDashboardRoute,
+  DashboardExperimentsRoute: DashboardExperimentsRoute,
   DashboardLogsRoute: DashboardLogsRoute,
   DashboardProjectsRoute: DashboardProjectsRouteWithChildren,
   DashboardUsersRoute: DashboardUsersRoute,
@@ -294,6 +310,7 @@ export interface FileRoutesByFullPath {
   '/api-keys': typeof DashboardApiKeysRoute
   '/cost-analysis': typeof DashboardCostAnalysisRoute
   '/dashboard': typeof DashboardDashboardRoute
+  '/experiments': typeof DashboardExperimentsRoute
   '/logs': typeof DashboardLogsRoute
   '/projects': typeof DashboardProjectsRouteWithChildren
   '/users': typeof DashboardUsersRoute
@@ -311,6 +328,7 @@ export interface FileRoutesByTo {
   '/api-keys': typeof DashboardApiKeysRoute
   '/cost-analysis': typeof DashboardCostAnalysisRoute
   '/dashboard': typeof DashboardDashboardRoute
+  '/experiments': typeof DashboardExperimentsRoute
   '/logs': typeof DashboardLogsRoute
   '/users': typeof DashboardUsersRoute
   '/projects/$id': typeof DashboardProjectsIdRoute
@@ -329,6 +347,7 @@ export interface FileRoutesById {
   '/_dashboard/api-keys': typeof DashboardApiKeysRoute
   '/_dashboard/cost-analysis': typeof DashboardCostAnalysisRoute
   '/_dashboard/dashboard': typeof DashboardDashboardRoute
+  '/_dashboard/experiments': typeof DashboardExperimentsRoute
   '/_dashboard/logs': typeof DashboardLogsRoute
   '/_dashboard/projects': typeof DashboardProjectsRouteWithChildren
   '/_dashboard/users': typeof DashboardUsersRoute
@@ -348,6 +367,7 @@ export interface FileRouteTypes {
     | '/api-keys'
     | '/cost-analysis'
     | '/dashboard'
+    | '/experiments'
     | '/logs'
     | '/projects'
     | '/users'
@@ -364,6 +384,7 @@ export interface FileRouteTypes {
     | '/api-keys'
     | '/cost-analysis'
     | '/dashboard'
+    | '/experiments'
     | '/logs'
     | '/users'
     | '/projects/$id'
@@ -380,6 +401,7 @@ export interface FileRouteTypes {
     | '/_dashboard/api-keys'
     | '/_dashboard/cost-analysis'
     | '/_dashboard/dashboard'
+    | '/_dashboard/experiments'
     | '/_dashboard/logs'
     | '/_dashboard/projects'
     | '/_dashboard/users'
@@ -433,6 +455,7 @@ export const routeTree = rootRoute
         "/_dashboard/api-keys",
         "/_dashboard/cost-analysis",
         "/_dashboard/dashboard",
+        "/_dashboard/experiments",
         "/_dashboard/logs",
         "/_dashboard/projects",
         "/_dashboard/users"
@@ -464,6 +487,10 @@ export const routeTree = rootRoute
     },
     "/_dashboard/dashboard": {
       "filePath": "_dashboard/dashboard.tsx",
+      "parent": "/_dashboard"
+    },
+    "/_dashboard/experiments": {
+      "filePath": "_dashboard/experiments.tsx",
       "parent": "/_dashboard"
     },
     "/_dashboard/logs": {

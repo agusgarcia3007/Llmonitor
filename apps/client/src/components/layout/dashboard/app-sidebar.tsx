@@ -4,8 +4,8 @@ import {
   IconCurrency,
   IconDashboard,
   IconFileDescription,
+  IconFlask,
   IconHelp,
-  // IconFlask,
   IconKey,
   IconSettings,
   IconUsers,
@@ -64,6 +64,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: t("navigation.costAnalysis"),
         url: "/cost-analysis",
         icon: IconCurrency,
+      },
+      {
+        title: t("navigation.experiments"),
+        url: "/experiments",
+        icon: IconFlask,
       },
       {
         title: t("navigation.alerts"),

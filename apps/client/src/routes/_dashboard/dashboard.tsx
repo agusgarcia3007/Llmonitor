@@ -149,14 +149,14 @@ export function Dashboard() {
             </CardTitle>
             <CardAction>
               <Badge
-                variant={overview.avgLatency < 1000 ? "outline" : "destructive"}
+                variant={overview.avgLatency < 1500 ? "default" : "destructive"}
               >
-                {overview.avgLatency < 1000 ? (
+                {overview.avgLatency < 1500 ? (
                   <IconTrendingUp />
                 ) : (
                   <IconTrendingDown />
                 )}
-                {overview.avgLatency < 1000
+                {overview.avgLatency < 1500
                   ? t("dashboard.stats.good")
                   : t("dashboard.stats.slow")}
               </Badge>
