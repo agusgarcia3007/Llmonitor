@@ -61,6 +61,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: IconFileDescription,
       },
       {
+        title: t("navigation.apiKeys"),
+        url: "/api-keys",
+        icon: IconKey,
+      },
+      {
         title: t("navigation.costAnalysis"),
         url: "/cost-analysis",
         icon: IconCurrency,
@@ -69,16 +74,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: t("navigation.experiments"),
         url: "/experiments",
         icon: IconFlask,
+        isComingSoon: true,
       },
       {
         title: t("navigation.alerts"),
         url: "/alerts",
         icon: IconBell,
-      },
-      {
-        title: t("navigation.apiKeys"),
-        url: "/api-keys",
-        icon: IconKey,
+        isComingSoon: true,
       },
     ],
     navSecondary: [

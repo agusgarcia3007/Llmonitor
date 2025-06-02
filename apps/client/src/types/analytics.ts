@@ -20,6 +20,10 @@ export interface DashboardStats {
       date: string;
       avg_latency: number;
     }>;
+    eventsActivity: Array<{
+      period: string;
+      events: number;
+    }>;
   };
 }
 

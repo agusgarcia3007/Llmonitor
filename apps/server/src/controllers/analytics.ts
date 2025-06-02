@@ -1,13 +1,23 @@
 import { Context } from "hono";
 import { db } from "@/db";
 import { llm_event } from "@/db/schema";
-import { eq, sql, gte, desc } from "drizzle-orm";
+import { eq, sql, gte, desc, and } from "drizzle-orm";
 
 export const getDashboardStats = async (c: Context) => {
   const session = await c.get("session");
-  const days = parseInt(c.req.query("days") || "30");
+  const days = parseInt(c.req.query("days") || "1");
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
+
+  const whereClause = and(
+    eq(llm_event.organization_id, session.activeOrganizationId),
+    gte(llm_event.created_at, startDate)
+  );
+
+  const timeFormat =
+    days === 1
+      ? sql<string>`date_trunc('hour', created_at)`
+      : sql<string>`date_trunc('day', created_at)`;
 
   const [
     totalEvents,
@@ -17,21 +27,22 @@ export const getDashboardStats = async (c: Context) => {
     topModels,
     costByDay,
     latencyByDay,
+    eventsActivity,
   ] = await Promise.all([
     db
       .select({ count: sql<number>`count(*)` })
       .from(llm_event)
-      .where(eq(llm_event.organization_id, session.activeOrganizationId)),
+      .where(whereClause),
 
     db
       .select({ total: sql<number>`sum(cost_usd)` })
       .from(llm_event)
-      .where(eq(llm_event.organization_id, session.activeOrganizationId)),
+      .where(whereClause),
 
     db
       .select({ avg: sql<number>`avg(latency_ms)` })
       .from(llm_event)
-      .where(eq(llm_event.organization_id, session.activeOrganizationId)),
+      .where(whereClause),
 
     db
       .select({
@@ -39,7 +50,7 @@ export const getDashboardStats = async (c: Context) => {
         errors: sql<number>`count(*) filter (where status >= 400)`,
       })
       .from(llm_event)
-      .where(eq(llm_event.organization_id, session.activeOrganizationId)),
+      .where(whereClause),
 
     db
       .select({
@@ -49,7 +60,7 @@ export const getDashboardStats = async (c: Context) => {
         cost: sql<number>`sum(cost_usd)`,
       })
       .from(llm_event)
-      .where(eq(llm_event.organization_id, session.activeOrganizationId))
+      .where(whereClause)
       .groupBy(llm_event.model, llm_event.provider)
       .orderBy(desc(sql`count(*)`))
       .limit(10),
@@ -60,10 +71,10 @@ export const getDashboardStats = async (c: Context) => {
         cost: sql<number>`sum(cost_usd)`,
       })
       .from(llm_event)
-      .where(eq(llm_event.organization_id, session.activeOrganizationId))
+      .where(whereClause)
       .groupBy(sql`date(created_at)`)
       .orderBy(sql`date(created_at)`)
-      .limit(30),
+      .limit(50),
 
     db
       .select({
@@ -71,10 +82,21 @@ export const getDashboardStats = async (c: Context) => {
         avg_latency: sql<number>`avg(latency_ms)`,
       })
       .from(llm_event)
-      .where(eq(llm_event.organization_id, session.activeOrganizationId))
+      .where(whereClause)
       .groupBy(sql`date(created_at)`)
       .orderBy(sql`date(created_at)`)
-      .limit(30),
+      .limit(50),
+
+    db
+      .select({
+        period: timeFormat,
+        events: sql<number>`count(*)`,
+      })
+      .from(llm_event)
+      .where(whereClause)
+      .groupBy(timeFormat)
+      .orderBy(timeFormat)
+      .limit(50),
   ]);
 
   const errorRatePercent =
@@ -95,6 +117,7 @@ export const getDashboardStats = async (c: Context) => {
       charts: {
         costByDay,
         latencyByDay,
+        eventsActivity,
       },
     },
   });
@@ -106,6 +129,11 @@ export const getCostAnalysis = async (c: Context) => {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
 
+  const whereClause = and(
+    eq(llm_event.organization_id, session.activeOrganizationId),
+    gte(llm_event.created_at, startDate)
+  );
+
   const [costByProvider, costTrend, topCostlyRequests] = await Promise.all([
     db
       .select({
@@ -115,7 +143,7 @@ export const getCostAnalysis = async (c: Context) => {
         avg_cost: sql<number>`avg(cost_usd)`,
       })
       .from(llm_event)
-      .where(eq(llm_event.organization_id, session.activeOrganizationId))
+      .where(whereClause)
       .groupBy(llm_event.provider)
       .orderBy(desc(sql`sum(cost_usd)`)),
 
@@ -126,10 +154,10 @@ export const getCostAnalysis = async (c: Context) => {
         count: sql<number>`count(*)`,
       })
       .from(llm_event)
-      .where(eq(llm_event.organization_id, session.activeOrganizationId))
+      .where(whereClause)
       .groupBy(sql`date(created_at)`)
       .orderBy(sql`date(created_at)`)
-      .limit(30),
+      .limit(50),
 
     db
       .select({
@@ -142,7 +170,7 @@ export const getCostAnalysis = async (c: Context) => {
         created_at: llm_event.created_at,
       })
       .from(llm_event)
-      .where(eq(llm_event.organization_id, session.activeOrganizationId))
+      .where(whereClause)
       .orderBy(desc(llm_event.cost_usd))
       .limit(10),
   ]);

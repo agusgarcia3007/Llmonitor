@@ -52,7 +52,7 @@ export function NavMain({
                   {item.isComingSoon ? (
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center gap-2">
-                        {item.icon && <item.icon />}
+                        {item.icon && <item.icon className="w-4 h-4" />}
                         <span>{item.title}</span>
                       </div>
                       <Badge variant="secondary" className="text-xs">
