@@ -4,4 +4,56 @@ description: Get started quickly with our platform
 icon: Zap
 ---
 
-# Quickstart
+## 1. Install the SDK
+
+<Tabs groupId='package-manager' persist items={['npm', 'pnpm', 'yarn', 'bun']} label='Package Installation'>
+
+```bash tab="npm"
+npm install @llmonitor/sdk
+```
+
+```bash tab="pnpm"
+pnpm install @llmonitor/sdk
+```
+
+```bash tab="yarn"
+yarn add @llmonitor/sdk
+```
+
+```bash tab="bun"
+bun add @llmonitor/sdk
+```
+
+</Tabs>
+
+## 2. Create an API Key
+
+Go to [llmonitor.io dashboard](https://llmonitor.io) and create a new API key for your project.
+
+## 3. Wrap your instance
+
+Wrap your instance and pass the API key:
+
+```javascript
+import { LLMonitor } from "@llmonitor/sdk";
+
+const monitor = new LLMonitor({
+    apiKey: "your-api-key"
+})
+
+// Wrap your instance to automatically track events
+const openai = monitor.openai(new OpenAI(...))
+
+const response = await openai.chat.completions.create({
+  model: "gpt-3.5-turbo",
+  messages: [
+    { role: "user", content: "Hello, world!" }
+  ]
+})
+```
+
+<Callout type="info" title="Resilient by Design">
+  If LLMonitor goes down or fails for any reason, your requests will still
+  execute normally. The monitoring is non-blocking and won't affect your
+  application's performance or reliability.
+</Callout>
