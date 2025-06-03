@@ -8,13 +8,13 @@
     "lint": "pnpm -r lint",
     "preview": "pnpm -r preview",
     "start": "pnpm -r start",
-    "dev:docs": "cd apps/docs && mint dev",
+    "dev:docs": "pnpm --filter docs dev",
     "dev:server": "pnpm --filter server dev",
     "dev:client": "pnpm --filter client dev",
     "dev:app": "(pnpm --filter client dev) & (pnpm --filter server dev)",
     "build:client": "pnpm --filter client build",
     "build:server": "pnpm --filter server build",
-    "build:docs": "cd apps/docs && mint build"
+    "build:docs": "pnpm --filter docs build"
   },
   "workspaces": [
     "client",
