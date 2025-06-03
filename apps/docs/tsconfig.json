@@ -10,6 +10,7 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -19,11 +20,11 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
+      "@/.source": [
+        "./.source/index.ts"
+      ],
       "@/*": [
         "./src/*"
-      ],
-      "content-collections": [
-        "./.content-collections/generated"
       ]
     },
     "plugins": [
@@ -36,8 +37,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".contentlayer/generated"
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
