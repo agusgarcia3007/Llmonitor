@@ -17,10 +17,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { IconBrandGithub, IconBrandGoogleFilled } from "@tabler/icons-react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_auth/login")({
   component: Login,
@@ -36,6 +37,21 @@ function Login({ className, ...props }: React.ComponentProps<"div">) {
   });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [socialLoading, setSocialLoading] = useState<string | null>(null);
+
+  async function handleSocialSignIn(provider: "google" | "github") {
+    setSocialLoading(provider);
+    try {
+      await authClient.signIn.social({
+        provider,
+        callbackURL: "/dashboard",
+      });
+    } catch (error) {
+      console.error(`${provider} sign in failed:`, error);
+    } finally {
+      setSocialLoading(null);
+    }
+  }
 
   async function onSubmit(values: { email: string; password: string }) {
     await authClient.signIn.email(
@@ -108,13 +124,36 @@ function Login({ className, ...props }: React.ComponentProps<"div">) {
                     </FormItem>
                   )}
                 />
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-2">
                   <Button type="submit" className="w-full" isLoading={loading}>
                     {t("auth.signin.submit")}
                   </Button>
-                  <Button variant="outline" className="w-full">
-                    {t("auth.signin.google")}
-                  </Button>
+                  <span className="relative text-center text-sm">
+                    <hr className="my-2" />
+                    <p className="text-muted-foreground text-xs bg-white px-2 absolute left-1/2 -translate-x-1/2 top-0">
+                      {t("auth.signin.or")}
+                    </p>
+                  </span>
+                  <div className="flex gap-x-2 items-center justify-center">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleSocialSignIn("google")}
+                      disabled={socialLoading !== null}
+                      isLoading={socialLoading === "google"}
+                    >
+                      <IconBrandGoogleFilled />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleSocialSignIn("github")}
+                      disabled={socialLoading !== null}
+                      isLoading={socialLoading === "github"}
+                    >
+                      <IconBrandGithub />
+                    </Button>
+                  </div>
                 </div>
               </div>
               <div className="mt-4 text-center text-sm">

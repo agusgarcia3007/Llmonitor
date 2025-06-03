@@ -1,4 +1,3 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,10 +15,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { useForm } from "react-hook-form";
 import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
+import { IconBrandGithub, IconBrandGoogleFilled } from "@tabler/icons-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_auth/signup")({
@@ -124,13 +125,24 @@ function Signup({ className, ...props }: React.ComponentProps<"div">) {
                     </FormItem>
                   )}
                 />
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-2">
                   <Button type="submit" className="w-full" isLoading={loading}>
                     {t("auth.signup.submit")}
                   </Button>
-                  <Button variant="outline" className="w-full">
-                    {t("auth.signup.google")}
-                  </Button>
+                  <span className="relative text-center text-sm">
+                    <hr className="my-2" />
+                    <p className="text-muted-foreground text-xs bg-white px-2 absolute left-1/2 -translate-x-1/2 top-0">
+                      {t("auth.signin.or")}
+                    </p>
+                  </span>
+                  <div className="flex gap-x-2 items-center justify-center">
+                    <Button variant="outline" size="icon">
+                      <IconBrandGoogleFilled />
+                    </Button>
+                    <Button variant="outline" size="icon">
+                      <IconBrandGithub />
+                    </Button>
+                  </div>
                 </div>
               </div>
               <div className="mt-4 text-center text-sm">
