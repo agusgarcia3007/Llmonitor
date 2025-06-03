@@ -5,3 +5,193 @@ icon: Package
 ---
 
 # SDK Guide
+
+## Installation
+
+<Tabs groupId='package-manager' persist items={['npm', 'pnpm', 'yarn', 'bun']} label='Package Installation'>
+
+```bash tab="npm"
+npm install @llmonitor/sdk
+```
+
+```bash tab="pnpm"
+pnpm install @llmonitor/sdk
+```
+
+```bash tab="yarn"
+yarn add @llmonitor/sdk
+```
+
+```bash tab="bun"
+bun add @llmonitor/sdk
+```
+
+</Tabs>
+
+## Basic Setup
+
+```javascript
+import { LLMonitor } from "@llmonitor/sdk";
+
+const monitor = new LLMonitor({
+  apiKey: "your-api-key",
+});
+```
+
+## Supported Providers
+
+### OpenAI
+
+```javascript
+import OpenAI from "openai";
+import { LLMonitor } from "@llmonitor/sdk";
+
+const monitor = new LLMonitor({ apiKey: "your-api-key" });
+const openai = monitor.openai(new OpenAI({ apiKey: "your-openai-key" }));
+
+const response = await openai.chat.completions.create({
+  model: "gpt-3.5-turbo",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+```
+
+### Anthropic
+
+```javascript
+import Anthropic from "@anthropic-ai/sdk";
+import { LLMonitor } from "@llmonitor/sdk";
+
+const monitor = new LLMonitor({ apiKey: "your-api-key" });
+const anthropic = monitor.anthropic(
+  new Anthropic({ apiKey: "your-anthropic-key" })
+);
+
+const response = await anthropic.messages.create({
+  model: "claude-3-sonnet-20240229",
+  max_tokens: 100,
+  messages: [{ role: "user", content: "Hello!" }],
+});
+```
+
+### Cohere
+
+```javascript
+import { CohereClient } from "cohere-ai";
+import { LLMonitor } from "@llmonitor/sdk";
+
+const monitor = new LLMonitor({ apiKey: "your-api-key" });
+const cohere = monitor.cohere(new CohereClient({ token: "your-cohere-key" }));
+
+const response = await cohere.generate({
+  model: "command",
+  prompt: "Hello!",
+  max_tokens: 100,
+});
+```
+
+## Configuration Options
+
+```javascript
+const monitor = new LLMonitor({
+  apiKey: "your-api-key",
+  baseUrl: "https://api.llmonitor.io", // Optional: custom base URL
+  projectId: "your-project-id", // Optional: specific project
+  metadata: {
+    // Optional: global metadata
+    environment: "production",
+    version: "1.0.0",
+  },
+});
+```
+
+## Adding Custom Metadata
+
+Add custom metadata to individual requests:
+
+```javascript
+const response = await openai.chat.completions.create(
+  {
+    model: "gpt-3.5-turbo",
+    messages: [{ role: "user", content: "Hello!" }],
+  },
+  {
+    metadata: {
+      userId: "user_123",
+      sessionId: "session_456",
+      feature: "chat",
+    },
+  }
+);
+```
+
+## Manual Event Logging
+
+For cases where you need more control:
+
+```javascript
+await monitor.logEvent({
+  provider: "openai",
+  model: "gpt-3.5-turbo",
+  prompt: "Hello, world!",
+  completion: "Hi there!",
+  prompt_tokens: 3,
+  completion_tokens: 3,
+  latency_ms: 250,
+  status: 200,
+  metadata: {
+    custom_field: "value",
+  },
+});
+```
+
+## Error Handling
+
+The SDK handles errors gracefully and won't break your application:
+
+```javascript
+try {
+  const response = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    messages: [{ role: "user", content: "Hello!" }],
+  });
+} catch (error) {
+  // Your OpenAI errors are preserved
+  console.error("OpenAI error:", error);
+}
+```
+
+<Callout type="info" title="Non-blocking Monitoring">
+  LLMonitor runs asynchronously and will never block your requests. If
+  monitoring fails, your application continues normally.
+</Callout>
+
+## Environment Variables
+
+You can set your API key via environment variable:
+
+```bash
+export LLMONITOR_API_KEY="your-api-key"
+```
+
+```javascript
+// No need to pass apiKey if environment variable is set
+const monitor = new LLMonitor();
+```
+
+## TypeScript Support
+
+The SDK is fully typed and works seamlessly with TypeScript:
+
+```typescript
+import { LLMonitor, LogEventOptions } from "@llmonitor/sdk";
+import OpenAI from "openai";
+
+const monitor: LLMonitor = new LLMonitor({ apiKey: "your-api-key" });
+const openai = monitor.openai(new OpenAI({ apiKey: "your-openai-key" }));
+
+const options: LogEventOptions = {
+  metadata: {
+    userId: "user_123",
+  },
+};
+```
