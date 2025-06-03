@@ -44,7 +44,7 @@ function Login({ className, ...props }: React.ComponentProps<"div">) {
     try {
       await authClient.signIn.social({
         provider,
-        callbackURL: "/dashboard",
+        callbackURL: "https://llmonitor.io/dashboard",
       });
     } catch (error) {
       console.error(`${provider} sign in failed:`, error);
