@@ -4,8 +4,6 @@ description: Complete guide for using our SDK
 icon: Package
 ---
 
-# SDK Guide
-
 ## Installation
 
 <Tabs groupId='package-manager' persist items={['npm', 'pnpm', 'yarn', 'bun']} label='Package Installation'>
@@ -40,9 +38,9 @@ const monitor = new LLMonitor({
 
 ## Supported Providers
 
-### OpenAI
+<Tabs groupId='providers' persist items={['openai', 'anthropic', 'cohere']} label='Choose your provider'>
 
-```javascript
+```javascript tab="openai"
 import OpenAI from "openai";
 import { LLMonitor } from "@llmonitor/sdk";
 
@@ -55,9 +53,7 @@ const response = await openai.chat.completions.create({
 });
 ```
 
-### Anthropic
-
-```javascript
+```javascript tab="anthropic"
 import Anthropic from "@anthropic-ai/sdk";
 import { LLMonitor } from "@llmonitor/sdk";
 
@@ -73,9 +69,7 @@ const response = await anthropic.messages.create({
 });
 ```
 
-### Cohere
-
-```javascript
+```javascript tab="cohere"
 import { CohereClient } from "cohere-ai";
 import { LLMonitor } from "@llmonitor/sdk";
 
@@ -89,13 +83,18 @@ const response = await cohere.generate({
 });
 ```
 
+</Tabs>
+
 ## Configuration Options
 
-```javascript
+```typescript
 const monitor = new LLMonitor({
   apiKey: "your-api-key",
-  baseUrl: "https://api.llmonitor.io", // Optional: custom base URL
   projectId: "your-project-id", // Optional: specific project
+  debug: boolean (defaults to `false`); // Optional: enable debug logging
+  enabled: boolean (defaults to `true`); //Optional: enable/disable monitoring
+  sessionId: string; //Optional: global session ID for all events
+  versionTag: string; //Optional: version tag for all events
   metadata: {
     // Optional: global metadata
     environment: "production",
