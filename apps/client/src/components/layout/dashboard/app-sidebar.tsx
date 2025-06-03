@@ -91,7 +91,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
       {
         title: t("navigation.documentation"),
-        url: "/docs",
+        url: "https://docs.llmonitor.io",
         icon: IconHelp,
         external: true,
       },
