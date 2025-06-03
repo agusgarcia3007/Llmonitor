@@ -1,7 +1,181 @@
 ---
 title: API Reference
-description: Complete API documentation and reference
+description: Use the LLMonitor REST API to interact with your monitoring data programmatically.
 icon: Code
 ---
 
-# API Reference
+## Base URL
+
+The base URL for all API endpoints is `https://api.llmonitor.io`
+
+## Authentication
+
+All API requests require authentication using your API key in the header:
+
+```bash
+curl -H "x-api-key: your-api-key-here" \
+  https://api.llmonitor.io/endpoint
+```
+
+## Endpoints
+
+### 1. Log LLM Event
+
+Record a new LLM interaction event.
+
+**Endpoint:** `POST /llm-events`
+
+**Headers:**
+
+```
+x-api-key: your-api-key
+Content-Type: application/json
+```
+
+**Request Body:**
+
+```json
+{
+  "provider": "openai",
+  "model": "gpt-3.5-turbo",
+  "temperature": 0.7,
+  "max_tokens": 100,
+  "prompt": "Hello, how are you?",
+  "prompt_tokens": 5,
+  "completion": "I'm doing well, thank you for asking!",
+  "completion_tokens": 8,
+  "latency_ms": 1250,
+  "status": 200,
+  "cost_usd": 0.00013,
+  "score": 0.95,
+  "version_tag": "v1.0",
+  "session_id": "session_123",
+  "request_id": "req_456",
+  "metadata": {
+    "custom_field": "value"
+  }
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "LLM event logged successfully",
+  "data": { ... }
+}
+```
+
+### 2. Get Events
+
+Retrieve logged LLM events with filtering and pagination.
+
+**Endpoint:** `GET /llm-events`
+
+**Headers:**
+
+```
+x-api-key: your-api-key
+```
+
+**Query Parameters:**
+
+- `limit` (optional): Number of events to return (default: 50)
+- `offset` (optional): Number of events to skip (default: 0)
+- `sort` (optional): Field to sort by (`created_at`, `model`, `provider`, `status`, `latency_ms`, `cost_usd`, `score`)
+- `order` (optional): Sort order (`asc` or `desc`)
+- `apiKey` (optional): Filter by specific API key
+
+**Example Request:**
+
+```bash
+curl -H "x-api-key: your-api-key" \
+  "https://api.llmonitor.io/llm-events?limit=10&sort=created_at&order=desc"
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "uuid",
+      "provider": "openai",
+      "model": "gpt-3.5-turbo",
+      "prompt": "Hello",
+      "completion": "Hi there!",
+      "cost_usd": 0.00013,
+      "created_at": "2024-01-01T12:00:00Z",
+      ...
+    }
+  ],
+  "pagination": {
+    "total": 100,
+    "limit": 10,
+    "offset": 0
+  }
+}
+```
+
+### 3. Get Dashboard Analytics
+
+Retrieve analytics and statistics for your dashboard.
+
+**Endpoint:** `GET /analytics/dashboard`
+
+**Headers:**
+
+```
+x-api-key: your-api-key
+```
+
+**Query Parameters:**
+
+- `days` (optional): Number of days to include in analytics (default: 1)
+
+**Example Request:**
+
+```bash
+curl -H "x-api-key: your-api-key" \
+  "https://api.llmonitor.io/analytics/dashboard?days=7"
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "overview": {
+      "totalEvents": 1523,
+      "totalCost": 12.45,
+      "avgLatency": 850,
+      "errorRate": 2.1
+    },
+    "topModels": [
+      {
+        "model": "gpt-3.5-turbo",
+        "provider": "openai",
+        "count": 850,
+        "cost": 8.32
+      }
+    ],
+    "charts": {
+      "costByDay": [...],
+      "latencyByDay": [...],
+      "eventsActivity": [...]
+    }
+  }
+}
+```
+
+**Common HTTP Status Codes:**
+
+- `200` - Success
+- `400` - Bad Request (invalid parameters)
+- `401` - Unauthorized (invalid API key)
+- `403` - Forbidden (access denied)
+- `429` - Rate limit exceeded
+- `500` - Internal server error
