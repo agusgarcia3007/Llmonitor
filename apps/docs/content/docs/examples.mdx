@@ -4,4 +4,300 @@ description: Practical examples and use cases
 icon: BookOpen
 ---
 
-# Examples
+## Basic Chat Application
+
+Simple chat implementation with monitoring:
+
+```typescript
+import OpenAI from "openai";
+import { LLMonitor } from "@llmonitor/sdk";
+
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+});
+const openai = monitor.openai(new OpenAI());
+
+async function chat(message: string, userId: string) {
+  const response = await openai.chat.completions.create(
+    {
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: message }],
+      temperature: 0.7,
+    },
+    {
+      metadata: {
+        userId,
+        feature: "chat",
+        userMessage: message,
+      },
+    }
+  );
+
+  return response.choices[0].message.content;
+}
+```
+
+## Multi-Provider Setup
+
+Using different providers based on use case:
+
+<Tabs groupId='multi-provider' persist items={['setup', 'usage']} label='Multi-Provider Example'>
+
+```typescript tab="setup"
+import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
+import { LLMonitor } from "@llmonitor/sdk";
+
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  versionTag: "v1.2.0",
+});
+
+// Different providers for different use cases
+const openai = monitor.openai(new OpenAI());
+const anthropic = monitor.anthropic(new Anthropic());
+
+export { openai, anthropic };
+```
+
+```typescript tab="usage"
+import { openai, anthropic } from "./ai-setup";
+
+// Fast responses with OpenAI
+async function quickResponse(prompt: string) {
+  return await openai.chat.completions.create(
+    {
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 150,
+    },
+    {
+      metadata: { useCase: "quick-response" },
+    }
+  );
+}
+
+// Complex reasoning with Claude
+async function complexReasoning(prompt: string) {
+  return await anthropic.messages.create(
+    {
+      model: "claude-3-sonnet-20240229",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 500,
+    },
+    {
+      metadata: { useCase: "complex-reasoning" },
+    }
+  );
+}
+```
+
+</Tabs>
+
+## Error Handling & Retries
+
+Robust implementation with error handling:
+
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+import OpenAI from "openai";
+
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+  debug: process.env.NODE_ENV === "development",
+});
+const openai = monitor.openai(new OpenAI());
+
+async function generateWithRetry(
+  prompt: string,
+  maxRetries: number = 3
+): Promise<string> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await openai.chat.completions.create(
+        {
+          model: "gpt-3.5-turbo",
+          messages: [{ role: "user", content: prompt }],
+        },
+        {
+          metadata: {
+            attempt,
+            maxRetries,
+            timestamp: new Date().toISOString(),
+          },
+        }
+      );
+
+      return response.choices[0].message.content || "";
+    } catch (error) {
+      console.log(`Attempt ${attempt} failed:`, error);
+
+      if (attempt === maxRetries) {
+        throw new Error(`Failed after ${maxRetries} attempts`);
+      }
+
+      // Wait before retry
+      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+    }
+  }
+
+  throw new Error("Unexpected error");
+}
+```
+
+## Custom Logging
+
+Manual event logging for custom workflows:
+
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+});
+
+async function customWorkflow(input: string) {
+  const startTime = Date.now();
+
+  try {
+    // Your custom AI logic here
+    const result = await processWithCustomModel(input);
+    const endTime = Date.now();
+
+    // Log successful event
+    await monitor.logEvent({
+      provider: "custom",
+      model: "my-fine-tuned-model",
+      prompt: input,
+      completion: result,
+      latency_ms: endTime - startTime,
+      status: 200,
+      metadata: {
+        workflow: "custom-processing",
+        inputLength: input.length,
+        outputLength: result.length,
+      },
+    });
+
+    return result;
+  } catch (error) {
+    const endTime = Date.now();
+
+    // Log error event
+    await monitor.logEvent({
+      provider: "custom",
+      model: "my-fine-tuned-model",
+      prompt: input,
+      completion: "",
+      latency_ms: endTime - startTime,
+      status: 500,
+      metadata: {
+        workflow: "custom-processing",
+        error: error.message,
+      },
+    });
+
+    throw error;
+  }
+}
+```
+
+## Session Tracking
+
+Track conversations across multiple interactions:
+
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+import OpenAI from "openai";
+import { v4 as uuidv4 } from "uuid";
+
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+});
+const openai = monitor.openai(new OpenAI());
+
+class ChatSession {
+  private sessionId: string;
+  private messages: Array<{ role: string; content: string }> = [];
+
+  constructor(userId: string) {
+    this.sessionId = `session_${userId}_${uuidv4()}`;
+  }
+
+  async sendMessage(userMessage: string) {
+    this.messages.push({ role: "user", content: userMessage });
+
+    const response = await openai.chat.completions.create(
+      {
+        model: "gpt-3.5-turbo",
+        messages: this.messages,
+      },
+      {
+        metadata: {
+          sessionId: this.sessionId,
+          messageCount: this.messages.length,
+          conversationLength: this.messages.length,
+        },
+      }
+    );
+
+    const aiMessage = response.choices[0].message.content || "";
+    this.messages.push({ role: "assistant", content: aiMessage });
+
+    return aiMessage;
+  }
+}
+
+// Usage
+const session = new ChatSession("user_123");
+await session.sendMessage("Hello!");
+await session.sendMessage("How are you?");
+```
+
+## A/B Testing
+
+Compare different models or prompts:
+
+```typescript
+import { LLMonitor } from "@llmonitor/sdk";
+import OpenAI from "openai";
+
+const monitor = new LLMonitor({
+  apiKey: process.env.LLMONITOR_API_KEY,
+});
+const openai = monitor.openai(new OpenAI());
+
+async function abTestModels(userPrompt: string, userId: string) {
+  const variant = Math.random() < 0.5 ? "A" : "B";
+
+  const modelConfig =
+    variant === "A"
+      ? { model: "gpt-3.5-turbo", temperature: 0.7 }
+      : { model: "gpt-4", temperature: 0.5 };
+
+  const response = await openai.chat.completions.create(
+    {
+      ...modelConfig,
+      messages: [{ role: "user", content: userPrompt }],
+    },
+    {
+      metadata: {
+        userId,
+        abTestVariant: variant,
+        experiment: "model-comparison-v1",
+      },
+    }
+  );
+
+  return {
+    response: response.choices[0].message.content,
+    variant,
+  };
+}
+```
+
+<Callout type="tip" title="Best Practices">
+  - Always include meaningful metadata for better analytics - Use session IDs to
+  track user conversations - Implement proper error handling and retries - Use
+  A/B testing to optimize your AI workflows
+</Callout>
