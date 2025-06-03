@@ -53,6 +53,8 @@ function Login({ className, ...props }: React.ComponentProps<"div">) {
     }
   }
 
+  const ENABLE_SOCIAL = false;
+
   async function onSubmit(values: { email: string; password: string }) {
     await authClient.signIn.email(
       {
@@ -128,32 +130,36 @@ function Login({ className, ...props }: React.ComponentProps<"div">) {
                   <Button type="submit" className="w-full" isLoading={loading}>
                     {t("auth.signin.submit")}
                   </Button>
-                  <span className="relative text-center text-sm">
-                    <hr className="my-2" />
-                    <p className="text-muted-foreground text-xs bg-white px-2 absolute left-1/2 -translate-x-1/2 top-0">
-                      {t("auth.signin.or")}
-                    </p>
-                  </span>
-                  <div className="flex gap-x-2 items-center justify-center">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handleSocialSignIn("google")}
-                      disabled={socialLoading !== null}
-                      isLoading={socialLoading === "google"}
-                    >
-                      <IconBrandGoogleFilled />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handleSocialSignIn("github")}
-                      disabled={socialLoading !== null}
-                      isLoading={socialLoading === "github"}
-                    >
-                      <IconBrandGithub />
-                    </Button>
-                  </div>
+                  {ENABLE_SOCIAL && (
+                    <>
+                      <span className="relative text-center text-sm">
+                        <hr className="my-2" />
+                        <p className="text-muted-foreground text-xs bg-white px-2 absolute left-1/2 -translate-x-1/2 top-0">
+                          {t("auth.signin.or")}
+                        </p>
+                      </span>
+                      <div className="flex gap-x-2 items-center justify-center">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleSocialSignIn("google")}
+                          disabled={socialLoading !== null}
+                          isLoading={socialLoading === "google"}
+                        >
+                          <IconBrandGoogleFilled />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleSocialSignIn("github")}
+                          disabled={socialLoading !== null}
+                          isLoading={socialLoading === "github"}
+                        >
+                          <IconBrandGithub />
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
               <div className="mt-4 text-center text-sm">

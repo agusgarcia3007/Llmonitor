@@ -78,6 +78,8 @@ function Signup({ className, ...props }: React.ComponentProps<"div">) {
     setLoading(false);
   }
 
+  const ENABLE_SOCIAL = false;
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -144,32 +146,37 @@ function Signup({ className, ...props }: React.ComponentProps<"div">) {
                   <Button type="submit" className="w-full" isLoading={loading}>
                     {t("auth.signup.submit")}
                   </Button>
-                  <span className="relative text-center text-sm">
-                    <hr className="my-2" />
-                    <p className="text-muted-foreground text-xs bg-white px-2 absolute left-1/2 -translate-x-1/2 top-0">
-                      {t("auth.signin.or")}
-                    </p>
-                  </span>
-                  <div className="flex gap-x-2 items-center justify-center">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handleSocialSignIn("google")}
-                      disabled={socialLoading !== null}
-                      isLoading={socialLoading === "google"}
-                    >
-                      <IconBrandGoogleFilled />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handleSocialSignIn("github")}
-                      disabled={socialLoading !== null}
-                      isLoading={socialLoading === "github"}
-                    >
-                      <IconBrandGithub />
-                    </Button>
-                  </div>
+                  {ENABLE_SOCIAL && (
+                    <>
+                      {" "}
+                      <span className="relative text-center text-sm">
+                        <hr className="my-2" />
+                        <p className="text-muted-foreground text-xs bg-white px-2 absolute left-1/2 -translate-x-1/2 top-0">
+                          {t("auth.signin.or")}
+                        </p>
+                      </span>
+                      <div className="flex gap-x-2 items-center justify-center">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleSocialSignIn("google")}
+                          disabled={socialLoading !== null}
+                          isLoading={socialLoading === "google"}
+                        >
+                          <IconBrandGoogleFilled />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleSocialSignIn("github")}
+                          disabled={socialLoading !== null}
+                          isLoading={socialLoading === "github"}
+                        >
+                          <IconBrandGithub />
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
               <div className="mt-4 text-center text-sm">
