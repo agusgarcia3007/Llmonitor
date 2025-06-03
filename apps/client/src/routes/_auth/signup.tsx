@@ -38,6 +38,21 @@ function Signup({ className, ...props }: React.ComponentProps<"div">) {
   });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [socialLoading, setSocialLoading] = useState<string | null>(null);
+
+  async function handleSocialSignIn(provider: "google" | "github") {
+    setSocialLoading(provider);
+    try {
+      await authClient.signIn.social({
+        provider,
+        callbackURL: "https://llmonitor.io/dashboard",
+      });
+    } catch (error) {
+      console.error(`${provider} sign in failed:`, error);
+    } finally {
+      setSocialLoading(null);
+    }
+  }
 
   async function onSubmit(values: {
     name: string;
@@ -136,10 +151,22 @@ function Signup({ className, ...props }: React.ComponentProps<"div">) {
                     </p>
                   </span>
                   <div className="flex gap-x-2 items-center justify-center">
-                    <Button variant="outline" size="icon">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleSocialSignIn("google")}
+                      disabled={socialLoading !== null}
+                      isLoading={socialLoading === "google"}
+                    >
                       <IconBrandGoogleFilled />
                     </Button>
-                    <Button variant="outline" size="icon">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleSocialSignIn("github")}
+                      disabled={socialLoading !== null}
+                      isLoading={socialLoading === "github"}
+                    >
                       <IconBrandGithub />
                     </Button>
                   </div>
