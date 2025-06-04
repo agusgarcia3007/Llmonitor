@@ -360,48 +360,15 @@ export function DataTable<TData, TValue>({
     ? parseAppliedFiltersForDisplay(appliedFilters, filtersConfig)
     : [];
 
-  // Loading state UI
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {columns.map((_, i) => (
-                  <TableHead key={i}>
-                    <Skeleton className="h-6 w-full" />
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {Array.from({ length: meta?.pageSize || 10 }).map((_, i) => (
-                <TableRow key={i}>
-                  {columns.map((_, j) => (
-                    <TableCell key={j}>
-                      <Skeleton className="h-6 w-full" />
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-
-        {meta && (
-          <div className="flex items-center justify-between px-2">
-            <Skeleton className="h-4 w-48" />
-            <div className="flex items-center space-x-6 lg:space-x-8">
-              <Skeleton className="h-8 w-40" />
-              <Skeleton className="h-8 w-[100px]" />
-              <Skeleton className="h-8 w-24" />
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
+  const skeletonRows = Array.from({ length: 5 }).map((_, i) => (
+    <TableRow key={`skeleton-${i}`}>
+      {columns.map((_, j) => (
+        <TableCell key={j}>
+          <Skeleton className="h-6 w-full" />
+        </TableCell>
+      ))}
+    </TableRow>
+  ));
 
   return (
     <div className="space-y-4">
@@ -476,7 +443,9 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              skeletonRows
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
