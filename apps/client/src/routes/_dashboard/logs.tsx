@@ -1,7 +1,6 @@
 import { type AdvancedFilterField } from "@/components/ui/advanced-filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
 import {
   Dialog,
@@ -10,15 +9,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  CommonFilters,
+  createNumberFilter,
+  createSelectFilter,
+} from "@/lib/filter-utils";
+import {
   llmEventsQueryOptions,
   useLLMEventsQuery,
 } from "@/services/llm-events/query";
 import type { GetEventsParams, LLMEvent } from "@/types";
-import {
-  CommonFilters,
-  createSelectFilter,
-  createNumberFilter,
-} from "@/lib/filter-utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { type ColumnDef, type SortingState } from "@tanstack/react-table";
@@ -365,26 +364,22 @@ export function LogsPage() {
         </div>
       </div>
 
-      <Card>
-        <CardContent>
-          <DataTable
-            columns={columns}
-            data={tableData}
-            meta={meta}
-            isLoading={isLoading}
-            onPaginationChange={handlePaginationChange}
-            onSortingChange={handleSortingChange}
-            onFiltersChange={handleFiltersChange}
-            filtersConfig={filtersConfig}
-            filtersButton={
-              <Button variant="outline" size="sm">
-                <ListFilter className="w-4 h-4 mr-2" />
-                Filters
-              </Button>
-            }
-          />
-        </CardContent>
-      </Card>
+      <DataTable
+        columns={columns}
+        data={tableData}
+        meta={meta}
+        isLoading={isLoading}
+        onPaginationChange={handlePaginationChange}
+        onSortingChange={handleSortingChange}
+        onFiltersChange={handleFiltersChange}
+        filtersConfig={filtersConfig}
+        filtersButton={
+          <Button variant="outline" size="sm">
+            <ListFilter className="w-4 h-4 mr-2" />
+            Filters
+          </Button>
+        }
+      />
     </div>
   );
 }
