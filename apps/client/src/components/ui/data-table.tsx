@@ -14,7 +14,9 @@ import * as React from "react";
 import {
   AdvancedFilters,
   type AdvancedFilterField,
+  FieldType,
 } from "@/components/ui/advanced-filters";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -37,6 +39,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  X,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -72,6 +75,195 @@ interface DataTableProps<TData, TValue> {
   filtersConfig?: AdvancedFilterField[];
   filtersButton?: React.ReactNode;
 }
+
+const formatFilterValue = (
+  field: AdvancedFilterField,
+  value: unknown
+): string => {
+  switch (field.type) {
+    case FieldType.TEXT:
+    case FieldType.NUMBER:
+      return String(value);
+
+    case FieldType.SELECT: {
+      const selectValue = value as string[];
+      return selectValue.join(", ");
+    }
+
+    case FieldType.DATE_RANGE: {
+      const dateValue = value as { from?: string; to?: string };
+      if (dateValue.from && dateValue.to) {
+        return `${new Date(dateValue.from).toLocaleDateString()} - ${new Date(
+          dateValue.to
+        ).toLocaleDateString()}`;
+      } else if (dateValue.from) {
+        return `From ${new Date(dateValue.from).toLocaleDateString()}`;
+      } else if (dateValue.to) {
+        return `Until ${new Date(dateValue.to).toLocaleDateString()}`;
+      }
+      return "";
+    }
+
+    case FieldType.SLIDER: {
+      const sliderValue = value as number[];
+      if (sliderValue && sliderValue.length === 2) {
+        return `${sliderValue[0]} - ${sliderValue[1]}`;
+      }
+      return String(value);
+    }
+
+    default:
+      return String(value);
+  }
+};
+
+const parseAppliedFiltersForDisplay = (
+  appliedFilters: Record<string, unknown>,
+  fields: AdvancedFilterField[]
+) => {
+  const displayFilters: Array<{
+    key: string;
+    label: string;
+    value: string;
+    field: AdvancedFilterField;
+  }> = [];
+
+  // Group related filters (like latencyMin/latencyMax)
+  const processedKeys = new Set<string>();
+
+  Object.entries(appliedFilters).forEach(([key, value]) => {
+    if (processedKeys.has(key) || value === undefined || value === null) return;
+
+    // Handle range filters (Min/Max pairs)
+    if (key.endsWith("Min")) {
+      const baseKey = key.replace("Min", "");
+      const maxKey = `${baseKey}Max`;
+      const minValue = value;
+      const maxValue = appliedFilters[maxKey];
+
+      const field = fields.find(
+        (f) =>
+          f.id === baseKey ||
+          f.id === `${baseKey}_ms` ||
+          f.id === `${baseKey}_usd` ||
+          (f.backendKey &&
+            (f.backendKey === baseKey ||
+              f.backendKey === key.replace("Min", "")))
+      );
+
+      if (field && (minValue !== undefined || maxValue !== undefined)) {
+        const rangeValue = [
+          minValue || field.min || 0,
+          maxValue || field.max || 100,
+        ];
+        displayFilters.push({
+          key: baseKey,
+          label: field.label,
+          value: formatFilterValue(
+            { ...field, type: FieldType.SLIDER },
+            rangeValue
+          ),
+          field,
+        });
+        processedKeys.add(key);
+        processedKeys.add(maxKey);
+      }
+      return;
+    }
+
+    if (key.endsWith("Max")) {
+      const baseKey = key.replace("Max", "");
+      const minKey = `${baseKey}Min`;
+
+      if (!processedKeys.has(minKey)) {
+        // Handle Max without Min
+        const field = fields.find(
+          (f) =>
+            f.id === baseKey ||
+            f.id === `${baseKey}_ms` ||
+            f.id === `${baseKey}_usd` ||
+            (f.backendKey &&
+              (f.backendKey === baseKey ||
+                f.backendKey === key.replace("Max", "")))
+        );
+
+        if (field) {
+          const rangeValue = [field.min || 0, value];
+          displayFilters.push({
+            key: baseKey,
+            label: field.label,
+            value: formatFilterValue(
+              { ...field, type: FieldType.SLIDER },
+              rangeValue
+            ),
+            field,
+          });
+          processedKeys.add(key);
+        }
+      }
+      return;
+    }
+
+    // Handle date range filters
+    if (key.endsWith("From") || key.endsWith("To")) {
+      const baseKey = key.replace(/From$|To$/, "");
+      const fromKey = `${baseKey}From`;
+      const toKey = `${baseKey}To`;
+
+      if (!processedKeys.has(fromKey) && !processedKeys.has(toKey)) {
+        const fromValue = appliedFilters[fromKey];
+        const toValue = appliedFilters[toKey];
+
+        const field = fields.find(
+          (f) => f.id === baseKey || (f.backendKey && f.backendKey === baseKey)
+        );
+
+        if (field && (fromValue || toValue)) {
+          const dateValue = {
+            from: fromValue as string,
+            to: toValue as string,
+          };
+          displayFilters.push({
+            key: baseKey,
+            label: field.label,
+            value: formatFilterValue(
+              { ...field, type: FieldType.DATE_RANGE },
+              dateValue
+            ),
+            field,
+          });
+          processedKeys.add(fromKey);
+          processedKeys.add(toKey);
+        }
+      }
+      return;
+    }
+
+    // Handle regular filters
+    const field = fields.find((f) => f.id === key || f.backendKey === key);
+    if (field) {
+      let displayValue = value;
+
+      // For arrays, show as comma-separated
+      if (Array.isArray(value) && value.length > 0) {
+        displayValue = value;
+      } else if (typeof value === "string" && value.trim() !== "") {
+        displayValue = value;
+      } else {
+        return; // Skip empty values
+      }
+
+      displayFilters.push({
+        key,
+        label: field.label,
+        value: formatFilterValue(field, displayValue),
+        field,
+      });
+    }
+  });
+
+  return displayFilters;
+};
 
 export function DataTable<TData, TValue>({
   columns,
@@ -139,6 +331,35 @@ export function DataTable<TData, TValue>({
     [onFiltersChange]
   );
 
+  const handleRemoveFilter = React.useCallback(
+    (filterKey: string) => {
+      const newFilters = { ...appliedFilters };
+
+      // Handle range filters - remove both min and max
+      if (filterKey === "latency" || filterKey === "cost") {
+        delete newFilters[`${filterKey}Min`];
+        delete newFilters[`${filterKey}Max`];
+      } else if (filterKey === "date") {
+        delete newFilters.dateFrom;
+        delete newFilters.dateTo;
+      } else {
+        delete newFilters[filterKey];
+        // Also try backend key variants
+        delete newFilters[`${filterKey}Min`];
+        delete newFilters[`${filterKey}Max`];
+        delete newFilters[`${filterKey}From`];
+        delete newFilters[`${filterKey}To`];
+      }
+
+      handleFiltersChange(newFilters);
+    },
+    [appliedFilters, handleFiltersChange]
+  );
+
+  const displayFilters = filtersConfig
+    ? parseAppliedFiltersForDisplay(appliedFilters, filtersConfig)
+    : [];
+
   // Loading state UI
   if (isLoading) {
     return (
@@ -185,22 +406,57 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       {filtersConfig && (
-        <div className="mb-2 flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>{filtersButton}</DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="p-4 w-[320px]"
-              onCloseAutoFocus={(e) => e.preventDefault()}
-            >
-              <AdvancedFilters
-                appliedFilters={appliedFilters}
-                onChange={handleFiltersChange}
-                fields={filtersConfig}
-              />
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>{filtersButton}</DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="p-4 w-[320px]"
+                onCloseAutoFocus={(e) => e.preventDefault()}
+              >
+                <AdvancedFilters
+                  appliedFilters={appliedFilters}
+                  onChange={handleFiltersChange}
+                  fields={filtersConfig}
+                />
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {displayFilters.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleFiltersChange({})}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                Clear all
+              </Button>
+            )}
+          </div>
+
+          {displayFilters.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {displayFilters.map((filter) => (
+                <Badge
+                  key={filter.key}
+                  variant="secondary"
+                  className="flex items-center gap-1 px-2 py-1"
+                >
+                  <span className="text-xs font-medium">{filter.label}:</span>
+                  <span className="text-xs">{filter.value}</span>
+                  <button
+                    onClick={() => handleRemoveFilter(filter.key)}
+                    className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+          )}
         </div>
       )}
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>

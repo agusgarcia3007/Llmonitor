@@ -28,6 +28,8 @@ export interface AdvancedFilterField {
   min?: number;
   max?: number;
   step?: number;
+  backendKey?: string;
+  transform?: (value: unknown) => Record<string, unknown>;
 }
 
 export enum FieldType {
@@ -172,18 +174,26 @@ const transformFiltersForBackend = (
     const field = fields.find((f) => f.id === key);
     if (!field || value === undefined || value === null) return;
 
+    if (field.transform) {
+      const transformedFilters = field.transform(value);
+      Object.assign(backendFilters, transformedFilters);
+      return;
+    }
+
+    const backendKey = field.backendKey || key;
+
     switch (field.type) {
       case FieldType.TEXT:
       case FieldType.NUMBER:
         if (value && String(value).trim() !== "") {
-          backendFilters[key] = value;
+          backendFilters[backendKey] = value;
         }
         break;
 
       case FieldType.SELECT: {
-        const selectValue = value as Option[];
+        const selectValue = value as string[];
         if (selectValue && selectValue.length > 0) {
-          backendFilters[key] = selectValue.map((option) => option.value);
+          backendFilters[backendKey] = selectValue;
         }
         break;
       }
@@ -191,10 +201,10 @@ const transformFiltersForBackend = (
       case FieldType.DATE_RANGE: {
         const dateRange = value as DateRange;
         if (dateRange?.from) {
-          backendFilters[`${key}From`] = dateRange.from.toISOString();
+          backendFilters[`${backendKey}From`] = dateRange.from.toISOString();
         }
         if (dateRange?.to) {
-          backendFilters[`${key}To`] = dateRange.to.toISOString();
+          backendFilters[`${backendKey}To`] = dateRange.to.toISOString();
         }
         break;
       }
@@ -202,23 +212,11 @@ const transformFiltersForBackend = (
       case FieldType.SLIDER: {
         const sliderValue = value as number[];
         if (sliderValue && sliderValue.length === 2) {
-          if (key === "latency_ms") {
-            if (sliderValue[0] !== field.min) {
-              backendFilters["latencyMin"] = sliderValue[0];
-            }
-            if (sliderValue[1] !== field.max) {
-              backendFilters["latencyMax"] = sliderValue[1];
-            }
-          } else if (key === "cost_usd") {
-            if (sliderValue[0] !== field.min) {
-              backendFilters["costMin"] = sliderValue[0];
-            }
-            if (sliderValue[1] !== field.max) {
-              backendFilters["costMax"] = sliderValue[1];
-            }
-          } else {
-            backendFilters[`${key}Min`] = sliderValue[0];
-            backendFilters[`${key}Max`] = sliderValue[1];
+          if (sliderValue[0] !== field.min) {
+            backendFilters[`${backendKey}Min`] = sliderValue[0];
+          }
+          if (sliderValue[1] !== field.max) {
+            backendFilters[`${backendKey}Max`] = sliderValue[1];
           }
         }
         break;
@@ -466,14 +464,19 @@ export function AdvancedFilters({
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
+                      initialFocus
                       mode="range"
+                      defaultMonth={formField.value?.from}
                       selected={formField.value}
-                      onSelect={(range) => {
-                        formField.onChange(range);
+                      onSelect={(date) => {
+                        formField.onChange(date);
                         handleInternalChange({
                           ...form.getValues(),
-                          [field.id]: range,
+                          [field.id]: date,
                         });
+                        if (date?.from && date?.to) {
+                          setDatePopoverOpen(field.id, false);
+                        }
                       }}
                       numberOfMonths={2}
                     />
@@ -495,25 +498,21 @@ export function AdvancedFilters({
             render={({ field: formField }) => (
               <FormItem>
                 <FormLabel>
-                  {field.label} ({formField.value?.[0]} - {formField.value?.[1]}
-                  )
+                  {field.label}: {formField.value?.[0]} - {formField.value?.[1]}
                 </FormLabel>
                 <FormControl>
                   <Slider
-                    min={field.min}
-                    max={field.max}
-                    step={field.step}
+                    min={field.min ?? 0}
+                    max={field.max ?? 100}
+                    step={field.step ?? 1}
                     value={
                       formField.value || [field.min ?? 0, field.max ?? 100]
                     }
                     onValueChange={(value) => {
                       formField.onChange(value);
-                      handleInternalChange({
-                        ...form.getValues(),
-                        [field.id]: value,
-                      });
+                      handleDebouncedChange(field.id, value);
                     }}
-                    showTooltip
+                    className="w-full"
                   />
                 </FormControl>
                 <FormMessage />

@@ -36,6 +36,7 @@ export const logEvent = async (c: Context) => {
 
   let organizationId =
     body.projectId || body.organizationId || session.organizationId;
+
   if (!organizationId && session.userId) {
     const org = await getActiveOrganization(session.userId);
     organizationId = org?.id;
@@ -43,7 +44,10 @@ export const logEvent = async (c: Context) => {
 
   if (!organizationId) {
     return c.json(
-      { success: false, message: "No organization found for this user" },
+      {
+        success: false,
+        message: "No organization found for this user",
+      },
       400
     );
   }
@@ -58,6 +62,7 @@ export const logEvent = async (c: Context) => {
           eq(require("@/db/schema").member.organizationId, organizationId)
         )
       );
+
     if (!member.length) {
       return c.json(
         {
@@ -100,13 +105,24 @@ export const logEvent = async (c: Context) => {
 
 export const getEvents = async (c: Context) => {
   const session = await c.get("session");
+
+  if (!session.activeOrganizationId) {
+    return c.json(
+      {
+        success: false,
+        message: "No active organization found",
+      },
+      400
+    );
+  }
+
   const { limit, offset, sort, order } = parseQueryParams(
     c,
     allowedSortFields as unknown as string[]
   );
+
   const apiKey = c.req.query("apiKey");
   const filters = parseEventFilters(c);
-
   const organizationId = session.activeOrganizationId;
 
   const orderBy =
@@ -120,28 +136,40 @@ export const getEvents = async (c: Context) => {
     filters,
   });
 
-  const [events, countResult] = await Promise.all([
-    db
-      .select()
-      .from(llm_event)
-      .where(and(...whereConditions))
-      .orderBy(orderBy)
-      .limit(limit)
-      .offset(offset),
-    db
-      .select({ count: count() })
-      .from(llm_event)
-      .where(and(...whereConditions)),
-  ]);
-  const total = countResult[0]?.count ?? 0;
+  try {
+    const [events, countResult] = await Promise.all([
+      db
+        .select()
+        .from(llm_event)
+        .where(and(...whereConditions))
+        .orderBy(orderBy)
+        .limit(limit)
+        .offset(offset),
+      db
+        .select({ count: count() })
+        .from(llm_event)
+        .where(and(...whereConditions)),
+    ]);
 
-  return c.json({
-    success: true,
-    data: events,
-    pagination: {
-      total: Number(total),
-      limit,
-      offset,
-    },
-  });
+    const total = countResult[0]?.count ?? 0;
+
+    return c.json({
+      success: true,
+      data: events,
+      pagination: {
+        total: Number(total),
+        limit,
+        offset,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    return c.json(
+      {
+        success: false,
+        message: "Failed to fetch events",
+      },
+      500
+    );
+  }
 };

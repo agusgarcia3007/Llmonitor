@@ -1,7 +1,4 @@
-import {
-  FieldType,
-  type AdvancedFilterField,
-} from "@/components/ui/advanced-filters";
+import { type AdvancedFilterField } from "@/components/ui/advanced-filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,6 +14,11 @@ import {
   useLLMEventsQuery,
 } from "@/services/llm-events/query";
 import type { GetEventsParams, LLMEvent } from "@/types";
+import {
+  CommonFilters,
+  createSelectFilter,
+  createNumberFilter,
+} from "@/lib/filter-utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { type ColumnDef, type SortingState } from "@tanstack/react-table";
@@ -66,34 +68,28 @@ export function LogsPage() {
   }, [data, pagination.page, pagination.pageSize, params, queryClient]);
 
   const filtersConfig: AdvancedFilterField[] = [
-    {
-      id: "model",
-      label: "Model",
-      type: FieldType.TEXT,
-    },
-    {
-      id: "provider",
-      label: "Provider",
-      type: FieldType.SELECT,
-      options: ["openai", "anthropic", "deepseek"],
-    },
-    { id: "date", label: "Date", type: FieldType.DATE_RANGE },
-    {
-      id: "latency_ms",
-      label: "Latency (ms)",
-      type: FieldType.SLIDER,
-      min: 0,
-      max: 10000,
-      step: 100,
-    },
-    {
-      id: "cost_usd",
-      label: "Cost (USD)",
-      type: FieldType.SLIDER,
-      min: 0,
-      max: 10,
-      step: 0.01,
-    },
+    CommonFilters.model(),
+    CommonFilters.provider([
+      "openai",
+      "anthropic",
+      "deepseek",
+      "cohere",
+      "google",
+      "azure",
+      "ollama",
+      "custom",
+    ]),
+    createSelectFilter(
+      "status",
+      "Status",
+      ["200", "400", "401", "403", "404", "429", "500", "502", "503"],
+      "status"
+    ),
+    CommonFilters.dateRange("Date", "date"),
+    CommonFilters.latency(30000, 100),
+    CommonFilters.cost(100, 0.01),
+    createNumberFilter("prompt_tokens", "Prompt Tokens"),
+    createNumberFilter("completion_tokens", "Completion Tokens"),
   ];
 
   const tableData = data?.data || [];
@@ -126,7 +122,12 @@ export function LogsPage() {
           </Button>
         ),
         cell: ({ row }) => (
-          <div className="font-medium">{row.getValue("id")}</div>
+          <div
+            className="font-medium max-w-[120px] truncate"
+            title={row.getValue("id")}
+          >
+            {row.getValue("id")}
+          </div>
         ),
       },
       {
@@ -141,6 +142,11 @@ export function LogsPage() {
             <ArrowUpDown className="h-4 w-4" />
           </Button>
         ),
+        cell: ({ row }) => (
+          <div className="max-w-[120px] truncate" title={row.getValue("model")}>
+            {row.getValue("model")}
+          </div>
+        ),
       },
       {
         accessorKey: "provider",
@@ -148,15 +154,27 @@ export function LogsPage() {
         cell: ({ row }) => {
           const provider = row.getValue("provider") as string;
           const bgDict: Record<string, string> = {
-            openai: "bg-green-200 text-green-800",
-            anthropic: "bg-orange-200 text-orange-800",
-            deepseek: "bg-blue-200 text-blue-800",
-            cohere: "bg-red-200 text-red-800",
-            google: "bg-yellow-200 text-yellow-800",
-            custom: "bg-gray-200 text-gray-800",
+            openai:
+              "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+            anthropic:
+              "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
+            deepseek:
+              "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+            cohere: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+            google:
+              "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+            azure:
+              "bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-300",
+            ollama:
+              "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+            custom:
+              "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300",
           };
           return (
-            <Badge variant="secondary" className={bgDict[provider]}>
+            <Badge
+              variant="secondary"
+              className={bgDict[provider] || bgDict.custom}
+            >
               {provider}
             </Badge>
           );
@@ -167,26 +185,37 @@ export function LogsPage() {
         header: t("logsTable.status"),
         cell: ({ row }) => {
           const status = row.getValue("status") as number;
-          const statusMap: Record<
-            number,
-            {
-              label: string;
-              variant: "default" | "destructive" | "outline" | "secondary";
-            }
-          > = {
-            200: { label: "Success", variant: "default" },
-            400: { label: "Error", variant: "destructive" },
-            500: { label: "Error", variant: "destructive" },
+          const getStatusVariant = (status: number) => {
+            if (status >= 200 && status < 300) return "default";
+            if (status >= 400 && status < 500) return "destructive";
+            if (status >= 500) return "destructive";
+            return "outline";
           };
 
-          const statusInfo = statusMap[status] || {
-            label: `${status}`,
-            variant: "outline",
+          const getStatusLabel = (status: number) => {
+            if (status === 200) return "OK";
+            if (status === 400) return "Bad Request";
+            if (status === 401) return "Unauthorized";
+            if (status === 403) return "Forbidden";
+            if (status === 404) return "Not Found";
+            if (status === 429) return "Rate Limited";
+            if (status === 500) return "Server Error";
+            if (status === 502) return "Bad Gateway";
+            if (status === 503) return "Service Unavailable";
+            return "Unknown";
           };
 
           return (
-            <Badge variant={statusInfo.variant}>
-              {status} {statusInfo.label}
+            <Badge
+              variant={
+                getStatusVariant(status) as
+                  | "default"
+                  | "destructive"
+                  | "outline"
+                  | "secondary"
+              }
+            >
+              {status} {getStatusLabel(status)}
             </Badge>
           );
         },
@@ -216,10 +245,18 @@ export function LogsPage() {
       {
         accessorKey: "prompt_tokens",
         header: t("logsTable.promptTokens"),
+        cell: ({ row }) => {
+          const tokens = row.getValue("prompt_tokens") as number;
+          return tokens ? tokens.toLocaleString() : "-";
+        },
       },
       {
         accessorKey: "completion_tokens",
         header: t("logsTable.completionTokens"),
+        cell: ({ row }) => {
+          const tokens = row.getValue("completion_tokens") as number;
+          return tokens ? tokens.toLocaleString() : "-";
+        },
       },
       {
         accessorKey: "latency_ms",
@@ -235,7 +272,19 @@ export function LogsPage() {
         ),
         cell: ({ row }) => {
           const latency = row.getValue("latency_ms") as number;
-          return latency ? `${latency.toFixed(0)} ms` : "-";
+          if (!latency) return "-";
+
+          const getLatencyColor = (ms: number) => {
+            if (ms < 1000) return "text-green-600 dark:text-green-400";
+            if (ms < 3000) return "text-yellow-600 dark:text-yellow-400";
+            return "text-red-600 dark:text-red-400";
+          };
+
+          return (
+            <span className={getLatencyColor(latency)}>
+              {latency.toFixed(0)} ms
+            </span>
+          );
         },
       },
       {
@@ -317,7 +366,7 @@ export function LogsPage() {
             filtersConfig={filtersConfig}
             filtersButton={
               <Button variant="outline" size="sm">
-                <ListFilter className="w-4 h-4" />
+                <ListFilter className="w-4 h-4 mr-2" />
                 Filters
               </Button>
             }
@@ -358,16 +407,16 @@ function TableExpandableCell({
             <Eye className="w-4 h-4" />
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="max-w-4xl max-h-[80vh]">
           <DialogTitle>{modalTitle}</DialogTitle>
           {type === "json" ? (
             <pre className="whitespace-pre-wrap text-xs max-h-[60vh] overflow-auto bg-muted rounded p-2">
               {JSON.stringify(value, null, 2)}
             </pre>
           ) : (
-            <code className="whitespace-pre-wrap bg-muted rounded p-2 text-sm max-h-[60vh] overflow-auto">
+            <div className="whitespace-pre-wrap bg-muted rounded p-2 text-sm max-h-[60vh] overflow-auto">
               {value as string}
-            </code>
+            </div>
           )}
         </DialogContent>
       </Dialog>

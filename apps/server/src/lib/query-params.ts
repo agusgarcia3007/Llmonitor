@@ -41,53 +41,69 @@ export function parseQueryParams(
   };
 }
 
-export function createSortHelpers<
-  T extends Record<string, any>,
-  K extends readonly string[]
->(
+export function createSortHelpers<T extends Record<string, any>>(
   table: T,
-  fields: K
-): {
-  allowedSortFields: K;
-  sortFieldMap: Record<K[number], any>;
-} {
+  sortableFields: readonly string[]
+) {
+  const allowedSortFields = [...sortableFields];
+  const sortFieldMap = sortableFields.reduce((acc, field) => {
+    acc[field] = table[field];
+    return acc;
+  }, {} as Record<string, any>);
+
   return {
-    allowedSortFields: fields,
-    sortFieldMap: Object.fromEntries(
-      fields.map((f) => [f, table[f]])
-    ) as Record<K[number], any>,
+    allowedSortFields,
+    sortFieldMap,
   };
 }
 
-export function parseEventFilters(c: Context) {
+export interface EventFilters {
+  model?: string;
+  provider?: string[];
+  status?: number;
+  version_tag?: string;
+  session_id?: string;
+  latencyMin?: number;
+  latencyMax?: number;
+  costMin?: number;
+  costMax?: number;
+  dateFrom?: Date;
+  dateTo?: Date;
+}
+
+export function parseEventFilters(c: Context): EventFilters {
   const q = c.req.query();
 
-  // Helper function to parse array parameters
   const parseArrayParam = (
     param: string | string[] | undefined
   ): string[] | undefined => {
     if (!param) return undefined;
-    if (Array.isArray(param)) return param;
+    if (Array.isArray(param)) return param.filter(Boolean);
     return param.split(",").filter(Boolean);
   };
 
-  // Helper function to parse date parameters
   const parseDateParam = (param: string | undefined): Date | undefined => {
     if (!param) return undefined;
     const date = new Date(param);
     return isNaN(date.getTime()) ? undefined : date;
   };
 
+  const parseNumberParam = (param: string | undefined): number | undefined => {
+    if (!param) return undefined;
+    const num = Number(param);
+    return isNaN(num) ? undefined : num;
+  };
+
   return {
-    model: q["model"] ?? undefined,
+    model: q["model"] || undefined,
     provider: parseArrayParam(q["provider"]),
-    status: q["status"] ? Number(q["status"]) : undefined,
-    version_tag: q["version_tag"] ?? undefined,
-    session_id: q["session_id"] ?? undefined,
-    latencyMin: q["latencyMin"] ? Number(q["latencyMin"]) : undefined,
-    latencyMax: q["latencyMax"] ? Number(q["latencyMax"]) : undefined,
-    costMin: q["costMin"] ? Number(q["costMin"]) : undefined,
-    costMax: q["costMax"] ? Number(q["costMax"]) : undefined,
+    status: parseNumberParam(q["status"]),
+    version_tag: q["version_tag"] || undefined,
+    session_id: q["session_id"] || undefined,
+    latencyMin: parseNumberParam(q["latencyMin"]),
+    latencyMax: parseNumberParam(q["latencyMax"]),
+    costMin: parseNumberParam(q["costMin"]),
+    costMax: parseNumberParam(q["costMax"]),
     dateFrom: parseDateParam(q["dateFrom"]),
     dateTo: parseDateParam(q["dateTo"]),
   };
@@ -100,16 +116,18 @@ export function buildEventWhereConditions({
 }: {
   organizationId: string;
   apiKey?: string;
-  filters: ReturnType<typeof parseEventFilters>;
+  filters: EventFilters;
 }) {
   const whereConditions = [eq(llm_event.organization_id, organizationId)];
 
   if (apiKey) {
     whereConditions.push(sql`metadata->>'apiKey' = ${apiKey}`);
   }
+
   if (filters.model) {
     whereConditions.push(eq(llm_event.model, filters.model));
   }
+
   if (filters.provider && filters.provider.length > 0) {
     if (filters.provider.length === 1) {
       whereConditions.push(eq(llm_event.provider, filters.provider[0]));
@@ -117,32 +135,42 @@ export function buildEventWhereConditions({
       whereConditions.push(inArray(llm_event.provider, filters.provider));
     }
   }
+
   if (filters.status !== undefined) {
     whereConditions.push(eq(llm_event.status, filters.status));
   }
+
   if (filters.version_tag) {
     whereConditions.push(eq(llm_event.version_tag, filters.version_tag));
   }
+
   if (filters.session_id) {
     whereConditions.push(eq(llm_event.session_id, filters.session_id));
   }
+
   if (filters.latencyMin !== undefined) {
     whereConditions.push(gte(llm_event.latency_ms, filters.latencyMin));
   }
+
   if (filters.latencyMax !== undefined) {
     whereConditions.push(lte(llm_event.latency_ms, filters.latencyMax));
   }
+
   if (filters.costMin !== undefined) {
     whereConditions.push(gte(llm_event.cost_usd, filters.costMin));
   }
+
   if (filters.costMax !== undefined) {
     whereConditions.push(lte(llm_event.cost_usd, filters.costMax));
   }
+
   if (filters.dateFrom) {
     whereConditions.push(gte(llm_event.created_at, filters.dateFrom));
   }
+
   if (filters.dateTo) {
     whereConditions.push(lte(llm_event.created_at, filters.dateTo));
   }
+
   return whereConditions;
 }
