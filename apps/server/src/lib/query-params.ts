@@ -1,6 +1,6 @@
 import { Context } from "hono";
 import { SORT_ORDER } from "./endpoint-builder";
-import { eq, sql, inArray, gte, lte } from "drizzle-orm";
+import { eq, sql, inArray, gte, lte, like } from "drizzle-orm";
 import { llm_event } from "@/db/schema";
 
 const DEFAULT_LIMIT = 20;
@@ -58,6 +58,7 @@ export function createSortHelpers<T extends Record<string, any>>(
 }
 
 export interface EventFilters {
+  id?: string;
   model?: string;
   provider?: string[];
   status?: number;
@@ -95,6 +96,7 @@ export function parseEventFilters(c: Context): EventFilters {
   };
 
   return {
+    id: q["id"] || undefined,
     model: q["model"] || undefined,
     provider: parseArrayParam(q["provider"]),
     status: parseNumberParam(q["status"]),
@@ -122,6 +124,10 @@ export function buildEventWhereConditions({
 
   if (apiKey) {
     whereConditions.push(sql`metadata->>'apiKey' = ${apiKey}`);
+  }
+
+  if (filters.id) {
+    whereConditions.push(like(llm_event.id, `%${filters.id}%`));
   }
 
   if (filters.model) {

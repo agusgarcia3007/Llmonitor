@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/advanced-filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -39,6 +40,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Search,
   X,
 } from "lucide-react";
 
@@ -283,11 +285,24 @@ export function DataTable<TData, TValue>({
     Record<string, unknown>
   >({});
 
+  const [idSearch, setIdSearch] = React.useState<string>("");
+  const debounceTimeoutRef = React.useRef<NodeJS.Timeout | undefined>(
+    undefined
+  );
+
   React.useEffect(() => {
     if (onSortingChange) {
       onSortingChange(sorting);
     }
   }, [sorting, onSortingChange]);
+
+  React.useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const table = useReactTable({
     data,
@@ -324,6 +339,30 @@ export function DataTable<TData, TValue>({
       }
     },
     [onFiltersChange]
+  );
+
+  const handleIdSearchChange = React.useCallback(
+    (value: string) => {
+      setIdSearch(value);
+
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+
+      debounceTimeoutRef.current = setTimeout(() => {
+        const updatedFilters = { ...appliedFilters };
+        if (value.trim()) {
+          updatedFilters.id = value.trim();
+        } else {
+          delete updatedFilters.id;
+        }
+        setAppliedFilters(updatedFilters);
+        if (onFiltersChange) {
+          onFiltersChange(updatedFilters);
+        }
+      }, 300);
+    },
+    [appliedFilters, onFiltersChange]
   );
 
   const handleRemoveFilter = React.useCallback(
@@ -370,6 +409,15 @@ export function DataTable<TData, TValue>({
       {filtersConfig && (
         <div className="space-y-2">
           <div className="flex items-center gap-2">
+            <div className="relative flex-1 max-w-xs">
+              <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search by ID..."
+                value={idSearch}
+                onChange={(e) => handleIdSearchChange(e.target.value)}
+                className="pl-8"
+              />
+            </div>
             <AdvancedFilters
               appliedFilters={appliedFilters}
               onChange={handleFiltersChange}

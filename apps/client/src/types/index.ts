@@ -37,6 +37,7 @@ export interface GetEventsParams {
   sort?: string;
   order?: "asc" | "desc";
   apiKey?: string;
+  id?: string;
   model?: string;
   provider?: string | string[];
   status?: number;
