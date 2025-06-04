@@ -23,7 +23,9 @@ import { Route as DashboardCostAnalysisImport } from './routes/_dashboard/cost-a
 import { Route as DashboardApiKeysImport } from './routes/_dashboard/api-keys'
 import { Route as DashboardAlertsImport } from './routes/_dashboard/alerts'
 import { Route as AuthSignupImport } from './routes/_auth/signup'
+import { Route as AuthResetPasswordImport } from './routes/_auth/reset-password'
 import { Route as AuthLoginImport } from './routes/_auth/login'
+import { Route as AuthForgotPasswordImport } from './routes/_auth/forgot-password'
 import { Route as AuthAcceptInvitationImport } from './routes/_auth/accept-invitation'
 import { Route as DashboardProjectsIndexImport } from './routes/_dashboard/projects/index'
 import { Route as DashboardProjectsIdImport } from './routes/_dashboard/projects/$id'
@@ -100,9 +102,21 @@ const AuthSignupRoute = AuthSignupImport.update({
   getParentRoute: () => AuthRouteRoute,
 } as any)
 
+const AuthResetPasswordRoute = AuthResetPasswordImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+
 const AuthLoginRoute = AuthLoginImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+
+const AuthForgotPasswordRoute = AuthForgotPasswordImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => AuthRouteRoute,
 } as any)
 
@@ -156,11 +170,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAcceptInvitationImport
       parentRoute: typeof AuthRouteImport
     }
+    '/_auth/forgot-password': {
+      id: '/_auth/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordImport
+      parentRoute: typeof AuthRouteImport
+    }
     '/_auth/login': {
       id: '/_auth/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof AuthLoginImport
+      parentRoute: typeof AuthRouteImport
+    }
+    '/_auth/reset-password': {
+      id: '/_auth/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordImport
       parentRoute: typeof AuthRouteImport
     }
     '/_auth/signup': {
@@ -247,13 +275,17 @@ declare module '@tanstack/react-router' {
 
 interface AuthRouteRouteChildren {
   AuthAcceptInvitationRoute: typeof AuthAcceptInvitationRoute
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthSignupRoute: typeof AuthSignupRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthAcceptInvitationRoute: AuthAcceptInvitationRoute,
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthSignupRoute: AuthSignupRoute,
 }
 
@@ -304,7 +336,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof DashboardRouteRouteWithChildren
   '/accept-invitation': typeof AuthAcceptInvitationRoute
+  '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
+  '/reset-password': typeof AuthResetPasswordRoute
   '/signup': typeof AuthSignupRoute
   '/alerts': typeof DashboardAlertsRoute
   '/api-keys': typeof DashboardApiKeysRoute
@@ -322,7 +356,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof DashboardRouteRouteWithChildren
   '/accept-invitation': typeof AuthAcceptInvitationRoute
+  '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
+  '/reset-password': typeof AuthResetPasswordRoute
   '/signup': typeof AuthSignupRoute
   '/alerts': typeof DashboardAlertsRoute
   '/api-keys': typeof DashboardApiKeysRoute
@@ -341,7 +377,9 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_dashboard': typeof DashboardRouteRouteWithChildren
   '/_auth/accept-invitation': typeof AuthAcceptInvitationRoute
+  '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
+  '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/_auth/signup': typeof AuthSignupRoute
   '/_dashboard/alerts': typeof DashboardAlertsRoute
   '/_dashboard/api-keys': typeof DashboardApiKeysRoute
@@ -361,7 +399,9 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/accept-invitation'
+    | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/signup'
     | '/alerts'
     | '/api-keys'
@@ -378,7 +418,9 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/accept-invitation'
+    | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/signup'
     | '/alerts'
     | '/api-keys'
@@ -395,7 +437,9 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/_dashboard'
     | '/_auth/accept-invitation'
+    | '/_auth/forgot-password'
     | '/_auth/login'
+    | '/_auth/reset-password'
     | '/_auth/signup'
     | '/_dashboard/alerts'
     | '/_dashboard/api-keys'
@@ -444,7 +488,9 @@ export const routeTree = rootRoute
       "filePath": "_auth/route.tsx",
       "children": [
         "/_auth/accept-invitation",
+        "/_auth/forgot-password",
         "/_auth/login",
+        "/_auth/reset-password",
         "/_auth/signup"
       ]
     },
@@ -465,8 +511,16 @@ export const routeTree = rootRoute
       "filePath": "_auth/accept-invitation.tsx",
       "parent": "/_auth"
     },
+    "/_auth/forgot-password": {
+      "filePath": "_auth/forgot-password.tsx",
+      "parent": "/_auth"
+    },
     "/_auth/login": {
       "filePath": "_auth/login.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/reset-password": {
+      "filePath": "_auth/reset-password.tsx",
       "parent": "/_auth"
     },
     "/_auth/signup": {

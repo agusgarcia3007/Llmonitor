@@ -101,6 +101,35 @@ export class EmailService {
     }
   }
 
+  async sendResetPasswordEmail(
+    to: string,
+    userName: string,
+    resetUrl: string
+  ): Promise<boolean> {
+    try {
+      const subject = "Reset your password - LLMonitor";
+
+      const template = this.loadEmailTemplate("reset-password-email.html");
+      const htmlContent = this.replaceTemplatePlaceholders(template, {
+        userName: userName || "User",
+        resetUrl,
+        timestamp: new Date().toLocaleString(),
+        siteUrl: siteData.url,
+        supportEmail: "support@llmonitor.com",
+      });
+
+      const result = await sendEmail(to, subject, htmlContent);
+      console.log(
+        `Reset password email sent successfully to ${to}:`,
+        result?.id
+      );
+      return true;
+    } catch (error) {
+      console.error("Error sending reset password email:", error);
+      return false;
+    }
+  }
+
   private getMetricDisplayName(metric: string): string {
     const displayNames: Record<string, string> = {
       cost_per_hour: "Cost per Hour",

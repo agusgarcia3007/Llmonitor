@@ -77,12 +77,12 @@ function Login({ className, ...props }: React.ComponentProps<"form">) {
             <Label htmlFor="password">
               {t("auth.signin.password", "Password")}
             </Label>
-            <a
-              href="#"
+            <Link
+              to="/forgot-password"
               className="ml-auto text-sm underline-offset-4 hover:underline"
             >
               {t("auth.signin.forgot", "Forgot your password?")}
-            </a>
+            </Link>
           </div>
           <Input
             id="password"

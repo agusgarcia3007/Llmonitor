@@ -7,7 +7,7 @@ import { admin, apiKey, openAPI, organization } from "better-auth/plugins";
 import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
 import Stripe from "stripe";
-import { TRUSTED_ORIGINS } from "./constants";
+import { siteData, TRUSTED_ORIGINS } from "./constants";
 import { getActiveOrganization } from "./utils";
 import { EmailService } from "./email-service";
 
@@ -23,6 +23,22 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    sendResetPassword: async ({ user, url, token }) => {
+      const redirectUrl = `${siteData.url}/reset-password?token=${token}`;
+
+      try {
+        await emailService.sendResetPasswordEmail(
+          user.email,
+          user.name || "",
+          redirectUrl
+        );
+
+        console.log(`[+] Reset password email sent to ${user.email}`);
+      } catch (error) {
+        console.error("[-] Failed to send reset password email:", error);
+      }
+    },
   },
   socialProviders: {
     google: {
