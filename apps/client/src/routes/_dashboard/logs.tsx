@@ -33,14 +33,20 @@ export const Route = createFileRoute("/_dashboard/logs")({
 
 export function LogsPage() {
   const { t } = useTranslation();
-  const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
+  const queryClient = useQueryClient();
+
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 10,
+  });
+
   const [sorting, setSorting] = useState<SortingState>([
     { id: "created_at", desc: true },
   ]);
+
   const [appliedFilters, setAppliedFilters] = useState<Record<string, unknown>>(
     {}
   );
-  const queryClient = useQueryClient();
 
   const params = useMemo<GetEventsParams>(() => {
     return {
@@ -104,7 +110,15 @@ export function LogsPage() {
 
   const handleFiltersChange = (advancedFilters: Record<string, unknown>) => {
     setAppliedFilters(advancedFilters);
-    setPagination((prev) => ({ ...prev, page: 1 }));
+    setPagination({ ...pagination, page: 1 });
+  };
+
+  const handlePaginationChange = (page: number, pageSize: number) => {
+    setPagination({ page, pageSize });
+  };
+
+  const handleSortingChange = (newSorting: SortingState) => {
+    setSorting(newSorting);
   };
 
   const columns = useMemo<ColumnDef<LLMEvent>[]>(
@@ -358,10 +372,8 @@ export function LogsPage() {
             data={tableData}
             meta={meta}
             isLoading={isLoading}
-            onPaginationChange={(page, pageSize) =>
-              setPagination({ page, pageSize })
-            }
-            onSortingChange={setSorting}
+            onPaginationChange={handlePaginationChange}
+            onSortingChange={handleSortingChange}
             onFiltersChange={handleFiltersChange}
             filtersConfig={filtersConfig}
             filtersButton={
