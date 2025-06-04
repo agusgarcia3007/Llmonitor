@@ -41,11 +41,6 @@ import {
   ChevronsRight,
   X,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 // Reusable interface for server-side data
 export interface PaginatedResult<T> {
@@ -375,19 +370,12 @@ export function DataTable<TData, TValue>({
       {filtersConfig && (
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>{filtersButton}</DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="p-4 w-[320px]"
-                onCloseAutoFocus={(e) => e.preventDefault()}
-              >
-                <AdvancedFilters
-                  appliedFilters={appliedFilters}
-                  onChange={handleFiltersChange}
-                  fields={filtersConfig}
-                />
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <AdvancedFilters
+              appliedFilters={appliedFilters}
+              onChange={handleFiltersChange}
+              fields={filtersConfig}
+              filtersButton={filtersButton}
+            />
 
             {displayFilters.length > 0 && (
               <Button

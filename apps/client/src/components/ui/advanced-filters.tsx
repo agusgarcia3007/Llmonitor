@@ -1,6 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Form,
   FormControl,
   FormField,
@@ -44,6 +49,7 @@ interface AdvancedFiltersProps {
   appliedFilters: Record<string, unknown>;
   onChange: (filters: Record<string, unknown>) => void;
   fields: AdvancedFilterField[];
+  filtersButton?: React.ReactNode;
 }
 
 const createFormSchema = (fields: AdvancedFilterField[]) => {
@@ -231,6 +237,7 @@ export function AdvancedFilters({
   appliedFilters,
   onChange,
   fields,
+  filtersButton,
 }: AdvancedFiltersProps) {
   const { t } = useTranslation();
   const schema = React.useMemo(() => createFormSchema(fields), [fields]);
@@ -316,10 +323,13 @@ export function AdvancedFilters({
             control={form.control}
             name={field.id}
             render={({ field: formField }) => (
-              <FormItem>
-                <FormLabel>{field.label}</FormLabel>
+              <FormItem className="space-y-1">
+                <FormLabel className="text-xs font-medium">
+                  {field.label}
+                </FormLabel>
                 <FormControl>
                   <Input
+                    className="h-8 text-sm"
                     placeholder={t(
                       "dataTableFilter.advancedFilters.placeholder.text",
                       {
@@ -347,11 +357,14 @@ export function AdvancedFilters({
             control={form.control}
             name={field.id}
             render={({ field: formField }) => (
-              <FormItem>
-                <FormLabel>{field.label}</FormLabel>
+              <FormItem className="space-y-1">
+                <FormLabel className="text-xs font-medium">
+                  {field.label}
+                </FormLabel>
                 <FormControl>
                   <Input
                     type="number"
+                    className="h-8 text-sm"
                     placeholder={t(
                       "dataTableFilter.advancedFilters.placeholder.number",
                       {
@@ -388,8 +401,10 @@ export function AdvancedFilters({
             control={form.control}
             name={field.id}
             render={({ field: formField }) => (
-              <FormItem>
-                <FormLabel>{field.label}</FormLabel>
+              <FormItem className="space-y-1">
+                <FormLabel className="text-xs font-medium">
+                  {field.label}
+                </FormLabel>
                 <FormControl>
                   <MultipleSelector
                     value={formField.value || []}
@@ -408,7 +423,7 @@ export function AdvancedFilters({
                       }
                     )}
                     emptyIndicator={
-                      <p className="text-center text-gray-600 dark:text-gray-400">
+                      <p className="text-center text-gray-600 dark:text-gray-400 text-xs">
                         {t("dataTableFilter.advancedFilters.empty.select")}
                       </p>
                     }
@@ -428,8 +443,10 @@ export function AdvancedFilters({
             control={form.control}
             name={field.id}
             render={({ field: formField }) => (
-              <FormItem>
-                <FormLabel>{field.label}</FormLabel>
+              <FormItem className="space-y-1">
+                <FormLabel className="text-xs font-medium">
+                  {field.label}
+                </FormLabel>
                 <Popover
                   open={datePopoverStates[field.id] || false}
                   onOpenChange={(isOpen) =>
@@ -440,9 +457,9 @@ export function AdvancedFilters({
                     <FormControl>
                       <Button
                         variant="outline"
-                        className="w-full justify-start text-left font-normal"
+                        className="w-full justify-start text-left font-normal h-8 text-sm"
                       >
-                        <CalendarIcon className="w-4 h-4 mr-2" />
+                        <CalendarIcon className="w-3 h-3 mr-2" />
                         {formField.value?.from ? (
                           formField.value.to ? (
                             <>
@@ -496,8 +513,8 @@ export function AdvancedFilters({
             control={form.control}
             name={field.id}
             render={({ field: formField }) => (
-              <FormItem>
-                <FormLabel>
+              <FormItem className="space-y-1">
+                <FormLabel className="text-xs font-medium">
                   {field.label}: {formField.value?.[0]} - {formField.value?.[1]}
                 </FormLabel>
                 <FormControl>
@@ -527,21 +544,74 @@ export function AdvancedFilters({
     }
   };
 
+  if (!filtersButton) {
+    return (
+      <Form {...form}>
+        <form className="space-y-3">
+          <div className="space-y-3">
+            {fields.map((field) => renderField(field))}
+          </div>
+          <div className="flex gap-2 pt-2 border-t">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleClear}
+              className="flex-1"
+            >
+              {t("dataTableFilter.clear")}
+            </Button>
+            <Button
+              type="button"
+              variant="default"
+              size="sm"
+              onClick={handleApply}
+              className="flex-1"
+            >
+              {t("dataTableFilter.advancedFilters.apply")}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    );
+  }
+
   return (
-    <Form {...form}>
-      <form className="space-y-4">
-        <div className="space-y-4">
-          {fields.map((field) => renderField(field))}
-        </div>
-        <div className="flex justify-between pt-2">
-          <Button type="button" variant="outline" onClick={handleClear}>
-            {t("dataTableFilter.clear")}
-          </Button>
-          <Button type="button" variant="default" onClick={handleApply}>
-            {t("dataTableFilter.advancedFilters.apply")}
-          </Button>
-        </div>
-      </form>
-    </Form>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>{filtersButton}</DropdownMenuTrigger>
+      <DropdownMenuContent
+        className="p-0 w-[280px] max-h-[500px]"
+        onCloseAutoFocus={(e) => e.preventDefault()}
+        align="start"
+      >
+        <Form {...form}>
+          <form className="flex flex-col h-full">
+            <div className="flex-1 overflow-y-auto max-h-[400px] p-3 space-y-3">
+              {fields.map((field) => renderField(field))}
+            </div>
+            <div className="flex gap-2 p-3 border-t bg-background">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleClear}
+                className="flex-1"
+              >
+                {t("dataTableFilter.clear")}
+              </Button>
+              <Button
+                type="button"
+                variant="default"
+                size="sm"
+                onClick={handleApply}
+                className="flex-1"
+              >
+                {t("dataTableFilter.advancedFilters.apply")}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
