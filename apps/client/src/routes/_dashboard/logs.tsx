@@ -32,7 +32,9 @@ export const Route = createFileRoute("/_dashboard/logs")({
 export function LogsPage() {
   const { t } = useTranslation();
   const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "created_at", desc: true },
+  ]);
   const [appliedFilters, setAppliedFilters] = useState<Record<string, unknown>>(
     {}
   );

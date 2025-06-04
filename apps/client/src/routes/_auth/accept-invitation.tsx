@@ -459,7 +459,9 @@ function AcceptInvitationPage() {
             {authMode === "signup" && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold">{t("auth.signup")}</h3>
+                  <h3 className="text-lg font-semibold">
+                    {t("auth.signup.title")}
+                  </h3>
                   <Button
                     variant="ghost"
                     size="sm"

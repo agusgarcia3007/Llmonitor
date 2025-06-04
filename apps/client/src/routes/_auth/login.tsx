@@ -1,65 +1,30 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
-import { IconBrandGithub, IconBrandGoogleFilled } from "@tabler/icons-react";
+
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_auth/login")({
   component: Login,
 });
 
-function Login({ className, ...props }: React.ComponentProps<"div">) {
+function Login({ className, ...props }: React.ComponentProps<"form">) {
   const { t } = useTranslation();
-  const form = useForm({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [socialLoading, setSocialLoading] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  async function handleSocialSignIn(provider: "google" | "github") {
-    setSocialLoading(provider);
-    try {
-      await authClient.signIn.social({
-        provider,
-        callbackURL: "https://llmonitor.io/dashboard",
-      });
-    } catch (error) {
-      console.error(`${provider} sign in failed:`, error);
-    } finally {
-      setSocialLoading(null);
-    }
-  }
-
-  const ENABLE_SOCIAL = false;
-
-  async function onSubmit(values: { email: string; password: string }) {
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
     await authClient.signIn.email(
       {
-        email: values.email,
-        password: values.password,
+        email,
+        password,
         callbackURL: "/dashboard",
       },
       {
@@ -77,101 +42,66 @@ function Login({ className, ...props }: React.ComponentProps<"div">) {
     );
     setLoading(false);
   }
+
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("auth.signin.title")}</CardTitle>
-          <CardDescription>{t("auth.signin.description")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className="flex flex-col gap-6">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("auth.signin.email")}</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="m@example.com"
-                          type="email"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center">
-                        <FormLabel>{t("auth.signin.password")}</FormLabel>
-                        <a
-                          href="#"
-                          className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                        >
-                          {t("auth.signin.forgot")}
-                        </a>
-                      </div>
-                      <FormControl>
-                        <Input type="password" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="flex flex-col gap-2">
-                  <Button type="submit" className="w-full" isLoading={loading}>
-                    {t("auth.signin.submit")}
-                  </Button>
-                  {ENABLE_SOCIAL && (
-                    <>
-                      <span className="relative text-center text-sm">
-                        <hr className="my-2" />
-                        <p className="text-muted-foreground text-xs bg-white px-2 absolute left-1/2 -translate-x-1/2 top-0">
-                          {t("auth.signin.or")}
-                        </p>
-                      </span>
-                      <div className="flex gap-x-2 items-center justify-center">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleSocialSignIn("google")}
-                          disabled={socialLoading !== null}
-                          isLoading={socialLoading === "google"}
-                        >
-                          <IconBrandGoogleFilled />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleSocialSignIn("github")}
-                          disabled={socialLoading !== null}
-                          isLoading={socialLoading === "github"}
-                        >
-                          <IconBrandGithub />
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-              <div className="mt-4 text-center text-sm">
-                {t("auth.signin.noAccount")}{" "}
-                <Link to="/signup" className="underline underline-offset-4">
-                  {t("auth.signin.signup")}
-                </Link>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
+    <form
+      className={cn("flex flex-col gap-6", className)}
+      onSubmit={onSubmit}
+      {...props}
+    >
+      <div className="flex flex-col items-center gap-2 text-center">
+        <h1 className="text-2xl font-bold">
+          {t("auth.signin.title", "Login to your account")}
+        </h1>
+        <p className="text-muted-foreground text-sm text-balance">
+          {t(
+            "auth.signin.description",
+            "Enter your email below to login to your account"
+          )}
+        </p>
+      </div>
+      <div className="grid gap-6">
+        <div className="grid gap-3">
+          <Label htmlFor="email">{t("auth.signin.email", "Email")}</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="m@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className="grid gap-3">
+          <div className="flex items-center">
+            <Label htmlFor="password">
+              {t("auth.signin.password", "Password")}
+            </Label>
+            <a
+              href="#"
+              className="ml-auto text-sm underline-offset-4 hover:underline"
+            >
+              {t("auth.signin.forgot", "Forgot your password?")}
+            </a>
+          </div>
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <Button type="submit" className="w-full" isLoading={loading}>
+          {t("auth.signin.submit", "Login")}
+        </Button>
+      </div>
+      <div className="text-center text-sm">
+        {t("auth.signin.noAccount", "Don't have an account?")}{" "}
+        <Link to="/signup" className="underline underline-offset-4">
+          {t("auth.signin.signup", "Sign up")}
+        </Link>
+      </div>
+    </form>
   );
 }

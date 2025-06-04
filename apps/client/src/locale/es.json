@@ -1,47 +1,4 @@
 {
-  "header": {
-    "features": "Características",
-    "pricing": "Precios",
-    "about": "Acerca de",
-    "login": "Iniciar sesión",
-    "signup": "Registrarse",
-    "getStarted": "Comenzar",
-    "docs": "Documentación"
-  },
-  "hero": {
-    "title": {
-      "default": "Centralizá y Automatizá tus Órdenes <highlight>de Todos tus Canales</highlight>"
-    },
-    "subtitle": "Headless OMS para empresas que venden en Tiendanube y Mercado Libre. Centralizá, gestioná y automatizá tus órdenes en un solo lugar, conectado a tu ERP y logística.",
-    "cta": "Unite a la lista de espera",
-    "demo": "Ver demo",
-    "trustedBy": "Confiado por empresas como :",
-    "waitlistTitle": "Acceso anticipado OMS",
-    "waitlistSubtitle": "Sumate y sé de los primeros en probar el OMS multicanal para e-commerce.",
-    "badge": "Gestión de Órdenes Multicanal",
-    "techBadge": "Tecnología Empresarial",
-    "feature1": {
-      "title": "Órdenes de todos tus canales",
-      "description": "Recibí y gestioná órdenes de Tiendanube y Mercado Libre en un solo panel"
-    },
-    "feature2": {
-      "title": "Automatizá tu operación",
-      "description": "Actualización de estados, historial y notificaciones automáticas a tus sistemas internos"
-    },
-    "feature3": {
-      "title": "Multi-tenant y roles",
-      "description": "Acceso seguro para tu equipo, con permisos y separación por empresa"
-    },
-    "feature4": {
-      "title": "API y Webhooks",
-      "description": "Integrá fácilmente con tu ERP, WMS o logística mediante API y webhooks configurables"
-    },
-    "techTitle": "Conectado y escalable",
-    "tech1": "Next.js",
-    "tech2": "PostgreSQL",
-    "tech3": "Hono API",
-    "tech4": "Webhooks"
-  },
   "auth": {
     "signin": {
       "title": "Inicia sesión en tu cuenta",
@@ -66,18 +23,11 @@
       "hasAccount": "¿Ya tienes una cuenta?",
       "signin": "Iniciar sesión"
     },
-    "email": "Email",
-    "password": "Contraseña",
-    "name": "Nombre",
-    "login": "Iniciar Sesión",
-    "signup": "Registrarse",
     "signupSuccess": "Cuenta creada exitosamente",
     "signupError": "Error al crear la cuenta",
     "loginSuccess": "Sesión iniciada exitosamente",
     "loginError": "Error al iniciar sesión",
     "createAccount": "Crear Cuenta",
-    "createNewAccount": "Crear Nueva Cuenta",
-    "loginExistingAccount": "Iniciar Sesión en Cuenta Existente",
     "alreadyHaveAccount": "¿Ya tienes una cuenta?",
     "dontHaveAccount": "¿No tienes una cuenta?",
     "switchAccount": "Cambiar de Cuenta",
@@ -181,6 +131,7 @@
     "goBack": "Volver",
     "goHome": "Ir al Inicio",
     "goToDashboard": "Ir al Panel",
+    "back": "Atrás",
     "status": "Estado"
   },
   "invitations": {
@@ -379,26 +330,6 @@
     "metadata": "Metadatos",
     "selectApiKey": "Seleccionar Clave API",
     "allApiKeys": "Todas las Claves API"
-  },
-  "organization": {
-    "copy": "Copiar",
-    "copied": "Copiado",
-    "projects": "Proyectos",
-    "edit": "Editar",
-    "delete": "Eliminar",
-    "add_project": "Agregar proyecto",
-    "save": "Guardar",
-    "create": "Crear",
-    "name": "Nombre",
-    "logo_url": "Logo URL",
-    "name_required": "Nombre es requerido",
-    "delete_project_title": "¿Eliminar proyecto?",
-    "delete_project_desc": "Esta acción eliminará el proyecto y todo lo asociado. ¿Estás seguro?",
-    "cancel": "Cancelar",
-    "copy_id": "Copiar ID",
-    "empty_title": "Aún no tienes proyectos",
-    "empty_description": "Crea tu primer proyecto para comenzar.",
-    "empty_action": "Crear proyecto"
   },
   "costAnalysis": {
     "title": "Análisis de Costos",

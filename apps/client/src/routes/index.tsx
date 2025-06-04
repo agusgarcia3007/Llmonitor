@@ -1,5 +1,5 @@
 import { Waitlist } from "@/components/landing/waitlist";
-import { LanguageSwitch } from "@/components/layout/language-switch";
+import { HeroSection } from "@/components/landing/hero-section";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -10,7 +10,6 @@ import {
   IconBrandFramer,
   IconBrandVscode,
   IconBulb,
-  IconChevronRight,
   IconCoin,
   IconFlask,
   IconLock,
@@ -87,60 +86,10 @@ function FeatureCard({
 function Index() {
   const { t } = useTranslation();
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background p-4 to-background/95 flex flex-col justify-start">
-      <div className="absolute top-4 right-4 z-10">
-        <LanguageSwitch />
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-background  to-background/95 flex flex-col justify-start">
+      <HeroSection />
 
       <div className="max-w-5xl mx-auto px-4 pt-10 md:pt-20 flex flex-col gap-12 items-center w-full">
-        <motion.section
-          className="flex flex-col items-center gap-5 text-center relative w-full"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          <motion.div
-            className="absolute w-[400px] h-[400px] bg-primary/5 rounded-full blur-[80px] -z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.8 }}
-            transition={{ duration: 1.5 }}
-          />
-
-          <Badge
-            variant="outline"
-            className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold tracking-wide mb-2"
-          >
-            {t("landing.badge")}
-          </Badge>
-
-          <motion.h1
-            className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight max-w-xl mx-auto text-secondary-foreground mb-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-          >
-            <span className="text-primary font-black">
-              {t("landing.title.highlight")}
-            </span>{" "}
-            {t("landing.title.suffix")}
-          </motion.h1>
-
-          <motion.p
-            className="text-base md:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed mb-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-          >
-            {t("landing.subtitle")}
-          </motion.p>
-
-          <div className="flex flex-col items-center gap-1 w-full">
-            <div className="w-full max-w-xs">
-              <Waitlist />
-            </div>
-          </div>
-        </motion.section>
-
         <Separator className="bg-border/50" />
 
         <section className="flex flex-col gap-14">
@@ -205,29 +154,6 @@ function Index() {
             />
           </motion.div>
         </section>
-
-        <motion.div
-          className="relative rounded-xl overflow-hidden border border-border/50 shadow-lg"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-8 md:p-12">
-            <div className="max-w-3xl">
-              <h3 className="text-2xl font-bold mb-4">
-                {t("landing.dashboard.title")}
-              </h3>
-              <p className="text-muted-foreground mb-6">
-                {t("landing.dashboard.description")}
-              </p>
-              <div className="flex items-center gap-2 text-primary font-medium">
-                <span>{t("landing.dashboard.cta")}</span>
-                <IconChevronRight size={18} stroke={1.5} />
-              </div>
-            </div>
-          </div>
-        </motion.div>
 
         <Separator className="bg-border/50" />
 
