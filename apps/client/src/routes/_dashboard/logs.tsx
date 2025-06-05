@@ -1,7 +1,7 @@
 import { type AdvancedFilterField } from "@/components/ui/advanced-filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable, createSortableHeader } from "@/components/ui/data-table";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +22,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { type ColumnDef, type SortingState } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
-import { ArrowUpDown, Eye, ListFilter } from "lucide-react";
+import { Eye, ListFilter } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -124,37 +124,16 @@ export function LogsPage() {
     () => [
       {
         accessorKey: "id",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            className="flex items-center gap-2"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            {t("logsTable.id")}
-            <ArrowUpDown className="h-4 w-4" />
-          </Button>
-        ),
+        header: createSortableHeader(t("logsTable.id")),
         cell: ({ row }) => (
-          <div
-            className="font-medium max-w-[120px] truncate"
-            title={row.getValue("id")}
-          >
+          <div className="font-medium" title={row.getValue("id")}>
             {row.getValue("id")}
           </div>
         ),
       },
       {
         accessorKey: "model",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            className="flex items-center gap-2"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            {t("logsTable.model")}
-            <ArrowUpDown className="h-4 w-4" />
-          </Button>
-        ),
+        header: createSortableHeader(t("logsTable.model")),
         cell: ({ row }) => (
           <div className="max-w-[120px] truncate" title={row.getValue("model")}>
             {row.getValue("model")}
@@ -273,16 +252,7 @@ export function LogsPage() {
       },
       {
         accessorKey: "latency_ms",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            className="flex items-center gap-2"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            {t("logsTable.latency")}
-            <ArrowUpDown className="h-4 w-4" />
-          </Button>
-        ),
+        header: createSortableHeader(t("logsTable.latency")),
         cell: ({ row }) => {
           const latency = row.getValue("latency_ms") as number;
           if (!latency) return "-";
@@ -302,16 +272,7 @@ export function LogsPage() {
       },
       {
         accessorKey: "cost_usd",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            className="flex items-center gap-2"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            {t("logsTable.cost")}
-            <ArrowUpDown className="h-4 w-4" />
-          </Button>
-        ),
+        header: createSortableHeader(t("logsTable.cost")),
         cell: ({ row }) => {
           const cost = row.getValue("cost_usd") as number;
           return cost ? `$${cost.toFixed(6)}` : "-";
@@ -319,16 +280,7 @@ export function LogsPage() {
       },
       {
         accessorKey: "created_at",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            className="flex items-center gap-2"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            {t("logsTable.createdAt")}
-            <ArrowUpDown className="h-4 w-4" />
-          </Button>
-        ),
+        header: createSortableHeader(t("logsTable.createdAt")),
         cell: ({ row }) => {
           const date = new Date(row.getValue("created_at"));
           return (
@@ -369,6 +321,7 @@ export function LogsPage() {
         data={tableData}
         meta={meta}
         isLoading={isLoading}
+        selectable
         onPaginationChange={handlePaginationChange}
         onSortingChange={handleSortingChange}
         onFiltersChange={handleFiltersChange}

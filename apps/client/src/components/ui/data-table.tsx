@@ -42,7 +42,37 @@ import {
   ChevronsRight,
   Search,
   X,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
+import { Checkbox } from "./checkbox";
+
+export function createSortableHeader(title: string) {
+  return ({
+    column,
+  }: {
+    column: {
+      toggleSorting: (ascending?: boolean) => void;
+      getIsSorted: () => false | "asc" | "desc";
+    };
+  }) => (
+    <Button
+      variant="ghost"
+      className="flex items-center gap-2"
+      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    >
+      {title}
+      {column.getIsSorted() === "asc" ? (
+        <ArrowUp className="h-4 w-4" />
+      ) : column.getIsSorted() === "desc" ? (
+        <ArrowDown className="h-4 w-4" />
+      ) : (
+        <ArrowUpDown className="h-4 w-4" />
+      )}
+    </Button>
+  );
+}
 
 // Reusable interface for server-side data
 export interface PaginatedResult<T> {
@@ -71,6 +101,7 @@ interface DataTableProps<TData, TValue> {
   isLoading?: boolean;
   filtersConfig?: AdvancedFilterField[];
   filtersButton?: React.ReactNode;
+  selectable?: boolean;
 }
 
 const formatFilterValue = (
@@ -268,6 +299,7 @@ export function DataTable<TData, TValue>({
   meta,
   onPaginationChange,
   onSortingChange,
+  selectable = false,
   onFiltersChange,
   pageSizeOptions = [10, 20, 30, 40, 50],
   isLoading = false,
@@ -319,7 +351,7 @@ export function DataTable<TData, TValue>({
           }
         : undefined,
     },
-    enableRowSelection: true,
+    enableRowSelection: selectable,
     manualPagination: Boolean(meta),
     manualSorting: Boolean(onSortingChange),
     manualFiltering: Boolean(onFiltersChange),
@@ -464,7 +496,17 @@ export function DataTable<TData, TValue>({
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow>
+                {selectable && (
+                  <TableHead>
+                    <Checkbox
+                      checked={table.getIsAllRowsSelected()}
+                      onCheckedChange={(checked) =>
+                        table.toggleAllPageRowsSelected(!!checked)
+                      }
+                    />
+                  </TableHead>
+                )}
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
                     {header.isPlaceholder
@@ -487,6 +529,16 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
+                  {selectable && (
+                    <TableCell>
+                      <Checkbox
+                        checked={row.getIsSelected()}
+                        onCheckedChange={(checked) =>
+                          row.toggleSelected(!!checked)
+                        }
+                      />
+                    </TableCell>
+                  )}
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(
