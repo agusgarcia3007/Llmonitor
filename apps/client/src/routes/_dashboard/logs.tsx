@@ -1,4 +1,3 @@
-import { type AdvancedFilterField } from "@/components/ui/advanced-filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable, createSortableHeader } from "@/components/ui/data-table";
@@ -12,6 +11,9 @@ import {
   CommonFilters,
   createNumberFilter,
   createSelectFilter,
+  parseFiltersForDisplay,
+  removeFilter,
+  type ExtendedFilterField,
 } from "@/lib/filter-utils";
 import {
   llmEventsQueryOptions,
@@ -25,7 +27,6 @@ import { formatDistance } from "date-fns";
 import { Eye, ListFilter } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-
 export const Route = createFileRoute("/_dashboard/logs")({
   component: LogsPage,
 });
@@ -72,7 +73,7 @@ export function LogsPage() {
     }
   }, [data, pagination.page, pagination.pageSize, params, queryClient]);
 
-  const filtersConfig: AdvancedFilterField[] = [
+  const filtersConfig: ExtendedFilterField[] = [
     CommonFilters.model(),
     CommonFilters.provider([
       "openai",
@@ -118,6 +119,20 @@ export function LogsPage() {
 
   const handleSortingChange = (newSorting: SortingState) => {
     setSorting(newSorting);
+  };
+
+  const handleRemoveFilter = (
+    filterKey: string,
+    appliedFilters: Record<string, unknown>
+  ) => {
+    return removeFilter(filterKey, appliedFilters, filtersConfig);
+  };
+
+  const parseFiltersDisplay = (
+    appliedFilters: Record<string, unknown>,
+    fields: ExtendedFilterField[]
+  ) => {
+    return parseFiltersForDisplay(appliedFilters, fields);
   };
 
   const columns = useMemo<ColumnDef<LLMEvent>[]>(
@@ -326,6 +341,8 @@ export function LogsPage() {
         onSortingChange={handleSortingChange}
         onFiltersChange={handleFiltersChange}
         filtersConfig={filtersConfig}
+        parseFiltersForDisplay={parseFiltersDisplay}
+        onRemoveFilter={handleRemoveFilter}
         filtersButton={
           <Button variant="outline" size="sm">
             <ListFilter className="w-4 h-4 mr-2" />
