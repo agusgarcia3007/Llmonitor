@@ -101,6 +101,49 @@ export const auth = betterAuth({
       stripeClient,
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
       createCustomerOnSignUp: true,
+      subscription: {
+        enabled: true,
+        plans: [
+          {
+            name: "hobby",
+            priceId: "price_1RX56PBvY3hUsoTtYzJRGtCf",
+            limits: {
+              events: 50000,
+              dataRetentionDays: 30,
+              users: 2,
+              projects: 1,
+            },
+          },
+          {
+            name: "pro",
+            priceId: "price_1RX591BvY3hUsoTttQmcLIdK",
+            limits: {
+              events: 2000000,
+              dataRetentionDays: 90,
+              users: -1,
+              projects: -1,
+            },
+          },
+        ],
+        authorizeReference: async ({ user, referenceId, action }) => {
+          if (referenceId === user.id) {
+            return true;
+          }
+
+          const member = await db
+            .select()
+            .from(schema.member)
+            .where(
+              eq(schema.member.userId, user.id) &&
+                eq(schema.member.organizationId, referenceId)
+            );
+
+          return (
+            member.length > 0 &&
+            (member[0].role === "owner" || member[0].role === "admin")
+          );
+        },
+      },
     }),
   ],
 
