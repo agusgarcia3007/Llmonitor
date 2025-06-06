@@ -37,6 +37,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDashboardStatsQuery } from "@/services/analytics/query";
 import type { DashboardStats } from "@/types/analytics";
+import { formatCompactNumber } from "@/lib/utils";
 
 export const Route = createFileRoute("/_dashboard/dashboard")({
   component: Dashboard,
@@ -128,7 +129,7 @@ export function Dashboard() {
               {isLoading ? (
                 <Skeleton className="h-8 w-24" />
               ) : (
-                overview.totalEvents.toLocaleString()
+                formatCompactNumber(overview.totalEvents)
               )}
             </CardTitle>
             <CardAction>

@@ -1,7 +1,7 @@
 import { Context } from "hono";
 import { db } from "@/db";
 import { llm_event } from "@/db/schema";
-import { eq, sql, gte, desc, and } from "drizzle-orm";
+import { eq, sql, gte, desc, and, count } from "drizzle-orm";
 
 export const getDashboardStats = async (c: Context) => {
   const session = await c.get("session");
@@ -181,6 +181,17 @@ export const getCostAnalysis = async (c: Context) => {
       costByProvider,
       costTrend,
       topCostlyRequests,
+    },
+  });
+};
+
+export const getGlobalStats = async (c: Context) => {
+  const totalEvents = await db.select({ count: count() }).from(llm_event);
+
+  return c.json({
+    success: true,
+    data: {
+      totalEvents: Number(totalEvents[0]?.count || 0),
     },
   });
 };

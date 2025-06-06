@@ -4,9 +4,12 @@ import { Sparkle } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { useGlobalStatsQuery } from "@/services/analytics/query";
+import { formatCompactNumber } from "@/lib/utils";
 
 export function HeroSection() {
   const { t } = useTranslation();
+  const { data: globalStats } = useGlobalStatsQuery();
 
   return (
     <>
@@ -62,6 +65,22 @@ export function HeroSection() {
                 >
                   {t("landing.subtitle")}
                 </motion.p>
+                
+                {globalStats?.totalEvents ? (
+                  <motion.div
+                    className="mx-auto mb-8 flex gap-2 items-center justify-center text-primary"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.35 }}
+                  >
+                    <div className="text-xl font-bold">
+                      {formatCompactNumber(globalStats.totalEvents)}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      eventos monitorizados y contando
+                    </div>
+                  </motion.div>
+                ) : null}
 
                 <motion.div
                   className="flex flex-col items-center gap-3 justify-center"

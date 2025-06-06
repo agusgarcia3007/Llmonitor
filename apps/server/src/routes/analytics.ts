@@ -1,4 +1,8 @@
-import { getDashboardStats, getCostAnalysis } from "@/controllers/analytics";
+import {
+  getDashboardStats,
+  getCostAnalysis,
+  getGlobalStats,
+} from "@/controllers/analytics";
 import { endpointBuilder, HttpMethod } from "@/lib/endpoint-builder";
 import { HonoApp } from "@/types";
 import { Hono } from "hono";
@@ -17,6 +21,13 @@ endpointBuilder({
   method: HttpMethod.GET,
   body: getCostAnalysis,
   isPrivate: true,
+})(analyticsRouter);
+
+endpointBuilder({
+  path: "/global-stats",
+  method: HttpMethod.GET,
+  body: getGlobalStats,
+  isPrivate: false,
 })(analyticsRouter);
 
 export { analyticsRouter };
