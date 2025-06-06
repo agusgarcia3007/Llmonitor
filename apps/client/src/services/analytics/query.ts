@@ -20,3 +20,13 @@ export const useDashboardStatsQuery = (days = 30) => {
 export const useCostAnalysisQuery = (days = 30) => {
   return useQuery(costAnalysisQueryOptions(days));
 };
+
+export const globalStatsQueryOptions = () =>
+  queryOptions({
+    queryKey: ["global-stats"],
+    queryFn: () => AnalyticsService.getGlobalStats(),
+  });
+
+export const useGlobalStatsQuery = () => {
+  return useQuery(globalStatsQueryOptions());
+};

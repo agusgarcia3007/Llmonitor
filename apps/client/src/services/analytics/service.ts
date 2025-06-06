@@ -10,4 +10,9 @@ export class AnalyticsService {
     const response = await http.get(`/analytics/cost-analysis?days=${days}`);
     return response.data.data;
   }
+
+  public static async getGlobalStats() {
+    const response = await http.get('/analytics/global-stats');
+    return response.data.data;
+  }
 }
