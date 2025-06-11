@@ -102,8 +102,9 @@ export function AlertsPage() {
     },
   });
 
-  const { watch, reset } = form;
+  const { watch, reset, formState } = form;
   const alertSections = watch("sections");
+  const { isDirty } = formState;
 
   useEffect(() => {
     if (!organizationsData?.length) return;
@@ -470,9 +471,12 @@ export function AlertsPage() {
                       type="submit"
                       className="w-full"
                       isLoading={saveAlertSectionsMutation.isPending}
+                      disabled={!isDirty}
                     >
                       <Settings className="h-4 w-4 mr-2" />
-                      {t("alertsNew.saveConfiguration")}
+                      {isDirty
+                        ? t("alertsNew.saveConfiguration")
+                        : t("alertsNew.success.configurationSaved")}
                     </Button>
                   </div>
                 </CardContent>
