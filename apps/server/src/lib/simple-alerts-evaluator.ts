@@ -1,4 +1,4 @@
-import { and, eq, gte, sql } from "drizzle-orm";
+import { and, eq, gte, lte, desc, between, sql, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import {
   alert_config,
@@ -112,7 +112,7 @@ export class SimpleAlertsEvaluator {
         .where(
           and(
             eq(member.organizationId, section.organization_id),
-            eq(member.role, "admin")
+            inArray(member.role, ["admin", "owner"])
           )
         );
 
@@ -199,7 +199,7 @@ export class SimpleAlertsEvaluator {
   ): Promise<number> {
     switch (metric) {
       case "errors":
-        return this.calculateErrorsPerMinute(whereConditions);
+        return this.calculateErrorsInTimeWindow(whereConditions);
 
       case "latency":
         return this.calculateAverageLatency(whereConditions);
@@ -216,7 +216,7 @@ export class SimpleAlertsEvaluator {
     }
   }
 
-  private async calculateErrorsPerMinute(
+  private async calculateErrorsInTimeWindow(
     whereConditions: any[]
   ): Promise<number> {
     const result = await db
@@ -227,6 +227,7 @@ export class SimpleAlertsEvaluator {
       .where(and(...whereConditions, gte(llm_event.status, 400)));
 
     const errorCount = result[0]?.count || 0;
+
     return errorCount;
   }
 
@@ -277,7 +278,7 @@ export class SimpleAlertsEvaluator {
         .where(
           and(
             eq(member.organizationId, section.organization_id),
-            eq(member.role, "admin")
+            inArray(member.role, ["admin", "owner"])
           )
         );
 
