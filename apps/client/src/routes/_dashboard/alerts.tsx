@@ -1,230 +1,385 @@
-import { CreateAlertForm } from "@/components/alerts/create-alert-form";
-import { EditAlertForm } from "@/components/alerts/edit-alert-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/ui/data-table";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
 import {
-  useAlertsQuery,
-  useDeleteAlertMutation,
-} from "@/services/alerts/query";
-import type { AlertConfig } from "@/types/alerts";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { createFileRoute } from "@tanstack/react-router";
-import { type ColumnDef } from "@tanstack/react-table";
-import { formatDistance } from "date-fns";
-import { ArrowUpDown, Edit, Plus, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import {
+  AlertTriangle,
+  Clock,
+  DollarSign,
+  Settings,
+  Loader2,
+  Mail,
+} from "lucide-react";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  useAlertSectionsQuery,
+  useSaveAlertSectionsMutation,
+} from "@/services/alerts/query";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 export const Route = createFileRoute("/_dashboard/alerts")({
   component: AlertsPage,
 });
 
+const alertSectionSchema = z.object({
+  id: z.string(),
+  enabled: z.boolean(),
+  threshold: z.number().min(0).optional(),
+  frequency: z.enum(["daily", "weekly", "monthly"]).optional(),
+});
+
+const alertSectionsFormSchema = z.object({
+  sections: z.array(alertSectionSchema),
+});
+
+type AlertSectionsFormData = z.infer<typeof alertSectionsFormSchema>;
+
 export function AlertsPage() {
-  const [editingAlert, setEditingAlert] = useState<AlertConfig | null>(null);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const { t } = useTranslation();
+  const { data: alertSectionsData, isLoading } = useAlertSectionsQuery();
+  const saveAlertSectionsMutation = useSaveAlertSectionsMutation();
 
-  const { data: alerts, isLoading } = useAlertsQuery();
-  const deleteAlertMutation = useDeleteAlertMutation();
+  const form = useForm<AlertSectionsFormData>({
+    resolver: zodResolver(alertSectionsFormSchema),
+    defaultValues: {
+      sections: [
+        { id: "errors", enabled: false, threshold: 5 },
+        { id: "latency", enabled: false, threshold: 5000 },
+        { id: "cost", enabled: false, threshold: 0.1 },
+        { id: "summary", enabled: false, frequency: "daily" },
+      ],
+    },
+  });
 
-  const handleEditAlert = (alert: AlertConfig) => {
-    setEditingAlert(alert);
-    setIsEditDialogOpen(true);
+  const { watch, setValue } = form;
+  const alertSections = watch("sections");
+
+  useEffect(() => {
+    if (alertSectionsData?.sections) {
+      setValue(
+        "sections",
+        alertSectionsData.sections.map((section) => ({
+          ...section,
+          threshold: section.threshold ?? 0,
+          frequency: section.frequency ?? "daily",
+        }))
+      );
+    }
+  }, [alertSectionsData, setValue]);
+
+  const getSectionConfig = (id: string) => {
+    const configs = {
+      errors: {
+        title: t("alertsNew.sections.errors.title"),
+        description: t("alertsNew.sections.errors.description"),
+        icon: AlertTriangle,
+        unit: t("alertsNew.sections.errors.unit"),
+      },
+      latency: {
+        title: t("alertsNew.sections.latency.title"),
+        description: t("alertsNew.sections.latency.description"),
+        icon: Clock,
+        unit: t("alertsNew.sections.latency.unit"),
+      },
+      cost: {
+        title: t("alertsNew.sections.cost.title"),
+        description: t("alertsNew.sections.cost.description"),
+        icon: DollarSign,
+        unit: t("alertsNew.sections.cost.unit"),
+      },
+      summary: {
+        title: t("alertsNew.sections.summary.title"),
+        description: t("alertsNew.sections.summary.description"),
+        icon: Mail,
+        unit: null,
+      },
+    };
+    return configs[id as keyof typeof configs];
   };
 
-  const columns = useMemo<ColumnDef<AlertConfig>[]>(
-    () => [
-      {
-        accessorKey: "name",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            className="flex items-center gap-2"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Name
-            <ArrowUpDown className="h-4 w-4" />
-          </Button>
-        ),
-        cell: ({ row }) => (
-          <div className="font-medium">{row.getValue("name")}</div>
-        ),
-      },
-      {
-        accessorKey: "type",
-        header: "Type",
-        cell: ({ row }) => {
-          const type = row.getValue("type") as string;
-          const typeMap: Record<
-            string,
-            { label: string; variant: "default" | "secondary" | "outline" }
-          > = {
-            threshold: { label: "Threshold", variant: "default" },
-            anomaly: { label: "Anomaly", variant: "secondary" },
-            budget: { label: "Budget", variant: "outline" },
-          };
+  const onSubmit = async (data: AlertSectionsFormData) => {
+    try {
+      await saveAlertSectionsMutation.mutateAsync({ sections: data.sections });
+      toast.success(t("alertsNew.success.configurationSaved"));
+    } catch (error) {
+      toast.error(t("alertsNew.error.savingConfiguration"));
+      console.error("Error saving alert settings:", error);
+    }
+  };
 
-          const typeInfo = typeMap[type] || { label: type, variant: "outline" };
-          return <Badge variant={typeInfo.variant}>{typeInfo.label}</Badge>;
-        },
-      },
-      {
-        accessorKey: "metric",
-        header: "Metric",
-        cell: ({ row }) => {
-          const metric = row.getValue("metric") as string;
-          return <span className="text-sm">{metric.replace(/_/g, " ")}</span>;
-        },
-      },
-      {
-        accessorKey: "threshold_value",
-        header: "Threshold",
-        cell: ({ row }) => {
-          const value = row.getValue("threshold_value") as number;
-          const operator = row.original.threshold_operator;
-          return (
-            <span className="text-sm">
-              {operator} {value}
-            </span>
-          );
-        },
-      },
-      {
-        accessorKey: "is_active",
-        header: "Status",
-        cell: ({ row }) => {
-          const isActive = row.getValue("is_active") as boolean;
-          return (
-            <Badge variant={isActive ? "default" : "secondary"}>
-              {isActive ? "Active" : "Inactive"}
-            </Badge>
-          );
-        },
-      },
-      {
-        accessorKey: "notification_channels",
-        header: "Notifications",
-        cell: ({ row }) => {
-          const channels = row.getValue("notification_channels") as Array<{
-            type: string;
-          }>;
-          return (
-            <div className="flex gap-1">
-              {channels.map((channel, index) => (
-                <Badge key={index} variant="outline" className="text-xs">
-                  {channel.type}
-                </Badge>
-              ))}
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "created_at",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            className="flex items-center gap-2"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Created At
-            <ArrowUpDown className="h-4 w-4" />
-          </Button>
-        ),
-        cell: ({ row }) => {
-          const date = new Date(row.getValue("created_at"));
-          return (
-            <div title={date.toLocaleString()}>
-              {formatDistance(date, new Date(), { addSuffix: true })}
-            </div>
-          );
-        },
-      },
-      {
-        id: "actions",
-        header: "Actions",
-        cell: ({ row }) => {
-          return (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleEditAlert(row.original)}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={async () =>
-                  await deleteAlertMutation.mutate(row.original.id)
-                }
-                disabled={deleteAlertMutation.isPending}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          );
-        },
-      },
-    ],
-    [deleteAlertMutation]
-  );
-
-  const tableData = alerts?.alerts || [];
+  if (isLoading) {
+    return (
+      <div className="p-6 w-full mx-auto">
+        <div className="flex items-center justify-center h-32">
+          <div className="flex items-center space-x-2 text-muted-foreground">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span>{t("apiKeys.loading")}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Alerts</h1>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Alert
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Create New Alert</DialogTitle>
-              <DialogDescription>
-                Configure an alert to monitor your LLM usage and get notified
-                when thresholds are exceeded.
-              </DialogDescription>
-            </DialogHeader>
-            <CreateAlertForm onSuccess={() => setIsCreateDialogOpen(false)} />
-          </DialogContent>
-        </Dialog>
+    <div className="p-6 w-full mx-auto">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">{t("alertsNew.title")}</h1>
+        <p className="text-muted-foreground">{t("alertsNew.description")}</p>
       </div>
 
-      <DataTable columns={columns} data={tableData} isLoading={isLoading} />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Toggles section - Left side (2/3 width) */}
+            <div className="lg:col-span-2 space-y-6">
+              {alertSections.map((section, index) => {
+                const config = getSectionConfig(section.id);
+                if (!config) return null;
 
-      {editingAlert && (
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Edit Alert</DialogTitle>
-              <DialogDescription>
-                Update the alert configuration.
-              </DialogDescription>
-            </DialogHeader>
-            <EditAlertForm
-              alert={editingAlert}
-              onSuccess={() => {
-                setIsEditDialogOpen(false);
-                setEditingAlert(null);
-              }}
-            />
-          </DialogContent>
-        </Dialog>
-      )}
+                const IconComponent = config.icon;
+                return (
+                  <Card
+                    key={section.id}
+                    className={`transition-all ${
+                      section.enabled ? "ring-2 ring-blue-200" : ""
+                    }`}
+                  >
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div
+                            className={`p-2 rounded-lg ${
+                              section.enabled
+                                ? "bg-blue-100 text-blue-600"
+                                : "bg-gray-100 text-gray-400"
+                            }`}
+                          >
+                            <IconComponent className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <CardTitle className="text-lg">
+                              {config.title}
+                            </CardTitle>
+                            <CardDescription>
+                              {config.description}
+                            </CardDescription>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <FormField
+                            control={form.control}
+                            name={`sections.${index}.enabled`}
+                            render={({ field }) => (
+                              <FormItem className="flex items-center space-x-2">
+                                <FormLabel className="text-sm">
+                                  {field.value
+                                    ? t("alertsNew.enabled")
+                                    : t("alertsNew.disabled")}
+                                </FormLabel>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+                    </CardHeader>
+
+                    {section.enabled && (
+                      <CardContent className="pt-0">
+                        <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                          {section.id === "summary" ? (
+                            <FormField
+                              control={form.control}
+                              name={`sections.${index}.frequency`}
+                              render={({ field }) => (
+                                <FormItem className="flex-1">
+                                  <FormLabel className="text-sm font-medium">
+                                    {t("alertsNew.sections.summary.frequency")}
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Select
+                                      value={field.value}
+                                      onValueChange={field.onChange}
+                                    >
+                                      <SelectTrigger className="w-48">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="daily">
+                                          {t(
+                                            "alertsNew.sections.summary.frequencies.daily"
+                                          )}
+                                        </SelectItem>
+                                        <SelectItem value="weekly">
+                                          {t(
+                                            "alertsNew.sections.summary.frequencies.weekly"
+                                          )}
+                                        </SelectItem>
+                                        <SelectItem value="monthly">
+                                          {t(
+                                            "alertsNew.sections.summary.frequencies.monthly"
+                                          )}
+                                        </SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          ) : (
+                            <FormField
+                              control={form.control}
+                              name={`sections.${index}.threshold`}
+                              render={({ field }) => (
+                                <FormItem className="flex-1">
+                                  <FormLabel className="text-sm font-medium">
+                                    {t("alertsNew.threshold")}
+                                  </FormLabel>
+                                  <div className="flex items-center space-x-2 mt-1">
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        className="w-32"
+                                        step={
+                                          section.id === "cost" ? "0.01" : "1"
+                                        }
+                                        min="0"
+                                        {...field}
+                                        onChange={(e) =>
+                                          field.onChange(
+                                            parseFloat(e.target.value)
+                                          )
+                                        }
+                                      />
+                                    </FormControl>
+                                    <span className="text-sm text-muted-foreground">
+                                      {config.unit}
+                                    </span>
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          )}
+                          <div className="flex items-center space-x-2">
+                            <Badge variant="outline">
+                              {t("alertsNew.emailActive")}
+                            </Badge>
+                          </div>
+                        </div>
+                      </CardContent>
+                    )}
+                  </Card>
+                );
+              })}
+            </div>
+
+            {/* Status section - Right side (1/3 width) */}
+            <div className="lg:col-span-1">
+              <Card className="sticky top-6">
+                <CardHeader>
+                  <CardTitle className="text-lg">
+                    {t("alertsNew.status")}
+                  </CardTitle>
+                  <CardDescription>
+                    {t("alertsNew.statusDescription")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid gap-4">
+                    {alertSections.map((section) => {
+                      const config = getSectionConfig(section.id);
+                      if (!config) return null;
+
+                      return (
+                        <div
+                          key={section.id}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div
+                              className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                                section.enabled
+                                  ? "bg-green-100 text-green-600"
+                                  : "bg-gray-200 text-gray-400"
+                              }`}
+                            >
+                              <config.icon className="h-3 w-3" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">
+                                {config.title}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {section.enabled
+                                  ? t("alertsNew.active")
+                                  : t("alertsNew.inactive")}
+                              </p>
+                            </div>
+                          </div>
+                          {section.enabled && (
+                            <div className="text-xs text-muted-foreground">
+                              {section.id === "summary"
+                                ? t(
+                                    `alertsNew.sections.summary.frequencies.${section.frequency}`
+                                  )
+                                : `${section.threshold} ${config.unit}`}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="pt-4 border-t">
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      isLoading={saveAlertSectionsMutation.isPending}
+                    >
+                      <Settings className="h-4 w-4 mr-2" />
+                      {t("alertsNew.saveConfiguration")}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </form>
+      </Form>
     </div>
   );
 }

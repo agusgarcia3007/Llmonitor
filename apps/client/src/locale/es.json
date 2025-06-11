@@ -494,5 +494,51 @@
     "unknownUser": "Usuario Desconocido",
     "invitationSentSuccessfully": "¡Invitación enviada exitosamente!",
     "andMoreMembers": "Y {{count}} miembros más"
+  },
+  "alertsNew": {
+    "title": "Alertas",
+    "description": "Configura alertas para monitorear tu aplicación LLM",
+    "saveConfiguration": "Guardar Configuración",
+    "status": "Estado de las alertas",
+    "statusDescription": "Resumen de la configuración actual",
+    "enabled": "Habilitado",
+    "disabled": "Deshabilitado",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "threshold": "Umbral de alerta",
+    "emailActive": "Email activo",
+    "success": {
+      "configurationSaved": "Configuración de alertas guardada exitosamente"
+    },
+    "error": {
+      "savingConfiguration": "Error al guardar la configuración"
+    },
+    "sections": {
+      "errors": {
+        "title": "En caso de error",
+        "description": "Recibe notificaciones cuando se detecten errores en las requests",
+        "unit": "errores por minuto"
+      },
+      "latency": {
+        "title": "Por alta demora en la request",
+        "description": "Alertas cuando las requests tarden más de lo esperado",
+        "unit": "ms"
+      },
+      "cost": {
+        "title": "Por costo por llamada",
+        "description": "Monitoreo de costos excesivos en llamadas individuales",
+        "unit": "USD por llamada"
+      },
+      "summary": {
+        "title": "Enviar un resumen",
+        "description": "Recibe resúmenes periódicos de la actividad de tu aplicación",
+        "frequency": "Frecuencia",
+        "frequencies": {
+          "daily": "Diariamente",
+          "weekly": "Semanalmente",
+          "monthly": "Mensualmente"
+        }
+      }
+    }
   }
 }

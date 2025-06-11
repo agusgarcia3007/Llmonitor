@@ -18,6 +18,12 @@ export const alertsQueryOptions = () =>
     queryFn: () => AlertService.getAlerts(),
   });
 
+export const alertSectionsQueryOptions = () =>
+  queryOptions({
+    queryKey: ["alert-sections"],
+    queryFn: () => AlertService.getAlertSections(),
+  });
+
 export const alertQueryOptions = (id: string) =>
   queryOptions({
     queryKey: ["alerts", id],
@@ -42,6 +48,10 @@ export const useAlertsQuery = () => {
   return useQuery(alertsQueryOptions());
 };
 
+export const useAlertSectionsQuery = () => {
+  return useQuery(alertSectionsQueryOptions());
+};
+
 export const useAlertQuery = (id: string) => {
   return useQuery(alertQueryOptions(id));
 };
@@ -61,6 +71,7 @@ export const useCreateAlertMutation = () => {
     mutationFn: (data: CreateAlertRequest) => AlertService.createAlert(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alerts"] });
+      queryClient.invalidateQueries({ queryKey: ["alert-sections"] });
     },
   });
 };
@@ -71,9 +82,9 @@ export const useUpdateAlertMutation = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateAlertRequest }) =>
       AlertService.updateAlert(id, data),
-    onSuccess: (_, { id }) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alerts"] });
-      queryClient.invalidateQueries({ queryKey: ["alerts", id] });
+      queryClient.invalidateQueries({ queryKey: ["alert-sections"] });
     },
   });
 };
@@ -85,13 +96,26 @@ export const useDeleteAlertMutation = () => {
     mutationFn: (id: string) => AlertService.deleteAlert(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alerts"] });
+      queryClient.invalidateQueries({ queryKey: ["alert-sections"] });
     },
   });
 };
 
-export const useEvaluateAlertsMutation = () => {
+export const useSaveAlertSectionsMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: () => AlertService.evaluateAlerts(),
+    mutationFn: AlertService.saveAlertSections,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["alerts"] });
+      queryClient.invalidateQueries({ queryKey: ["alert-sections"] });
+    },
+  });
+};
+
+export const useEvaluateAlertMutation = () => {
+  return useMutation({
+    mutationFn: (id: string) => AlertService.evaluateAlert(id),
   });
 };
 

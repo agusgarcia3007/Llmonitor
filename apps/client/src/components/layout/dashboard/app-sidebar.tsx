@@ -71,15 +71,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: IconCurrency,
       },
       {
-        title: t("navigation.experiments"),
-        url: "/experiments",
-        icon: IconFlask,
-        isComingSoon: true,
-      },
-      {
         title: t("navigation.alerts"),
         url: "/alerts",
         icon: IconBell,
+      },
+      {
+        title: t("navigation.experiments"),
+        url: "/experiments",
+        icon: IconFlask,
         isComingSoon: true,
       },
     ],

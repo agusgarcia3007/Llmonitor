@@ -494,5 +494,51 @@
       "requests": "requests",
       "tokens": "tokens"
     }
+  },
+  "alertsNew": {
+    "title": "Alerts",
+    "description": "Configure alerts to monitor your LLM application",
+    "saveConfiguration": "Save Configuration",
+    "status": "Alert Status",
+    "statusDescription": "Current configuration summary",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "active": "Active",
+    "inactive": "Inactive",
+    "threshold": "Alert threshold",
+    "emailActive": "Email active",
+    "success": {
+      "configurationSaved": "Alert configuration saved successfully"
+    },
+    "error": {
+      "savingConfiguration": "Error saving configuration"
+    },
+    "sections": {
+      "errors": {
+        "title": "On Error",
+        "description": "Receive notifications when errors are detected in requests",
+        "unit": "errors per minute"
+      },
+      "latency": {
+        "title": "High Request Latency",
+        "description": "Alerts when requests take longer than expected",
+        "unit": "ms"
+      },
+      "cost": {
+        "title": "Cost Per Call",
+        "description": "Monitor excessive costs in individual calls",
+        "unit": "USD per call"
+      },
+      "summary": {
+        "title": "Send Summary",
+        "description": "Receive periodic summaries of your application activity",
+        "frequency": "Frequency",
+        "frequencies": {
+          "daily": "Daily",
+          "weekly": "Weekly",
+          "monthly": "Monthly"
+        }
+      }
+    }
   }
 }
