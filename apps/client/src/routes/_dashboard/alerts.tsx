@@ -106,9 +106,9 @@ export function AlertsPage() {
   const alertSections = watch("sections");
 
   useEffect(() => {
-    const allProjectIds = organizationsData?.map((org) => org.id) || [];
+    if (alertSectionsData?.sections && organizationsData?.length) {
+      const allProjectIds = organizationsData.map((org) => org.id);
 
-    if (alertSectionsData?.sections) {
       reset({
         sections: alertSectionsData.sections.map((section) => ({
           ...section,
@@ -119,7 +119,13 @@ export function AlertsPage() {
             : allProjectIds,
         })),
       });
-    } else if (organizationsData?.length) {
+    }
+  }, [alertSectionsData, organizationsData, reset]);
+
+  useEffect(() => {
+    if (!alertSectionsData && organizationsData?.length) {
+      const allProjectIds = organizationsData.map((org) => org.id);
+
       reset({
         sections: [
           {

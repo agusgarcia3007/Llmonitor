@@ -43,7 +43,7 @@ export class SimpleAlertsEvaluator {
   private async evaluateSection(
     section: typeof alert_config.$inferSelect
   ): Promise<void> {
-    const timeWindowStart = new Date(Date.now() - section.time_window);
+    const timeWindowStart = new Date(Date.now() - section.time_window * 1000);
     const projectIds = (section.filters as any)?.projectIds || [];
 
     // Build base query conditions
@@ -151,21 +151,17 @@ export class SimpleAlertsEvaluator {
     const hour = now.getHours();
 
     // Send daily summary at 9 AM
-    if (section.time_window === 86400000 && hour === 9) {
+    if (section.time_window === 86400 && hour === 9) {
       return true;
     }
 
     // Send weekly summary on Monday at 9 AM
-    if (section.time_window === 604800000 && now.getDay() === 1 && hour === 9) {
+    if (section.time_window === 604800 && now.getDay() === 1 && hour === 9) {
       return true;
     }
 
     // Send monthly summary on the 1st at 9 AM
-    if (
-      section.time_window === 2592000000 &&
-      now.getDate() === 1 &&
-      hour === 9
-    ) {
+    if (section.time_window === 2592000 && now.getDate() === 1 && hour === 9) {
       return true;
     }
 

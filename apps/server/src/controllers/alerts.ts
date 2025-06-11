@@ -43,9 +43,9 @@ export const getAlertSections = async (c: Context) => {
     enabled: section.is_active,
     threshold: section.threshold_value,
     frequency:
-      section.time_window === 86400000
+      section.time_window === 86400
         ? "daily"
-        : section.time_window === 604800000
+        : section.time_window === 604800
         ? "weekly"
         : "monthly",
     projectIds: (section.filters as any)?.projectIds || [],
@@ -81,10 +81,10 @@ export const saveAlertSections = async (c: Context) => {
     for (const section of data.sections) {
       const timeWindow =
         section.frequency === "daily"
-          ? 86400000
+          ? 86400 // 24 hours in seconds
           : section.frequency === "weekly"
-          ? 604800000
-          : 2592000000; // monthly
+          ? 604800 // 7 days in seconds
+          : 2592000; // 30 days in seconds
 
       await db.insert(alert_config).values({
         id: randomUUID(),
