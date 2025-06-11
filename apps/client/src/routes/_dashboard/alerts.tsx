@@ -106,26 +106,22 @@ export function AlertsPage() {
   const alertSections = watch("sections");
 
   useEffect(() => {
-    if (alertSectionsData?.sections && organizationsData?.length) {
-      const allProjectIds = organizationsData.map((org) => org.id);
+    if (!organizationsData?.length) return;
 
-      reset({
-        sections: alertSectionsData.sections.map((section) => ({
-          ...section,
-          threshold: section.threshold ?? 0,
-          frequency: section.frequency ?? "daily",
-          projectIds: section.projectIds?.length
-            ? section.projectIds
-            : allProjectIds,
-        })),
-      });
-    }
-  }, [alertSectionsData, organizationsData, reset]);
+    const allProjectIds = organizationsData.map((org) => org.id);
 
-  useEffect(() => {
-    if (!alertSectionsData && organizationsData?.length) {
-      const allProjectIds = organizationsData.map((org) => org.id);
+    if (alertSectionsData?.sections?.length) {
+      const formattedSections = alertSectionsData.sections.map((section) => ({
+        ...section,
+        threshold: section.threshold ?? 0,
+        frequency: section.frequency ?? "daily",
+        projectIds: section.projectIds?.length
+          ? section.projectIds
+          : allProjectIds,
+      }));
 
+      reset({ sections: formattedSections });
+    } else {
       reset({
         sections: [
           {

@@ -18,12 +18,14 @@ interface AlertSectionsResponse {
 
 export class AlertService {
   public static async getAlertSections(): Promise<AlertSectionsResponse> {
-    return http.get("/alerts/sections");
+    const response = await http.get("/alerts/sections");
+    return response.data;
   }
 
   public static async saveAlertSections(
     request: AlertSectionsRequest
   ): Promise<{ success: boolean }> {
-    return http.post("/alerts/sections", request);
+    const response = await http.post("/alerts/sections", request);
+    return response.data;
   }
 }
