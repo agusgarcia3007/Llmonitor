@@ -26,9 +26,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { cn } from "@/lib/utils";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session, isPending } = authClient.useSession();
@@ -135,6 +135,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuItem>
           </SidebarMenu>
         )}
+
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

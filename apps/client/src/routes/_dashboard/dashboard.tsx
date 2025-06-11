@@ -9,7 +9,7 @@ import {
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, XAxis, CartesianGrid } from "recharts";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -46,7 +46,7 @@ export const Route = createFileRoute("/_dashboard/dashboard")({
 const chartConfig = {
   events: {
     label: "Events",
-    color: "hsl(var(--primary))",
+    color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
@@ -285,27 +285,35 @@ export function Dashboard() {
               </div>
             ) : (
               <ChartContainer config={chartConfig} className="h-[200px] w-full">
-                <BarChart
+                <AreaChart
+                  accessibilityLayer
                   data={formatChartData()}
-                  margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+                  margin={{
+                    left: 12,
+                    right: 12,
+                  }}
                 >
+                  <CartesianGrid vertical={false} />
                   <XAxis
                     dataKey="period"
                     tickLine={false}
                     axisLine={false}
-                    className="text-xs"
-                    tick={{ fontSize: 12 }}
-                    interval="preserveStartEnd"
+                    tickMargin={8}
+                    tickFormatter={(value) => value}
                   />
-                  <YAxis hide />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent indicator="line" />}
+                  />
+                  <Area
                     dataKey="events"
-                    fill="var(--color-primary)"
-                    radius={[4, 4, 0, 0]}
-                    maxBarSize={40}
+                    type="natural"
+                    fill="var(--color-events)"
+                    fillOpacity={0.4}
+                    stroke="var(--color-events)"
+                    stackId="a"
                   />
-                </BarChart>
+                </AreaChart>
               </ChartContainer>
             )}
           </CardContent>

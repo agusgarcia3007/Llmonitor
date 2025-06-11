@@ -1,6 +1,7 @@
+import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { TooltipProvider } from "../ui/tooltip";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = new QueryClient({
@@ -14,9 +15,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
   });
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>{children}</TooltipProvider>
-      <Toaster />
-    </QueryClientProvider>
+    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>{children}</TooltipProvider>
+        <Toaster />
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
