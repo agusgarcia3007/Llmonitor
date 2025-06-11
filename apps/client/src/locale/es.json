@@ -154,7 +154,7 @@
     "previous": "Anterior",
     "first": "Primera",
     "last": "Últimos {{days}} días",
-    "last24Hours": "Últimas 24 horas",
+    "last24Hours": "Hoy",
     "last7Days": "Últimos 7 días",
     "lastMonth": "Último mes",
     "lastYear": "Último año",
@@ -233,7 +233,7 @@
       "mostFrequent": "Modelos usados con mayor frecuencia",
       "calls": "llamadas",
       "eventsActivity": "Actividad de Eventos",
-      "eventsPerHour24h": "Mostrando eventos por hora para las últimas 24 horas",
+      "eventsPerHour24h": "Mostrando eventos por hora de hoy",
       "dailyEventsFor": "Mostrando eventos diarios para {{period}}"
     }
   },

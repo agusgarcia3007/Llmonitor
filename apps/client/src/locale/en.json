@@ -154,7 +154,7 @@
     "previous": "Previous",
     "first": "First",
     "last": "Last {{days}} days",
-    "last24Hours": "Last 24 hours",
+    "last24Hours": "Today",
     "last7Days": "Last 7 days",
     "lastMonth": "Last month",
     "lastYear": "Last year",
@@ -233,7 +233,7 @@
       "mostFrequent": "Most frequently used models",
       "calls": "calls",
       "eventsActivity": "Events Activity",
-      "eventsPerHour24h": "Showing events per hour for the last 24 hours",
+      "eventsPerHour24h": "Showing events per hour for today",
       "dailyEventsFor": "Showing daily events for the {{period}}"
     }
   },

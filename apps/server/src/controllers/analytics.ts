@@ -6,8 +6,17 @@ import { eq, sql, gte, desc, and, count } from "drizzle-orm";
 export const getDashboardStats = async (c: Context) => {
   const session = await c.get("session");
   const days = parseInt(c.req.query("days") || "1");
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - days);
+
+  let startDate: Date;
+  if (days === 1) {
+    // For today, start from beginning of current day (00:00:00)
+    startDate = new Date();
+    startDate.setHours(0, 0, 0, 0);
+  } else {
+    // For multiple days, use the previous logic
+    startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+  }
 
   const whereClause = and(
     eq(llm_event.organization_id, session.activeOrganizationId),
