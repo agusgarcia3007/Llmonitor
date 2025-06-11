@@ -130,8 +130,51 @@ export class EmailService {
     }
   }
 
+  async sendDailySummaryEmail(
+    to: string,
+    organizationName: string,
+    stats: {
+      totalRequests: number;
+      totalErrors: number;
+      avgLatency: number;
+      totalCost: number;
+    }
+  ): Promise<boolean> {
+    try {
+      const subject = `📊 Daily Summary for ${organizationName}`;
+
+      const template = this.loadEmailTemplate("daily-summary-email.html");
+      const htmlContent = this.replaceTemplatePlaceholders(template, {
+        organizationName,
+        date: new Date().toLocaleDateString(),
+        totalRequests: stats.totalRequests.toLocaleString(),
+        totalErrors: stats.totalErrors.toLocaleString(),
+        avgLatency: `${Math.round(stats.avgLatency)}ms`,
+        totalCost: `$${stats.totalCost.toFixed(4)}`,
+        dashboardUrl: `${siteData.url}/dashboard`,
+        settingsUrl: `${siteData.url}/settings/alerts`,
+      });
+
+      const result = await sendEmail(to, subject, htmlContent);
+      console.log(
+        `Daily summary email sent successfully to ${to}:`,
+        result?.id
+      );
+      return true;
+    } catch (error) {
+      console.error("Error sending daily summary email:", error);
+      return false;
+    }
+  }
+
   private getMetricDisplayName(metric: string): string {
     const displayNames: Record<string, string> = {
+      // Alert sections
+      errors: "Errors",
+      latency: "Average Latency",
+      cost: "Average Cost",
+      summary: "Summary",
+      // Legacy metrics
       cost_per_hour: "Cost per Hour",
       cost_per_day: "Cost per Day",
       cost_per_week: "Cost per Week",
@@ -148,6 +191,21 @@ export class EmailService {
   }
 
   private formatMetricValue(metric: string, value: number): string {
+    // Alert sections formatting
+    if (metric === "errors") {
+      return `${Math.round(value)} errors`;
+    }
+    if (metric === "latency") {
+      return `${Math.round(value)}ms`;
+    }
+    if (metric === "cost") {
+      return `$${value.toFixed(4)}`;
+    }
+    if (metric === "summary") {
+      return value.toString();
+    }
+
+    // Legacy formatting
     if (metric.startsWith("cost_")) {
       return `$${value.toFixed(2)}`;
     }

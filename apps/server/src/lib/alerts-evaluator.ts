@@ -105,6 +105,19 @@ export class AlertsEvaluator {
       .where(and(...whereConditions));
 
     switch (metric) {
+      case "errors":
+        return this.calculateErrorsPerMinute(query);
+
+      case "latency":
+        return this.calculateAverageLatency(query);
+
+      case "cost":
+        return this.calculateCostPerCall(query);
+
+      case "summary":
+        return 0; // Summary doesn't have a threshold, always return 0
+
+      // Legacy metrics - keep for backwards compatibility
       case "cost_per_hour":
       case "cost_per_day":
       case "cost_per_week":
@@ -200,6 +213,37 @@ export class AlertsEvaluator {
     );
 
     return metric === "token_usage_per_hour" ? totalTokens : totalTokens / 24;
+  }
+
+  // New methods for simplified alert sections
+  private async calculateErrorsPerMinute(query: any): Promise<number> {
+    const events = await query;
+    const errorEvents = events.filter((event: any) => event.status >= 400);
+    return errorEvents.length;
+  }
+
+  private async calculateAverageLatency(query: any): Promise<number> {
+    const events = await query;
+    if (events.length === 0) return 0;
+
+    const totalLatency = events.reduce(
+      (sum: number, event: any) => sum + (event.latency_ms || 0),
+      0
+    );
+
+    return totalLatency / events.length;
+  }
+
+  private async calculateCostPerCall(query: any): Promise<number> {
+    const events = await query;
+    if (events.length === 0) return 0;
+
+    const totalCost = events.reduce(
+      (sum: number, event: any) => sum + (event.cost_usd || 0),
+      0
+    );
+
+    return totalCost / events.length;
   }
 
   private checkThreshold(
