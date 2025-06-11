@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,15 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Form,
   FormControl,
@@ -24,24 +14,36 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import MultipleSelector from "@/components/ui/multiselect";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   AlertTriangle,
   Clock,
   DollarSign,
-  Settings,
   Loader2,
   Mail,
+  Settings,
 } from "lucide-react";
-import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
+
 import {
   useAlertSectionsQuery,
   useSaveAlertSectionsMutation,
 } from "@/services/alerts/query";
-import { toast } from "sonner";
-import { useForm } from "react-hook-form";
+import { useGetOrganizationsList } from "@/services/organizations/query";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { z } from "zod";
 
 export const Route = createFileRoute("/_dashboard/alerts")({
@@ -53,6 +55,7 @@ const alertSectionSchema = z.object({
   enabled: z.boolean(),
   threshold: z.number().min(0).optional(),
   frequency: z.enum(["daily", "weekly", "monthly"]).optional(),
+  projectIds: z.array(z.string()).optional(),
 });
 
 const alertSectionsFormSchema = z.object({
@@ -64,35 +67,89 @@ type AlertSectionsFormData = z.infer<typeof alertSectionsFormSchema>;
 export function AlertsPage() {
   const { t } = useTranslation();
   const { data: alertSectionsData, isLoading } = useAlertSectionsQuery();
+  const { data: organizationsData } = useGetOrganizationsList();
   const saveAlertSectionsMutation = useSaveAlertSectionsMutation();
 
   const form = useForm<AlertSectionsFormData>({
     resolver: zodResolver(alertSectionsFormSchema),
     defaultValues: {
       sections: [
-        { id: "errors", enabled: false, threshold: 5 },
-        { id: "latency", enabled: false, threshold: 5000 },
-        { id: "cost", enabled: false, threshold: 0.1 },
-        { id: "summary", enabled: false, frequency: "daily" },
+        {
+          id: "errors",
+          enabled: false,
+          threshold: 5,
+          projectIds: [],
+        },
+        {
+          id: "latency",
+          enabled: false,
+          threshold: 5000,
+          projectIds: [],
+        },
+        {
+          id: "cost",
+          enabled: false,
+          threshold: 0.1,
+          projectIds: [],
+        },
+        {
+          id: "summary",
+          enabled: false,
+          frequency: "daily",
+          projectIds: [],
+        },
       ],
     },
   });
 
-  const { watch, setValue } = form;
+  const { watch, reset } = form;
   const alertSections = watch("sections");
 
   useEffect(() => {
+    const allProjectIds = organizationsData?.map((org) => org.id) || [];
+
     if (alertSectionsData?.sections) {
-      setValue(
-        "sections",
-        alertSectionsData.sections.map((section) => ({
+      reset({
+        sections: alertSectionsData.sections.map((section) => ({
           ...section,
           threshold: section.threshold ?? 0,
           frequency: section.frequency ?? "daily",
-        }))
-      );
+          projectIds: section.projectIds?.length
+            ? section.projectIds
+            : allProjectIds,
+        })),
+      });
+    } else if (organizationsData?.length) {
+      reset({
+        sections: [
+          {
+            id: "errors",
+            enabled: false,
+            threshold: 5,
+            projectIds: allProjectIds,
+          },
+          {
+            id: "latency",
+            enabled: false,
+            threshold: 5000,
+            projectIds: allProjectIds,
+          },
+          {
+            id: "cost",
+            enabled: false,
+            threshold: 0.1,
+            projectIds: allProjectIds,
+          },
+          {
+            id: "summary",
+            enabled: false,
+            frequency: "daily",
+            projectIds: allProjectIds,
+          },
+        ],
+      });
     }
-  }, [alertSectionsData, setValue]);
+  }, [alertSectionsData, organizationsData, reset]);
 
   const getSectionConfig = (id: string) => {
     const configs = {
@@ -218,86 +275,128 @@ export function AlertsPage() {
 
                     {section.enabled && (
                       <CardContent className="pt-0">
-                        <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                          {section.id === "summary" ? (
+                        <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <FormField
                               control={form.control}
-                              name={`sections.${index}.frequency`}
+                              name={`sections.${index}.projectIds`}
                               render={({ field }) => (
-                                <FormItem className="flex-1">
+                                <FormItem>
                                   <FormLabel className="text-sm font-medium">
-                                    {t("alertsNew.sections.summary.frequency")}
+                                    {t("navigation.projects")}
                                   </FormLabel>
                                   <FormControl>
-                                    <Select
-                                      value={field.value}
-                                      onValueChange={field.onChange}
-                                    >
-                                      <SelectTrigger className="w-48">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="daily">
-                                          {t(
-                                            "alertsNew.sections.summary.frequencies.daily"
-                                          )}
-                                        </SelectItem>
-                                        <SelectItem value="weekly">
-                                          {t(
-                                            "alertsNew.sections.summary.frequencies.weekly"
-                                          )}
-                                        </SelectItem>
-                                        <SelectItem value="monthly">
-                                          {t(
-                                            "alertsNew.sections.summary.frequencies.monthly"
-                                          )}
-                                        </SelectItem>
-                                      </SelectContent>
-                                    </Select>
+                                    <MultipleSelector
+                                      value={
+                                        field.value?.map((id) => ({
+                                          value: id,
+                                          label:
+                                            organizationsData?.find(
+                                              (org) => org.id === id
+                                            )?.name || id,
+                                        })) || []
+                                      }
+                                      onChange={(options) => {
+                                        field.onChange(
+                                          options.map((option) => option.value)
+                                        );
+                                      }}
+                                      defaultOptions={
+                                        organizationsData?.map((org) => ({
+                                          value: org.id,
+                                          label: org.name,
+                                        })) || []
+                                      }
+                                      placeholder="Select projects..."
+                                      emptyIndicator={
+                                        <p className="text-center text-sm">
+                                          No projects found
+                                        </p>
+                                      }
+                                    />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
                               )}
                             />
-                          ) : (
-                            <FormField
-                              control={form.control}
-                              name={`sections.${index}.threshold`}
-                              render={({ field }) => (
-                                <FormItem className="flex-1">
-                                  <FormLabel className="text-sm font-medium">
-                                    {t("alertsNew.threshold")}
-                                  </FormLabel>
-                                  <div className="flex items-center space-x-2 mt-1">
+
+                            {section.id === "summary" ? (
+                              <FormField
+                                control={form.control}
+                                name={`sections.${index}.frequency`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-sm font-medium">
+                                      {t(
+                                        "alertsNew.sections.summary.frequency"
+                                      )}
+                                    </FormLabel>
                                     <FormControl>
-                                      <Input
-                                        type="number"
-                                        className="w-32"
-                                        step={
-                                          section.id === "cost" ? "0.01" : "1"
-                                        }
-                                        min="0"
-                                        {...field}
-                                        onChange={(e) =>
-                                          field.onChange(
-                                            parseFloat(e.target.value)
-                                          )
-                                        }
-                                      />
+                                      <Select
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                      >
+                                        <SelectTrigger className="w-full">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="daily">
+                                            {t(
+                                              "alertsNew.sections.summary.frequencies.daily"
+                                            )}
+                                          </SelectItem>
+                                          <SelectItem value="weekly">
+                                            {t(
+                                              "alertsNew.sections.summary.frequencies.weekly"
+                                            )}
+                                          </SelectItem>
+                                          <SelectItem value="monthly">
+                                            {t(
+                                              "alertsNew.sections.summary.frequencies.monthly"
+                                            )}
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
                                     </FormControl>
-                                    <span className="text-sm text-muted-foreground">
-                                      {config.unit}
-                                    </span>
-                                  </div>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )}
-                          <div className="flex items-center space-x-2">
-                            <Badge variant="outline">
-                              {t("alertsNew.emailActive")}
-                            </Badge>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            ) : (
+                              <FormField
+                                control={form.control}
+                                name={`sections.${index}.threshold`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-sm font-medium">
+                                      {t("alertsNew.threshold")}
+                                    </FormLabel>
+                                    <div className="flex items-center space-x-2">
+                                      <FormControl>
+                                        <Input
+                                          type="number"
+                                          className="flex-1"
+                                          step={
+                                            section.id === "cost" ? "0.01" : "1"
+                                          }
+                                          min="0"
+                                          {...field}
+                                          onChange={(e) =>
+                                            field.onChange(
+                                              parseFloat(e.target.value)
+                                            )
+                                          }
+                                        />
+                                      </FormControl>
+                                      <span className="text-sm text-muted-foreground">
+                                        {config.unit}
+                                      </span>
+                                    </div>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )}
                           </div>
                         </div>
                       </CardContent>

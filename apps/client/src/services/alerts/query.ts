@@ -24,18 +24,10 @@ export const alertSectionsQueryOptions = () =>
     queryFn: () => AlertService.getAlertSections(),
   });
 
-export const alertQueryOptions = (id: string) =>
+export const alertTriggersQueryOptions = () =>
   queryOptions({
-    queryKey: ["alerts", id],
-    queryFn: () => AlertService.getAlert(id),
-    enabled: !!id,
-  });
-
-export const alertTriggersQueryOptions = (id: string) =>
-  queryOptions({
-    queryKey: ["alerts", id, "triggers"],
-    queryFn: () => AlertService.getAlertTriggers(id),
-    enabled: !!id,
+    queryKey: ["alert-triggers"],
+    queryFn: () => AlertService.getAlertTriggers(),
   });
 
 export const webhooksQueryOptions = () =>
@@ -52,12 +44,8 @@ export const useAlertSectionsQuery = () => {
   return useQuery(alertSectionsQueryOptions());
 };
 
-export const useAlertQuery = (id: string) => {
-  return useQuery(alertQueryOptions(id));
-};
-
-export const useAlertTriggersQuery = (id: string) => {
-  return useQuery(alertTriggersQueryOptions(id));
+export const useAlertTriggersQuery = () => {
+  return useQuery(alertTriggersQueryOptions());
 };
 
 export const useWebhooksQuery = () => {
@@ -71,7 +59,6 @@ export const useCreateAlertMutation = () => {
     mutationFn: (data: CreateAlertRequest) => AlertService.createAlert(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alerts"] });
-      queryClient.invalidateQueries({ queryKey: ["alert-sections"] });
     },
   });
 };
@@ -84,7 +71,6 @@ export const useUpdateAlertMutation = () => {
       AlertService.updateAlert(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alerts"] });
-      queryClient.invalidateQueries({ queryKey: ["alert-sections"] });
     },
   });
 };
@@ -96,7 +82,6 @@ export const useDeleteAlertMutation = () => {
     mutationFn: (id: string) => AlertService.deleteAlert(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alerts"] });
-      queryClient.invalidateQueries({ queryKey: ["alert-sections"] });
     },
   });
 };
@@ -107,7 +92,6 @@ export const useSaveAlertSectionsMutation = () => {
   return useMutation({
     mutationFn: AlertService.saveAlertSections,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["alerts"] });
       queryClient.invalidateQueries({ queryKey: ["alert-sections"] });
     },
   });
@@ -115,7 +99,7 @@ export const useSaveAlertSectionsMutation = () => {
 
 export const useEvaluateAlertMutation = () => {
   return useMutation({
-    mutationFn: (id: string) => AlertService.evaluateAlert(id),
+    mutationFn: (alertId: string) => AlertService.evaluateAlert(alertId),
   });
 };
 
