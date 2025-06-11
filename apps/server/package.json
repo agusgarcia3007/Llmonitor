@@ -8,7 +8,8 @@
     "build": "bun build ./src/index.ts --compile --outfile server",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:push": "drizzle-kit push"
   },
   "dependencies": {
     "@better-auth/stripe": "^1.2.8",

@@ -65,7 +65,7 @@ export function HeroSection() {
                 >
                   {t("landing.subtitle")}
                 </motion.p>
-                
+
                 {globalStats?.totalEvents ? (
                   <motion.div
                     className="mx-auto mb-8 flex gap-2 items-center justify-center text-primary"
@@ -77,7 +77,7 @@ export function HeroSection() {
                       {formatCompactNumber(globalStats.totalEvents)}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      eventos monitorizados y contando
+                      {t("landing.eventsAndCounting")}
                     </div>
                   </motion.div>
                 ) : null}

@@ -245,6 +245,7 @@
     },
     "subtitle": "Herramientas completas para entender, optimizar y depurar tus interacciones con LLM",
     "ecosystem": "Integrado en todo el ecosistema de IA: OpenAI, Claude, Gemini, Mistral, modelos open-source y más",
+    "eventsAndCounting": "eventos monitorizados y contando",
 
     "features": {
       "badge": "Capacidades Potentes",
