@@ -46,7 +46,7 @@ export const Route = createFileRoute("/_dashboard/dashboard")({
 const chartConfig = {
   events: {
     label: "Events",
-    color: "hsl(var(--chart-1))",
+    color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
 
