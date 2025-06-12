@@ -1,4 +1,4 @@
-import { DashboardLayout } from "@/components/layout/dashboard/indext";
+import { DashboardLayout } from "@/components/layout/dashboard";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 function isAuthenticated() {
