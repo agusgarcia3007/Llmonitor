@@ -53,7 +53,7 @@ export const auth = betterAuth({
   trustedOrigins: TRUSTED_ORIGINS,
   rateLimit: {
     window: 10, // time window in seconds
-    max: 100, // max requests in the window
+    max: 1000,
   },
   advanced: {
     crossSubDomainCookies: { enabled: true },
