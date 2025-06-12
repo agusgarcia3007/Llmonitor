@@ -16,7 +16,7 @@ export function SpinningBox({ scale, ...props }: SpinningBoxProps) {
   const [clicked, click] = useState(false);
   useCursor(hovered);
   // Subscribe this component to the render-loop, rotate the mesh every frame
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (ref.current) {
       ref.current.rotation.x = ref.current.rotation.y += delta;
     }
