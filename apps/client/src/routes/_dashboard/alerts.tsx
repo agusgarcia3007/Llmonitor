@@ -228,7 +228,7 @@ export function AlertsPage() {
                   <Card
                     key={section.id}
                     className={`transition-all ${
-                      section.enabled ? "ring-2 ring-blue-200" : ""
+                      section.enabled ? "ring-2 ring-primary/20" : ""
                     }`}
                   >
                     <CardHeader>
@@ -237,8 +237,8 @@ export function AlertsPage() {
                           <div
                             className={`p-2 rounded-lg ${
                               section.enabled
-                                ? "bg-blue-100 text-blue-600"
-                                : "bg-gray-100 text-gray-400"
+                                ? "bg-primary/10 text-primary"
+                                : "bg-muted text-muted-foreground"
                             }`}
                           >
                             <IconComponent className="h-5 w-5" />
@@ -278,7 +278,7 @@ export function AlertsPage() {
 
                     {section.enabled && (
                       <CardContent className="pt-0">
-                        <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+                        <div className="space-y-4 p-4 bg-muted/20 rounded-lg">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <FormField
                               control={form.control}
@@ -429,14 +429,14 @@ export function AlertsPage() {
                       return (
                         <div
                           key={section.id}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                          className="flex items-center justify-between p-3 bg-muted/20 rounded-lg"
                         >
                           <div className="flex items-center space-x-3">
                             <div
                               className={`w-6 h-6 rounded-full flex items-center justify-center ${
                                 section.enabled
-                                  ? "bg-green-100 text-green-600"
-                                  : "bg-gray-200 text-gray-400"
+                                  ? "bg-primary/10 text-primary"
+                                  : "bg-muted text-muted-foreground"
                               }`}
                             >
                               <config.icon className="h-3 w-3" />
