@@ -1,7 +1,8 @@
 import { and, eq, gte, lte, desc, between, sql, inArray } from "drizzle-orm";
 import { db } from "@/db";
-import { alert_config, llm_event, user } from "@/db/schema";
+import { alert_config, alert_trigger, llm_event, user } from "@/db/schema";
 import { EmailService } from "./email-service";
+import { randomUUID } from "crypto";
 
 export class SimpleAlertsEvaluator {
   private emailService: EmailService;
@@ -46,7 +47,14 @@ export class SimpleAlertsEvaluator {
 
     // Handle summary section differently - send daily summary
     if (section.metric === "summary") {
-      await this.sendDailySummary(section, whereConditions);
+      const shouldSendSummary = await this.shouldSendSummaryNotification(
+        section
+      );
+      if (shouldSendSummary) {
+        await this.sendDailySummary(section, whereConditions);
+        // Record the summary trigger
+        await this.recordAlertTrigger(section, 1);
+      }
       return;
     }
 
@@ -57,14 +65,29 @@ export class SimpleAlertsEvaluator {
     const isTriggered = metricValue > section.threshold_value;
 
     if (isTriggered) {
-      console.log(`🚨 Alert triggered for ${section.name}:`, {
-        metric: section.metric,
-        value: metricValue,
-        threshold: section.threshold_value,
-        userId: section.created_by,
-      });
+      // Check if we should send notification (cooldown logic)
+      const shouldNotify = await this.shouldSendNotification(
+        section,
+        metricValue
+      );
 
-      await this.sendNotification(section, metricValue);
+      if (shouldNotify) {
+        console.log(`🚨 Alert triggered for ${section.name}:`, {
+          metric: section.metric,
+          value: metricValue,
+          threshold: section.threshold_value,
+          userId: section.created_by,
+        });
+
+        await this.sendNotification(section, metricValue);
+
+        // Record the trigger
+        await this.recordAlertTrigger(section, metricValue);
+      } else {
+        console.log(
+          `⏰ Alert for ${section.name} is in cooldown period, skipping notification`
+        );
+      }
     }
   }
 
@@ -298,5 +321,126 @@ export class SimpleAlertsEvaluator {
       summary: "Daily Summary",
     };
     return displayNames[sectionId] || sectionId;
+  }
+
+  private async shouldSendNotification(
+    section: typeof alert_config.$inferSelect,
+    currentValue: number
+  ): Promise<boolean> {
+    // Get the most recent trigger for this alert
+    const lastTrigger = await db
+      .select()
+      .from(alert_trigger)
+      .where(eq(alert_trigger.alert_config_id, section.id))
+      .orderBy(desc(alert_trigger.triggered_at))
+      .limit(1);
+
+    // If no previous trigger, this is a new alert
+    if (lastTrigger.length === 0) {
+      return true;
+    }
+
+    const lastTriggerData = lastTrigger[0];
+    const lastValue = lastTriggerData.metric_value;
+    const lastTriggerTime = lastTriggerData.triggered_at;
+
+    // Check if enough time has passed for a minimum cooldown (30 minutes)
+    const minCooldownMinutes = 30;
+    const minCooldownThreshold = new Date(
+      Date.now() - minCooldownMinutes * 60 * 1000
+    );
+
+    if (lastTriggerTime > minCooldownThreshold) {
+      return false; // Still in minimum cooldown period
+    }
+
+    // If the current value is below threshold, the problem might be resolved
+    if (currentValue <= section.threshold_value) {
+      // Mark the last trigger as resolved if it hasn't been already
+      if (lastTriggerData.status === "triggered") {
+        await db
+          .update(alert_trigger)
+          .set({
+            status: "resolved",
+            resolved_at: new Date(),
+          })
+          .where(eq(alert_trigger.id, lastTriggerData.id));
+      }
+      return false; // Don't send alert for resolved condition
+    }
+
+    // Calculate percentage change from last alert
+    const percentageChange =
+      Math.abs((currentValue - lastValue) / lastValue) * 100;
+
+    // Send alert if the value has increased significantly (25% worse)
+    const significantChangeThreshold = 25;
+
+    if (
+      percentageChange >= significantChangeThreshold &&
+      currentValue > lastValue
+    ) {
+      return true; // Significant worsening
+    }
+
+    // For ongoing issues, only send alert after longer cooldown (4 hours)
+    const longCooldownMinutes = 240; // 4 hours
+    const longCooldownThreshold = new Date(
+      Date.now() - longCooldownMinutes * 60 * 1000
+    );
+
+    return lastTriggerTime < longCooldownThreshold;
+  }
+
+  private async recordAlertTrigger(
+    section: typeof alert_config.$inferSelect,
+    metricValue: number
+  ): Promise<void> {
+    await db.insert(alert_trigger).values({
+      id: randomUUID(),
+      alert_config_id: section.id,
+      metric_value: metricValue,
+      context: {
+        threshold: section.threshold_value,
+        metric: section.metric,
+        projectIds: (section.filters as any)?.projectIds || [],
+      },
+      status: "triggered",
+    });
+  }
+
+  private async shouldSendSummaryNotification(
+    section: typeof alert_config.$inferSelect
+  ): Promise<boolean> {
+    // For summary, check if we sent one in the configured frequency period
+    const now = new Date();
+    let cooldownThreshold: Date;
+
+    switch (section.time_window) {
+      case 86400: // daily
+        cooldownThreshold = new Date(now.getTime() - 20 * 60 * 60 * 1000); // 20 hours ago
+        break;
+      case 604800: // weekly
+        cooldownThreshold = new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000); // 6 days ago
+        break;
+      case 2592000: // monthly
+        cooldownThreshold = new Date(now.getTime() - 25 * 24 * 60 * 60 * 1000); // 25 days ago
+        break;
+      default:
+        cooldownThreshold = new Date(now.getTime() - 20 * 60 * 60 * 1000); // Default to 20 hours
+    }
+
+    const recentTrigger = await db
+      .select()
+      .from(alert_trigger)
+      .where(
+        and(
+          eq(alert_trigger.alert_config_id, section.id),
+          gte(alert_trigger.triggered_at, cooldownThreshold)
+        )
+      )
+      .limit(1);
+
+    return recentTrigger.length === 0;
   }
 }
