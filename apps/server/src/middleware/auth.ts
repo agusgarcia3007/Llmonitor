@@ -2,6 +2,11 @@ import { auth } from "@/lib/auth";
 import { Context, Next } from "hono";
 
 export const sessionMiddleware = async (c: Context, next: Next) => {
+  if (c.req.header("x-api-key")) {
+    c.set("user", null);
+    c.set("session", null);
+    return next();
+  }
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
   if (!session) {
@@ -16,6 +21,9 @@ export const sessionMiddleware = async (c: Context, next: Next) => {
 };
 
 export const authMiddleware = async (c: Context, next: Next) => {
+  if (c.req.header("x-api-key")) {
+    return next();
+  }
   const user = c.get("user");
   const session = c.get("session");
 

@@ -2,6 +2,7 @@ import { Context } from "hono";
 import { LogLlmEventSchema } from "../schemas/llm-events";
 import { db } from "@/db";
 import { llm_event, type LLMEventMetadata } from "@/db/schema";
+import { apikey, member } from "@/db/schema";
 import {
   parseQueryParams,
   createSortHelpers,
@@ -35,11 +36,21 @@ export const logEvent = async (c: Context) => {
   const apiKey = c.req.header("x-api-key");
 
   let organizationId =
-    body.projectId || body.organizationId || session.organizationId;
+    body.projectId || body.organizationId || session?.organizationId;
 
-  if (!organizationId && session.userId) {
-    const org = await getActiveOrganization(session.userId);
-    organizationId = org?.id;
+  if (!organizationId && apiKey) {
+    const keyRecord = await db
+      .select()
+      .from(apikey)
+      .where(eq(apikey.key, apiKey))
+      .limit(1);
+
+    if (keyRecord.length) {
+      const userId = keyRecord[0].userId;
+
+      const org = await getActiveOrganization(userId);
+      organizationId = org?.id;
+    }
   }
 
   if (!organizationId) {
@@ -52,18 +63,18 @@ export const logEvent = async (c: Context) => {
     );
   }
 
-  if (session.userId && organizationId) {
-    const member = await db
+  if (session && session.userId && organizationId) {
+    const memberRow = await db
       .select()
-      .from(require("@/db/schema").member)
+      .from(member)
       .where(
         and(
-          eq(require("@/db/schema").member.userId, session.userId),
-          eq(require("@/db/schema").member.organizationId, organizationId)
+          eq(member.userId, session.userId),
+          eq(member.organizationId, organizationId)
         )
       );
 
-    if (!member.length) {
+    if (!memberRow.length) {
       return c.json(
         {
           success: false,
