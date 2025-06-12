@@ -1,4 +1,5 @@
 import { Link, Outlet } from "@tanstack/react-router";
+import Scene from "./scene";
 
 export function AuthLayout() {
   return (
@@ -16,13 +17,8 @@ export function AuthLayout() {
           </div>
         </div>
       </div>
-      <div className="bg-muted relative hidden lg:block">
-        <img
-          src="/auth-background.jpeg"
-          alt="auth background"
-          draggable={false}
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        />
+      <div className="bg-muted relative hidden lg:block ">
+        <Scene />
       </div>
     </div>
   );
