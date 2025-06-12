@@ -7,7 +7,7 @@ export class AlertService {
     this.alertsEvaluator = new SimpleAlertsEvaluator();
   }
 
-  async evaluateAlerts(organizationId: string): Promise<void> {
-    await this.alertsEvaluator.evaluateAlertsForOrganization(organizationId);
+  async evaluateAlerts(): Promise<void> {
+    await this.alertsEvaluator.evaluateAlertsForAllUsers();
   }
 }

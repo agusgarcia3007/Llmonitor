@@ -1,12 +1,6 @@
 import { and, eq, gte, lte, desc, between, sql, inArray } from "drizzle-orm";
 import { db } from "@/db";
-import {
-  alert_config,
-  llm_event,
-  user,
-  member,
-  organization,
-} from "@/db/schema";
+import { alert_config, llm_event, user } from "@/db/schema";
 import { EmailService } from "./email-service";
 
 export class SimpleAlertsEvaluator {
@@ -16,19 +10,15 @@ export class SimpleAlertsEvaluator {
     this.emailService = new EmailService();
   }
 
-  async evaluateAlertsForOrganization(organizationId: string): Promise<void> {
-    console.log(`Evaluating alerts for organization: ${organizationId}`);
+  async evaluateAlertsForAllUsers(): Promise<void> {
+    console.log(`Evaluating alerts for all users`);
 
-    // Get all active alert sections for this organization
+    // Get all active alert sections
     const alertSections = await db
       .select()
       .from(alert_config)
       .where(
-        and(
-          eq(alert_config.organization_id, organizationId),
-          eq(alert_config.type, "section"),
-          eq(alert_config.is_active, true)
-        )
+        and(eq(alert_config.type, "section"), eq(alert_config.is_active, true))
       );
 
     for (const section of alertSections) {
@@ -47,15 +37,11 @@ export class SimpleAlertsEvaluator {
     const projectIds = (section.filters as any)?.projectIds || [];
 
     // Build base query conditions
-    let whereConditions = [
-      eq(llm_event.organization_id, section.organization_id),
-      gte(llm_event.created_at, timeWindowStart),
-    ];
+    let whereConditions = [gte(llm_event.created_at, timeWindowStart)];
 
     // Add project filter if specific projects are selected
-    if (projectIds.length > 0 && !projectIds.includes("all")) {
-      // For now, we'll skip project filtering since we don't have that field in llm_event
-      // This would need to be implemented based on how projects are stored
+    if (projectIds.length > 0) {
+      whereConditions.push(inArray(llm_event.organization_id, projectIds));
     }
 
     // Handle summary section differently - send daily summary
@@ -75,7 +61,7 @@ export class SimpleAlertsEvaluator {
         metric: section.metric,
         value: metricValue,
         threshold: section.threshold_value,
-        organizationId: section.organization_id,
+        userId: section.created_by,
       });
 
       await this.sendNotification(section, metricValue);
@@ -92,42 +78,36 @@ export class SimpleAlertsEvaluator {
         return;
       }
 
-      // Get organization details
-      const orgResult = await db
-        .select({ name: organization.name })
-        .from(organization)
-        .where(eq(organization.id, section.organization_id))
+      // Get user details
+      const userResult = await db
+        .select({ email: user.email })
+        .from(user)
+        .where(eq(user.id, section.created_by))
         .limit(1);
 
-      const organizationName = orgResult[0]?.name || "Your Organization";
+      if (!userResult[0]) {
+        console.warn(`User not found for alert section ${section.name}`);
+        return;
+      }
+
+      const userEmail = userResult[0].email;
 
       // Calculate summary stats
       const stats = await this.calculateSummaryStats(whereConditions);
 
-      // Get admin emails for this organization
-      const adminEmails = await db
-        .select({ email: user.email })
-        .from(user)
-        .innerJoin(member, eq(member.userId, user.id))
-        .where(
-          and(
-            eq(member.organizationId, section.organization_id),
-            inArray(member.role, ["admin", "owner"])
-          )
-        );
+      // Send to the user who created the alert
+      const adminEmails = [{ email: userEmail }];
 
       if (adminEmails.length === 0) {
-        console.warn(
-          `No admin emails found for organization ${section.organization_id}`
-        );
+        console.warn(`No email found for user ${section.created_by}`);
         return;
       }
 
-      // Send daily summary to each admin
+      // Send daily summary to the user
       for (const admin of adminEmails) {
         const success = await this.emailService.sendDailySummaryEmail(
           admin.email,
-          organizationName,
+          "Your Projects",
           stats
         );
 
@@ -261,53 +241,48 @@ export class SimpleAlertsEvaluator {
     metricValue: number
   ): Promise<void> {
     try {
-      // Get organization details
-      const orgResult = await db
-        .select({ name: organization.name })
-        .from(organization)
-        .where(eq(organization.id, section.organization_id))
-        .limit(1);
-
-      const organizationName = orgResult[0]?.name || "Your Organization";
-
-      // Get admin emails for this organization
-      const adminEmails = await db
+      // Get user email
+      const userResult = await db
         .select({ email: user.email })
         .from(user)
-        .innerJoin(member, eq(member.userId, user.id))
-        .where(
-          and(
-            eq(member.organizationId, section.organization_id),
-            inArray(member.role, ["admin", "owner"])
-          )
-        );
+        .where(eq(user.id, section.created_by))
+        .limit(1);
+
+      if (!userResult[0]) {
+        console.warn(`User not found for alert section ${section.name}`);
+        return;
+      }
+
+      const organizationName = "Your Projects";
+
+      const adminEmails = [{ email: userResult[0].email }];
 
       if (adminEmails.length === 0) {
-        console.warn(
-          `No admin emails found for organization ${section.organization_id}`
-        );
+        console.warn(`No email found for user ${section.created_by}`);
         return;
       }
 
       // Send email to each admin
       for (const admin of adminEmails) {
-        const success = await this.emailService.sendAlertEmail(
-          admin.email,
-          this.getAlertDisplayName(section.name),
-          section.metric,
-          metricValue,
-          section.threshold_value,
-          organizationName
-        );
+        if (process.env.NODE_ENV === "production") {
+          const success = await this.emailService.sendAlertEmail(
+            admin.email,
+            this.getAlertDisplayName(section.name),
+            section.metric,
+            metricValue,
+            section.threshold_value,
+            organizationName
+          );
 
-        if (success) {
-          console.log(
-            `✅ Alert email sent to ${admin.email} for ${section.name}`
-          );
-        } else {
-          console.error(
-            `❌ Failed to send alert email to ${admin.email} for ${section.name}`
-          );
+          if (success) {
+            console.log(
+              `✅ Alert email sent to ${admin.email} for ${section.name}`
+            );
+          } else {
+            console.error(
+              `❌ Failed to send alert email to ${admin.email} for ${section.name}`
+            );
+          }
         }
       }
     } catch (error) {

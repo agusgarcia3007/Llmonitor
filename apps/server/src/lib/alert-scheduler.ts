@@ -1,6 +1,4 @@
 import { AlertService } from "@/services/alerts";
-import { db } from "@/db";
-import { organization } from "@/db/schema";
 
 export class AlertScheduler {
   private alertService: AlertService;
@@ -39,13 +37,7 @@ export class AlertScheduler {
     try {
       console.log("Running alert evaluation...");
 
-      const organizations = await db
-        .select({ id: organization.id })
-        .from(organization);
-
-      for (const org of organizations) {
-        await this.alertService.evaluateAlerts(org.id);
-      }
+      await this.alertService.evaluateAlerts();
 
       console.log("Alert evaluation completed");
     } catch (error) {

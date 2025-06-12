@@ -21,9 +21,8 @@ const alertSectionSchema = z.object({
 // GET /alerts/sections - Get alert sections configuration
 export const getAlertSections = async (c: Context) => {
   const user = c.get("user");
-  const session = c.get("session");
 
-  if (!user || !session?.activeOrganizationId) {
+  if (!user) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
@@ -32,7 +31,7 @@ export const getAlertSections = async (c: Context) => {
     .from(alert_config)
     .where(
       and(
-        eq(alert_config.organization_id, session.activeOrganizationId),
+        eq(alert_config.created_by, user.id),
         eq(alert_config.type, "section")
       )
     );
@@ -57,9 +56,8 @@ export const getAlertSections = async (c: Context) => {
 // POST /alerts/sections - Save alert sections configuration
 export const saveAlertSections = async (c: Context) => {
   const user = c.get("user");
-  const session = c.get("session");
 
-  if (!user || !session?.activeOrganizationId) {
+  if (!user) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
@@ -67,12 +65,12 @@ export const saveAlertSections = async (c: Context) => {
     const body = await c.req.json();
     const data = alertSectionSchema.parse(body);
 
-    // Delete existing sections for this organization
+    // Delete existing sections for this user
     await db
       .delete(alert_config)
       .where(
         and(
-          eq(alert_config.organization_id, session.activeOrganizationId),
+          eq(alert_config.created_by, user.id),
           eq(alert_config.type, "section")
         )
       );
@@ -88,7 +86,7 @@ export const saveAlertSections = async (c: Context) => {
 
       await db.insert(alert_config).values({
         id: randomUUID(),
-        organization_id: session.activeOrganizationId,
+        organization_id: user.id, // Using user.id as placeholder for organization_id since it's required by schema
         name: section.id,
         description: `Alert section for ${section.id}`,
         type: "section",
