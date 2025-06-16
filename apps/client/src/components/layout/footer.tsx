@@ -1,7 +1,7 @@
-import { useTranslation } from "react-i18next";
-import { Link } from "@tanstack/react-router";
-import { IconBrandGithub, IconBrandTwitter } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
+import { IconBrandGithub, IconBrandTwitter } from "@tabler/icons-react";
+import { Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 export function Footer() {
   const { t } = useTranslation();
