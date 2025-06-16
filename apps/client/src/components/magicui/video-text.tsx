@@ -1,7 +1,12 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import React, { ElementType, ReactNode, useEffect, useState } from "react";
+import React, {
+  type ElementType,
+  type ReactNode,
+  useEffect,
+  useState,
+} from "react";
 
 export interface VideoTextProps {
   /**
@@ -95,7 +100,9 @@ export function VideoText({
     return () => window.removeEventListener("resize", updateSvgMask);
   }, [content, fontSize, fontWeight, textAnchor, dominantBaseline, fontFamily]);
 
-  const dataUrlMask = `url("data:image/svg+xml,${encodeURIComponent(svgMask)}")`;
+  const dataUrlMask = `url("data:image/svg+xml,${encodeURIComponent(
+    svgMask
+  )}")`;
 
   return (
     <Component className={cn(`relative size-full`, className)}>
