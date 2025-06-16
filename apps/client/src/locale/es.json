@@ -158,7 +158,7 @@
     "of": "de",
     "next": "Siguiente",
     "previous": "Anterior",
-    "first": "Primera",
+    "first": "Primero",
     "last": "Últimos {{days}} días",
     "last24Hours": "Hoy",
     "last7Days": "Últimos 7 días",
@@ -173,7 +173,18 @@
     "goHome": "Ir al Inicio",
     "goToDashboard": "Ir al Panel",
     "back": "Atrás",
-    "status": "Estado"
+    "status": "Estado",
+    "theme": {
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Sistema",
+      "toggle": "Cambiar tema"
+    },
+    "languageSwitch": {
+      "changeLanguage": "Cambiar idioma",
+      "english": "Inglés",
+      "spanish": "Español"
+    }
   },
   "invitations": {
     "title": "¡Estás Invitado!",

@@ -173,7 +173,18 @@
     "goToDashboard": "Go to Dashboard",
     "back": "Back",
     "status": "Status",
-    "login": "Login"
+    "login": "Login",
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System",
+      "toggle": "Toggle theme"
+    },
+    "languageSwitch": {
+      "changeLanguage": "Change language",
+      "english": "English",
+      "spanish": "Spanish"
+    }
   },
   "invitations": {
     "title": "You're Invited!",

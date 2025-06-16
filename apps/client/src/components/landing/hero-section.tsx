@@ -1,12 +1,12 @@
-import { formatCompactNumber } from "@/lib/utils";
 import { useGlobalStatsQuery } from "@/services/analytics/query";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Sparkle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import HeroVideoDialog from "../magicui/hero-video-dialog";
-import { HeroHeader } from "./header";
+import { NumberTicker } from "../magicui/number-ticker";
 import { ShineBorder } from "../magicui/shine-border";
+import { HeroHeader } from "./header";
 
 export function HeroSection() {
   const { t } = useTranslation();
@@ -75,7 +75,11 @@ export function HeroSection() {
                     transition={{ duration: 0.7, delay: 0.35 }}
                   >
                     <div className="text-xl font-bold">
-                      {formatCompactNumber(globalStats.totalEvents)}
+                      <NumberTicker
+                        value={globalStats.totalEvents}
+                        startValue={globalStats.totalEvents / 2}
+                        className="text-primary"
+                      />
                     </div>
                     <div className="text-sm text-muted-foreground">
                       {t("landing.eventsAndCounting")}
