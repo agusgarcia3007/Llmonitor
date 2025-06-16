@@ -258,6 +258,11 @@
     }
   },
   "landing": {
+    "periodSwitch": {
+      "billMonthly": "Bill Monthly",
+      "billYearly": "Bill Yearly",
+      "monthsFree": "2 months free"
+    },
     "badge": "AI Observability Platform",
     "title": {
       "highlight": "Clear Insights",

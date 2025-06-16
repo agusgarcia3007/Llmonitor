@@ -152,7 +152,6 @@ function Index() {
         </section>
         <Separator className="bg-border/50" />
 
-        <Separator className="bg-border/50" />
         <section className="flex flex-col gap-14" id="pricing">
           <div className="text-center">
             <motion.div

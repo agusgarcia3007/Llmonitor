@@ -258,6 +258,11 @@
     }
   },
   "landing": {
+    "periodSwitch": {
+      "billMonthly": "Facturar Mensualmente",
+      "billYearly": "Facturar Anualmente",
+      "monthsFree": "2 meses gratis"
+    },
     "badge": "Plataforma de Observabilidad para IA",
     "title": {
       "highlight": "Perspectivas Claras",

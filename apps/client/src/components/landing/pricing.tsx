@@ -14,7 +14,6 @@ import { PeriodSwitch } from "./period-switch";
 export function Pricing() {
   const { t } = useTranslation();
 
-  // Definir las características para cada plan
   const hobbyFeatures = [
     t("landing.pricing.hobby.feature1"),
     t("landing.pricing.hobby.feature2"),
@@ -44,7 +43,7 @@ export function Pricing() {
   ];
 
   return (
-    <>
+    <div className="flex flex-col gap-y-2">
       <PeriodSwitch />
       <div className="mt-8 grid gap-6 md:mt-20 md:grid-cols-3 container mx-auto">
         <Card>
@@ -149,6 +148,6 @@ export function Pricing() {
           </CardContent>
         </Card>
       </div>
-    </>
+    </div>
   );
 }
