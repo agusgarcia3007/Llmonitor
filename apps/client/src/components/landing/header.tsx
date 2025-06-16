@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { t } from "i18next";
 import { Menu, X } from "lucide-react";
 import React from "react";
+import { ThemeSwitch } from "../layout/theme-switch";
 
 const menuItems = [
   { name: "Features", href: "/#features" },
@@ -100,11 +101,14 @@ export const HeroHeader = () => {
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                 {isAuthenticated() ? (
-                  <Button asChild size="sm">
-                    <Link to="/dashboard">
-                      <span>{t("landing.header.dashboard")}</span>
-                    </Link>
-                  </Button>
+                  <>
+                    <Button asChild size="sm">
+                      <Link to="/dashboard">
+                        <span>{t("landing.header.dashboard")}</span>
+                      </Link>
+                    </Button>
+                    <ThemeSwitch />
+                  </>
                 ) : (
                   <>
                     <Button

@@ -82,11 +82,11 @@ export function VideoText({
   textAnchor = "middle",
   dominantBaseline = "middle",
   fontFamily = "sans-serif",
-  as,
+  as = "div",
 }: VideoTextProps) {
   const [svgMask, setSvgMask] = useState("");
   const content = React.Children.toArray(children).join("");
-  const Component = as || "div";
+  const Component = as;
 
   useEffect(() => {
     const updateSvgMask = () => {
@@ -106,7 +106,9 @@ export function VideoText({
   )}")`;
 
   return (
-    <Component className={cn("relative size-full", className)}>
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - Component accepts children but TypeScript has issues with dynamic components
+    <Component className={cn(`relative size-full`, className)}>
       {/* Create a container that masks the video to only show within text */}
       <div
         className="absolute inset-0 flex items-center justify-center"
