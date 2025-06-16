@@ -95,7 +95,13 @@ export const auth = betterAuth({
       },
     }),
     admin(),
-    apiKey(),
+    apiKey({
+      rateLimit: {
+        enabled: true,
+        timeWindow: 1000, // 1 segundo entre solicitudes
+        maxRequests: 100, // 100 solicitudes por ventana de tiempo
+      },
+    }),
     openAPI(),
     stripe({
       stripeClient,
