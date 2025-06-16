@@ -16,7 +16,7 @@
     "build:server": "pnpm --filter server build",
     "build:docs": "pnpm --filter docs build",
     "check-translations": "node scripts/check-translations.js",
-    "prepare": "npx husky"
+    "prepare": "husky"
   },
   "workspaces": [
     "client",
