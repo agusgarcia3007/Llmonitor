@@ -9,7 +9,8 @@
       "submit": "Iniciar sesión",
       "or": "O",
       "noAccount": "¿No tienes una cuenta?",
-      "signup": "Regístrate"
+      "signup": "Regístrate",
+      "github": "Iniciar sesión con GitHub"
     },
     "signup": {
       "title": "Crea una cuenta",
@@ -21,7 +22,9 @@
       "submit": "Registrarse",
       "google": "Registrarse con Google",
       "hasAccount": "¿Ya tienes una cuenta?",
-      "signin": "Iniciar sesión"
+      "signin": "Iniciar sesión",
+      "or": "O",
+      "github": "Registrarse con GitHub"
     },
     "forgotPassword": {
       "title": "¿Olvidaste tu contraseña?",

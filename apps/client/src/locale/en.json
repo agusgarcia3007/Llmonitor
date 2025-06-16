@@ -9,7 +9,8 @@
       "submit": "Login",
       "or": "Or",
       "noAccount": "Don't have an account?",
-      "signup": "Sign up"
+      "signup": "Sign up",
+      "github": "Login with GitHub"
     },
     "signup": {
       "title": "Create an account",
@@ -21,7 +22,9 @@
       "submit": "Sign up",
       "google": "Sign up with Google",
       "hasAccount": "Already have an account?",
-      "signin": "Sign in"
+      "signin": "Sign in",
+      "or": "Or",
+      "github": "Sign up with GitHub"
     },
     "forgotPassword": {
       "title": "Forgot your password?",

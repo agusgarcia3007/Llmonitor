@@ -103,7 +103,7 @@ export const HeroHeader = () => {
                 {isAuthenticated() ? (
                   <>
                     <Button asChild size="sm">
-                      <Link to="/dashboard">
+                      <Link to="/dashboard" search={{ period: "1" }}>
                         <span>{t("landing.header.dashboard")}</span>
                       </Link>
                     </Button>

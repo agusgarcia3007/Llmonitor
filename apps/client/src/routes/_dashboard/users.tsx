@@ -78,7 +78,7 @@ export function UsersAdminPage() {
 
   useEffect(() => {
     if (!isPending && (!session?.user || session.user.role !== "admin")) {
-      navigate({ to: "/dashboard" });
+      navigate({ to: "/dashboard", search: { period: "1" } });
     }
   }, [isPending, session, navigate]);
 
