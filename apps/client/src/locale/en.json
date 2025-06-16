@@ -324,6 +324,47 @@
 
     "footer": {
       "copyright": "© {{year}} LLMonitor."
+    },
+
+    "pricing": {
+      "hobby": {
+        "title": "Hobby",
+        "price": "$0 / mo",
+        "description": "Ideal for side projects, testing, or early exploration.",
+        "feature1": "All core features (with usage limits)",
+        "feature2": "50,000 events / month included",
+        "feature3": "30 days data retention",
+        "feature4": "2 users, 1 project",
+        "feature5": "Community support (GitHub)",
+        "cta": "Get Started"
+      },
+      "pro": {
+        "title": "Pro",
+        "price": "$20 / mo",
+        "description": "For developers and teams who need flexibility, scalability, and full visibility.",
+        "popular": "Popular",
+        "feature1": "Everything in Hobby",
+        "feature2": "2,000,000 events / month included",
+        "feature3": "$0.00002 USD per additional event",
+        "feature4": "365 days data retention",
+        "feature5": "Unlimited users",
+        "feature6": "Unlimited projects",
+        "feature7": "Email support",
+        "cta": "Get Started"
+      },
+      "enterprise": {
+        "title": "Enterprise",
+        "price": "Custom",
+        "description": "For high-volume or security-sensitive teams with advanced requirements.",
+        "feature1": "Everything in Pro",
+        "feature2": "Custom data residency (US / EU)",
+        "feature3": "Self-hosting & BYOK support",
+        "feature4": "SSO / SAML & role-based access",
+        "feature5": "PII redaction & encryption at rest",
+        "feature6": "Up to 5 year data retention",
+        "feature7": "Dedicated support & SLA available",
+        "cta": "Contact Us"
+      }
     }
   },
   "apiKeys": {

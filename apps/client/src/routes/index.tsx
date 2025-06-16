@@ -23,6 +23,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Pricing } from "@/components/landing/pricing";
+import { SmoothCursor } from "@/components/ui/smooth-cursor";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -405,6 +406,7 @@ function Index() {
           </p>
         </footer>
       </div>
+      <SmoothCursor />
     </div>
   );
 }

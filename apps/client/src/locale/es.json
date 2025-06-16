@@ -324,6 +324,47 @@
 
     "footer": {
       "copyright": "© {{year}} LLMonitor."
+    },
+
+    "pricing": {
+      "hobby": {
+        "title": "Hobby",
+        "price": "$0 / mes",
+        "description": "Ideal para proyectos personales, pruebas o exploración inicial.",
+        "feature1": "Todas las funciones principales (con límites de uso)",
+        "feature2": "50.000 eventos / mes incluidos",
+        "feature3": "30 días de retención de datos",
+        "feature4": "2 usuarios, 1 proyecto",
+        "feature5": "Soporte comunitario (GitHub)",
+        "cta": "Comenzar"
+      },
+      "pro": {
+        "title": "Pro",
+        "price": "$20 / mes",
+        "description": "Para desarrolladores y equipos que necesitan flexibilidad, escalabilidad y visibilidad completa.",
+        "popular": "Popular",
+        "feature1": "Todo lo incluido en Hobby",
+        "feature2": "2.000.000 eventos / mes incluidos",
+        "feature3": "$0,00002 USD por evento adicional",
+        "feature4": "365 días de retención de datos",
+        "feature5": "Usuarios ilimitados",
+        "feature6": "Proyectos ilimitados",
+        "feature7": "Soporte por email",
+        "cta": "Comenzar"
+      },
+      "enterprise": {
+        "title": "Enterprise",
+        "price": "Personalizado",
+        "description": "Para equipos de alto volumen o con requisitos avanzados de seguridad.",
+        "feature1": "Todo lo incluido en Pro",
+        "feature2": "Residencia de datos personalizada (EE.UU. / UE)",
+        "feature3": "Soporte para autoalojamiento y BYOK",
+        "feature4": "SSO / SAML y acceso basado en roles",
+        "feature5": "Redacción de PII y cifrado en reposo",
+        "feature6": "Hasta 5 años de retención de datos",
+        "feature7": "Soporte dedicado y SLA disponible",
+        "cta": "Contáctanos"
+      }
     }
   },
   "apiKeys": {
