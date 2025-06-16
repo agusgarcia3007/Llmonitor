@@ -22,6 +22,7 @@ import {
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { Pricing } from "@/components/landing/pricing";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -362,6 +363,8 @@ function Index() {
         </section>
 
         <Separator className="bg-border/50" />
+
+        <Pricing />
 
         <motion.section
           className="flex flex-col items-center gap-8 text-center bg-gradient-to-b from-card/80 to-card/30 backdrop-blur-sm p-10 rounded-xl border border-border/50 shadow-lg relative overflow-hidden"

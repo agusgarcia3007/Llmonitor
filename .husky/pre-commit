@@ -1,0 +1,1 @@
+bun scripts/check-translations.js || exit 1

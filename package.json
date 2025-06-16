@@ -14,7 +14,9 @@
     "dev:app": "(pnpm --filter client dev) & (pnpm --filter server dev)",
     "build:client": "pnpm --filter client build",
     "build:server": "pnpm --filter server build",
-    "build:docs": "pnpm --filter docs build"
+    "build:docs": "pnpm --filter docs build",
+    "check-translations": "node scripts/check-translations.js",
+    "prepare": "husky"
   },
   "workspaces": [
     "client",

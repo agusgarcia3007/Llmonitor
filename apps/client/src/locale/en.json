@@ -65,7 +65,13 @@
     "dontHaveAccount": "Don't have an account?",
     "switchAccount": "Switch Account",
     "passwordPlaceholder": "Enter your password",
-    "namePlaceholder": "Enter your full name"
+    "namePlaceholder": "Enter your full name",
+    "loginExistingAccount": "Login to existing account",
+    "createNewAccount": "Create new account",
+    "login": "Login",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name"
   },
   "dataTableFilter": {
     "clear": "Clear",
@@ -132,7 +138,6 @@
     "profile": "Profile",
     "billing": "Billing",
     "logout": "Logout",
-    "login": "Login",
     "register": "Register",
     "forgotPassword": "Forgot Password",
     "resetPassword": "Reset Password",
@@ -167,7 +172,8 @@
     "goHome": "Go Home",
     "goToDashboard": "Go to Dashboard",
     "back": "Back",
-    "status": "Status"
+    "status": "Status",
+    "login": "Login"
   },
   "invitations": {
     "title": "You're Invited!",
@@ -457,7 +463,11 @@
     "membersCount": "members",
     "unknownUser": "Unknown User",
     "invitationSentSuccessfully": "Invitation sent successfully!",
-    "andMoreMembers": "And {{count}} more members"
+    "andMoreMembers": "And {{count}} more members",
+    "projectDeleted": "Project deleted successfully",
+    "deleteConfirmTitle": "Delete Project",
+    "deleteConfirmDescription": "Are you sure you want to delete this project? This action cannot be undone.",
+    "deleteProject": "Delete Project"
   },
   "costAnalysis": {
     "title": "Cost Analysis",
@@ -540,5 +550,20 @@
         }
       }
     }
+  },
+  "organization": {
+    "edit": "Edit Organization",
+    "name": "Organization Name",
+    "logo_url": "Logo URL",
+    "cancel": "Cancel",
+    "save": "Save",
+    "copied": "Copied to clipboard",
+    "empty_action": "No actions available",
+    "copy_id": "Copy ID",
+    "add_project": "Add Project"
+  },
+  "logs": {
+    "title": "Logs",
+    "description": "View detailed logs of your LLM interactions"
   }
 }

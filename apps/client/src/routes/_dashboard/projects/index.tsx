@@ -59,13 +59,15 @@ function ProjectsIndexPage() {
           <>
             {organizations.map((org) => (
               <Link key={org.id} to="/projects/$id" params={{ id: org.id }}>
-                <Card className="cursor-pointer transition-all duration-200 group hover:bg-muted/50">
-                  <CardHeader className="pb-4">
+                <Card className="cursor-pointer transition-all duration-200 group hover:border-primary hover:bg-primary/10">
+                  <CardHeader className="pb-4 *:group-hover:text-primary">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <IconBriefcase className="h-5 w-5" />
                         <div>
-                          <CardTitle className="text-lg">{org.name}</CardTitle>
+                          <CardTitle className="text-lg line-clamp-1 ">
+                            {org.name}
+                          </CardTitle>
                           <CardDescription className="text-sm">
                             {org.slug || "default project"}
                           </CardDescription>

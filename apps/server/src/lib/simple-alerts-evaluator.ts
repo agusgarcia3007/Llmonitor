@@ -12,6 +12,12 @@ export class SimpleAlertsEvaluator {
   }
 
   async evaluateAlertsForAllUsers(): Promise<void> {
+    if (process.env.NODE_ENV !== "production") {
+      console.log(
+        "[AlertScheduler] Skipping alert evaluation: not in production environment"
+      );
+      return;
+    }
     console.log(`Evaluating alerts for all users`);
 
     // Get all active alert sections

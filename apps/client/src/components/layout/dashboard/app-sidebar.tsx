@@ -111,7 +111,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   src="/logo.svg"
                   alt="LLMonitor"
                   className={cn(
-                    "transition-all duration-300",
+                    "transition-all dark:invert duration-300",
                     !open ? "!size-5" : "!size-7"
                   )}
                 />

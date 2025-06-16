@@ -65,7 +65,13 @@
     "dontHaveAccount": "¿No tienes una cuenta?",
     "switchAccount": "Cambiar de Cuenta",
     "passwordPlaceholder": "Ingresa tu contraseña",
-    "namePlaceholder": "Ingresa tu nombre completo"
+    "namePlaceholder": "Ingresa tu nombre completo",
+    "loginExistingAccount": "Iniciar sesión con cuenta existente",
+    "createNewAccount": "Crear nueva cuenta",
+    "login": "Iniciar sesión",
+    "email": "Email",
+    "password": "Contraseña",
+    "name": "Nombre"
   },
   "dataTableFilter": {
     "clear": "Limpiar",
@@ -493,7 +499,11 @@
     "membersCount": "miembros",
     "unknownUser": "Usuario Desconocido",
     "invitationSentSuccessfully": "¡Invitación enviada exitosamente!",
-    "andMoreMembers": "Y {{count}} miembros más"
+    "andMoreMembers": "Y {{count}} miembros más",
+    "projectDeleted": "Proyecto eliminado exitosamente",
+    "deleteConfirmTitle": "Eliminar Proyecto",
+    "deleteConfirmDescription": "¿Estás seguro de que deseas eliminar este proyecto? Esta acción no se puede deshacer.",
+    "deleteProject": "Eliminar Proyecto"
   },
   "alertsNew": {
     "title": "Alertas",
@@ -540,5 +550,20 @@
         }
       }
     }
+  },
+  "organization": {
+    "edit": "Editar Organización",
+    "name": "Nombre de la Organización",
+    "logo_url": "URL del Logo",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "copied": "Copiado al portapapeles",
+    "empty_action": "No hay acciones disponibles",
+    "copy_id": "Copiar ID",
+    "add_project": "Añadir Proyecto"
+  },
+  "logs": {
+    "title": "Registros",
+    "description": "Ver registros detallados de tus interacciones con LLM"
   }
 }

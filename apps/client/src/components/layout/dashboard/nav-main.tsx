@@ -44,8 +44,7 @@ export function NavMain({
                       : item.title
                   }
                   className={cn(
-                    isActive &&
-                      "bg-sidebar-accent text-sidebar-accent-foreground",
+                    isActive && "bg-primary/10 text-primary font-semibold",
                     item.isComingSoon && "opacity-50 cursor-not-allowed"
                   )}
                 >
