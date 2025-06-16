@@ -11,9 +11,11 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as LandingRouteImport } from './routes/_landing/route'
 import { Route as DashboardRouteImport } from './routes/_dashboard/route'
 import { Route as AuthRouteImport } from './routes/_auth/route'
 import { Route as IndexImport } from './routes/index'
+import { Route as LandingAboutImport } from './routes/_landing/about'
 import { Route as DashboardUsersImport } from './routes/_dashboard/users'
 import { Route as DashboardProjectsImport } from './routes/_dashboard/projects'
 import { Route as DashboardLogsImport } from './routes/_dashboard/logs'
@@ -32,6 +34,11 @@ import { Route as DashboardProjectsIdImport } from './routes/_dashboard/projects
 
 // Create/Update Routes
 
+const LandingRouteRoute = LandingRouteImport.update({
+  id: '/_landing',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const DashboardRouteRoute = DashboardRouteImport.update({
   id: '/_dashboard',
   getParentRoute: () => rootRoute,
@@ -46,6 +53,12 @@ const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const LandingAboutRoute = LandingAboutImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => LandingRouteRoute,
 } as any)
 
 const DashboardUsersRoute = DashboardUsersImport.update({
@@ -163,6 +176,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRoute
     }
+    '/_landing': {
+      id: '/_landing'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof LandingRouteImport
+      parentRoute: typeof rootRoute
+    }
     '/_auth/accept-invitation': {
       id: '/_auth/accept-invitation'
       path: '/accept-invitation'
@@ -254,6 +274,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardUsersImport
       parentRoute: typeof DashboardRouteImport
     }
+    '/_landing/about': {
+      id: '/_landing/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof LandingAboutImport
+      parentRoute: typeof LandingRouteImport
+    }
     '/_dashboard/projects/$id': {
       id: '/_dashboard/projects/$id'
       path: '/$id'
@@ -332,9 +359,21 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
   DashboardRouteRouteChildren,
 )
 
+interface LandingRouteRouteChildren {
+  LandingAboutRoute: typeof LandingAboutRoute
+}
+
+const LandingRouteRouteChildren: LandingRouteRouteChildren = {
+  LandingAboutRoute: LandingAboutRoute,
+}
+
+const LandingRouteRouteWithChildren = LandingRouteRoute._addFileChildren(
+  LandingRouteRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '': typeof DashboardRouteRouteWithChildren
+  '': typeof LandingRouteRouteWithChildren
   '/accept-invitation': typeof AuthAcceptInvitationRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
@@ -348,13 +387,14 @@ export interface FileRoutesByFullPath {
   '/logs': typeof DashboardLogsRoute
   '/projects': typeof DashboardProjectsRouteWithChildren
   '/users': typeof DashboardUsersRoute
+  '/about': typeof LandingAboutRoute
   '/projects/$id': typeof DashboardProjectsIdRoute
   '/projects/': typeof DashboardProjectsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '': typeof DashboardRouteRouteWithChildren
+  '': typeof LandingRouteRouteWithChildren
   '/accept-invitation': typeof AuthAcceptInvitationRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
@@ -367,6 +407,7 @@ export interface FileRoutesByTo {
   '/experiments': typeof DashboardExperimentsRoute
   '/logs': typeof DashboardLogsRoute
   '/users': typeof DashboardUsersRoute
+  '/about': typeof LandingAboutRoute
   '/projects/$id': typeof DashboardProjectsIdRoute
   '/projects': typeof DashboardProjectsIndexRoute
 }
@@ -376,6 +417,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_dashboard': typeof DashboardRouteRouteWithChildren
+  '/_landing': typeof LandingRouteRouteWithChildren
   '/_auth/accept-invitation': typeof AuthAcceptInvitationRoute
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
@@ -389,6 +431,7 @@ export interface FileRoutesById {
   '/_dashboard/logs': typeof DashboardLogsRoute
   '/_dashboard/projects': typeof DashboardProjectsRouteWithChildren
   '/_dashboard/users': typeof DashboardUsersRoute
+  '/_landing/about': typeof LandingAboutRoute
   '/_dashboard/projects/$id': typeof DashboardProjectsIdRoute
   '/_dashboard/projects/': typeof DashboardProjectsIndexRoute
 }
@@ -411,6 +454,7 @@ export interface FileRouteTypes {
     | '/logs'
     | '/projects'
     | '/users'
+    | '/about'
     | '/projects/$id'
     | '/projects/'
   fileRoutesByTo: FileRoutesByTo
@@ -429,6 +473,7 @@ export interface FileRouteTypes {
     | '/experiments'
     | '/logs'
     | '/users'
+    | '/about'
     | '/projects/$id'
     | '/projects'
   id:
@@ -436,6 +481,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_auth'
     | '/_dashboard'
+    | '/_landing'
     | '/_auth/accept-invitation'
     | '/_auth/forgot-password'
     | '/_auth/login'
@@ -449,6 +495,7 @@ export interface FileRouteTypes {
     | '/_dashboard/logs'
     | '/_dashboard/projects'
     | '/_dashboard/users'
+    | '/_landing/about'
     | '/_dashboard/projects/$id'
     | '/_dashboard/projects/'
   fileRoutesById: FileRoutesById
@@ -458,12 +505,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
+  LandingRouteRoute: typeof LandingRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
+  LandingRouteRoute: LandingRouteRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -478,7 +527,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/_auth",
-        "/_dashboard"
+        "/_dashboard",
+        "/_landing"
       ]
     },
     "/": {
@@ -505,6 +555,12 @@ export const routeTree = rootRoute
         "/_dashboard/logs",
         "/_dashboard/projects",
         "/_dashboard/users"
+      ]
+    },
+    "/_landing": {
+      "filePath": "_landing/route.tsx",
+      "children": [
+        "/_landing/about"
       ]
     },
     "/_auth/accept-invitation": {
@@ -562,6 +618,10 @@ export const routeTree = rootRoute
     "/_dashboard/users": {
       "filePath": "_dashboard/users.tsx",
       "parent": "/_dashboard"
+    },
+    "/_landing/about": {
+      "filePath": "_landing/about.tsx",
+      "parent": "/_landing"
     },
     "/_dashboard/projects/$id": {
       "filePath": "_dashboard/projects/$id.tsx",

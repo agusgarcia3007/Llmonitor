@@ -1,29 +1,24 @@
-import { Waitlist } from "@/components/landing/waitlist";
 import { HeroSection } from "@/components/landing/hero-section";
+import { Pricing } from "@/components/landing/pricing";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { SmoothCursor } from "@/components/ui/smooth-cursor";
 import {
   IconApi,
   IconArrowsShuffle,
   IconBell,
   IconBrandFramer,
   IconBrandVscode,
-  IconBulb,
   IconCoin,
   IconFlask,
   IconLock,
   IconRobot,
-  IconRocket,
   IconSearch,
-  IconTool,
-  IconUsers,
 } from "@tabler/icons-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { Pricing } from "@/components/landing/pricing";
-import { SmoothCursor } from "@/components/ui/smooth-cursor";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -88,12 +83,11 @@ function FeatureCard({
 function Index() {
   const { t } = useTranslation();
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background  to-background/95 flex flex-col justify-start">
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/95 flex flex-col justify-start">
       <HeroSection />
 
       <div className="max-w-5xl mx-auto px-4 pt-10 md:pt-20 flex flex-col gap-12 items-center w-full">
         <Separator className="bg-border/50" />
-
         <section className="flex flex-col gap-14">
           <div className="text-center">
             <motion.div
@@ -156,9 +150,7 @@ function Index() {
             />
           </motion.div>
         </section>
-
         <Separator className="bg-border/50" />
-
         <section className="flex flex-col gap-14">
           <div className="text-center">
             <motion.div
@@ -250,18 +242,16 @@ function Index() {
                   />
                 </div>
                 <p className="font-medium mb-2">
-                  {t("landing.developers.frameworks")}
+                  {t("landing.developers.framework")}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {t("landing.developers.frameworksDesc")}
+                  {t("landing.developers.frameworkDesc")}
                 </p>
               </Card>
             </motion.div>
           </motion.div>
         </section>
-
         <Separator className="bg-border/50" />
-
         <section className="flex flex-col gap-14">
           <div className="text-center">
             <motion.div
@@ -272,139 +262,21 @@ function Index() {
             >
               <Badge
                 variant="outline"
-                className="bg-primary/5 text-primary/90 px-3 py-1 rounded-full text-xs font-medium"
+                className="bg-accent/30 text-accent-foreground px-3 py-1 rounded-full text-xs font-medium"
               >
-                {t("landing.audience.badge")}
+                {t("landing.pricing.badge")}
               </Badge>
               <h2 className="text-2xl md:text-3xl font-bold mt-3 mb-2">
-                {t("landing.audience.title")}
+                {t("landing.pricing.title")}
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                {t("landing.ecosystem")}
+                {t("landing.pricing.subtitle")}
               </p>
             </motion.div>
           </div>
 
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 gap-6"
-            variants={container}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-          >
-            <motion.div variants={item}>
-              <Card className="p-6 border border-border/50 bg-card/30 backdrop-blur-sm hover:border-primary/20 transition-all duration-300 h-full hover:shadow-lg group">
-                <div className="flex gap-4 items-start mb-4">
-                  <div className="p-3 bg-primary/10 rounded-lg text-primary group-hover:bg-primary/15 transition-colors">
-                    <IconUsers stroke={1.5} />
-                  </div>
-                  <div>
-                    <p className="font-medium text-lg mb-1 group-hover:text-primary/90 transition-colors">
-                      {t("landing.audience.teams")}
-                    </p>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {t("landing.audience.teamsDesc")}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-            <motion.div variants={item}>
-              <Card className="p-6 border border-border/50 bg-card/30 backdrop-blur-sm hover:border-primary/20 transition-all duration-300 h-full hover:shadow-lg group">
-                <div className="flex gap-4 items-start mb-4">
-                  <div className="p-3 bg-primary/10 rounded-lg text-primary group-hover:bg-primary/15 transition-colors">
-                    <IconRocket stroke={1.5} />
-                  </div>
-                  <div>
-                    <p className="font-medium text-lg mb-1 group-hover:text-primary/90 transition-colors">
-                      {t("landing.audience.startups")}
-                    </p>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {t("landing.audience.startupsDesc")}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-            <motion.div variants={item}>
-              <Card className="p-6 border border-border/50 bg-card/30 backdrop-blur-sm hover:border-primary/20 transition-all duration-300 h-full hover:shadow-lg group">
-                <div className="flex gap-4 items-start mb-4">
-                  <div className="p-3 bg-primary/10 rounded-lg text-primary group-hover:bg-primary/15 transition-colors">
-                    <IconTool stroke={1.5} />
-                  </div>
-                  <div>
-                    <p className="font-medium text-lg mb-1 group-hover:text-primary/90 transition-colors">
-                      {t("landing.audience.builders")}
-                    </p>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {t("landing.audience.buildersDesc")}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-            <motion.div variants={item}>
-              <Card className="p-6 border border-border/50 bg-card/30 backdrop-blur-sm hover:border-primary/20 transition-all duration-300 h-full hover:shadow-lg group">
-                <div className="flex gap-4 items-start mb-4">
-                  <div className="p-3 bg-primary/10 rounded-lg text-primary group-hover:bg-primary/15 transition-colors">
-                    <IconBulb stroke={1.5} />
-                  </div>
-                  <div>
-                    <p className="font-medium text-lg mb-1 group-hover:text-primary/90 transition-colors">
-                      {t("landing.audience.anyone")}
-                    </p>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {t("landing.audience.anyoneDesc")}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          </motion.div>
+          <Pricing />
         </section>
-
-        <Separator className="bg-border/50" />
-
-        <Pricing />
-
-        <motion.section
-          className="flex flex-col items-center gap-8 text-center bg-gradient-to-b from-card/80 to-card/30 backdrop-blur-sm p-10 rounded-xl border border-border/50 shadow-lg relative overflow-hidden"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.6 }}
-            transition={{ duration: 1.5 }}
-          />
-
-          <div>
-            <Badge
-              variant="default"
-              className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium mb-4"
-            >
-              {t("landing.waitlist.badge")}
-            </Badge>
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">
-              {t("landing.waitlist.title")}
-            </h2>
-            <p className="text-muted-foreground mt-2 max-w-lg mx-auto mb-6">
-              {t("landing.waitlist.subtitle")}
-            </p>
-          </div>
-
-          <div className="w-full">
-            <Waitlist />
-          </div>
-        </motion.section>
-
-        <footer className="text-center text-sm text-muted-foreground pt-4">
-          <p>
-            {t("landing.footer.copyright", { year: new Date().getFullYear() })}
-          </p>
-        </footer>
       </div>
       <SmoothCursor />
     </div>

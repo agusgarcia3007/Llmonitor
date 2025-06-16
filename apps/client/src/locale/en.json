@@ -249,6 +249,12 @@
       "highlight": "Clear Insights",
       "suffix": "for Your AI Models"
     },
+    "header": {
+      "dashboard": "Dashboard",
+      "login": "Login",
+      "signUp": "Sign Up",
+      "getStarted": "Get Started"
+    },
     "subtitle": "Comprehensive tools to understand, optimize, and troubleshoot your LLM interactions",
     "ecosystem": "Integrated across the AI ecosystem: OpenAI, Claude, Gemini, Mistral, open-source models & more",
     "eventsAndCounting": "monitored events and counting",
@@ -294,7 +300,9 @@
       "integrationDesc": "Just one line of code to start getting insights",
       "apiDesc": "Designed with developer experience in mind",
       "noLockInDesc": "Freedom to switch models and providers anytime",
-      "frameworksDesc": "Seamless integration with your existing stack"
+      "frameworksDesc": "Seamless integration with your existing stack",
+      "framework": "Framework Agnostic",
+      "frameworkDesc": "Works with any JavaScript framework or runtime environment"
     },
 
     "audience": {
@@ -364,6 +372,45 @@
         "feature6": "Up to 5 year data retention",
         "feature7": "Dedicated support & SLA available",
         "cta": "Contact Us"
+      },
+      "badge": "Pricing",
+      "title": "Simple, Transparent Pricing",
+      "subtitle": "Choose the plan that's right for you"
+    },
+    "about": {
+      "badge": "About Us",
+      "title": "LLMonitor",
+      "subtitle": "Model-agnostic LLM Observability & Cost Intelligence",
+      "description1": "LLMonitor gives AI builders a single pane of glass to see how every prompt behaves, how much it costs, and when it breaks—across any model provider (OpenAI, Anthropic, Google, etc.).",
+      "description2": "Replace home-grown logs, scattered dashboards and blind-spot debugging with an actionable, dev-friendly analytics layer that pays for itself by cutting token spend and downtime.",
+      "mission": {
+        "title": "Our Mission",
+        "description": "We're building the essential observability layer for AI applications, helping developers build more reliable, cost-effective, and performant AI systems."
+      },
+      "features": {
+        "title": "Key Features",
+        "dashboard": {
+          "title": "Centralized Dashboard",
+          "description": "Prompt and completion analytics across all providers in one place."
+        },
+        "cost": {
+          "title": "Cost Intelligence",
+          "description": "Real-time spend tracking with automated cost calculation."
+        },
+        "providers": {
+          "title": "Multi-provider Support",
+          "description": "OpenAI, Anthropic, Google, Cohere, and custom providers."
+        },
+        "developer": {
+          "title": "Developer-friendly",
+          "description": "One-line SDK integration with TypeScript support."
+        }
+      },
+      "getStarted": {
+        "title": "Get Started",
+        "description": "Join thousands of developers who are building better AI applications with LLMonitor.",
+        "cta1": "Get Started for Free",
+        "cta2": "Read Documentation"
       }
     }
   },

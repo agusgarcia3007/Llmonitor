@@ -1,13 +1,14 @@
-import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import React from "react";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
+import { t } from "i18next";
+import { Menu, X } from "lucide-react";
+import React from "react";
 
 const menuItems = [
   { name: "Features", href: "#link" },
   { name: "Pricing", href: "#link" },
-  { name: "About", href: "#link" },
+  { name: "About", href: "/about" },
 ];
 
 function isAuthenticated() {
@@ -101,7 +102,7 @@ export const HeroHeader = () => {
                 {isAuthenticated() ? (
                   <Button asChild size="sm">
                     <Link to="/dashboard">
-                      <span>Dashboard</span>
+                      <span>{t("landing.header.dashboard")}</span>
                     </Link>
                   </Button>
                 ) : (
@@ -113,7 +114,7 @@ export const HeroHeader = () => {
                       className={cn(isScrolled && "lg:hidden")}
                     >
                       <Link to="/login">
-                        <span>Login</span>
+                        <span>{t("landing.header.login")}</span>
                       </Link>
                     </Button>
                     <Button
@@ -122,7 +123,7 @@ export const HeroHeader = () => {
                       className={cn(isScrolled && "lg:hidden")}
                     >
                       <Link to="/signup">
-                        <span>Sign Up</span>
+                        <span>{t("landing.header.signUp")}</span>
                       </Link>
                     </Button>
                     <Button
@@ -131,7 +132,7 @@ export const HeroHeader = () => {
                       className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
                     >
                       <Link to="/signup">
-                        <span>Get Started</span>
+                        <span>{t("landing.header.getStarted")}</span>
                       </Link>
                     </Button>
                   </>

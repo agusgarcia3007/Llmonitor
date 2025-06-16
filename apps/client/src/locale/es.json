@@ -249,6 +249,12 @@
       "highlight": "Perspectivas Claras",
       "suffix": "para tus Modelos de IA"
     },
+    "header": {
+      "dashboard": "Panel",
+      "login": "Iniciar Sesión",
+      "signUp": "Registrarse",
+      "getStarted": "Comenzar"
+    },
     "subtitle": "Herramientas completas para entender, optimizar y depurar tus interacciones con LLM",
     "ecosystem": "Integrado en todo el ecosistema de IA: OpenAI, Claude, Gemini, Mistral, modelos open-source y más",
     "eventsAndCounting": "eventos monitorizados y contando",
@@ -290,17 +296,19 @@
     },
 
     "developers": {
-      "badge": "Diseñado para Desarrolladores",
-      "title": "Integración sin esfuerzo, insights completos",
-      "integration": "Integración SDK en una sola línea",
-      "api": "API intuitiva para registros",
-      "noLockIn": "Arquitectura agnóstica de proveedores",
+      "badge": "Desarrolladores",
+      "title": "Construido por Desarrolladores",
+      "subtitle": "Diseñado para integrarse en tu flujo de trabajo",
+      "integration": "Integración Simple",
+      "integrationDesc": "Solo una línea de código para empezar",
+      "api": "API Robusta",
+      "apiDesc": "Diseñada pensando en la experiencia del desarrollador",
+      "noLockIn": "Sin Ataduras",
+      "noLockInDesc": "Libertad para cambiar modelos y proveedores en cualquier momento",
+      "frameworksDesc": "Integración perfecta con tu stack existente",
       "frameworks": "Soporte nativo para LangChain, LlamaIndex y APIs directas",
-      "subtitle": "Hecho por desarrolladores, para desarrolladores — integración mínima, máximo insight",
-      "integrationDesc": "Solo una línea de código para empezar a obtener insights",
-      "apiDesc": "Pensado para la mejor experiencia de desarrollo",
-      "noLockInDesc": "Libertad para cambiar de modelo y proveedor cuando quieras",
-      "frameworksDesc": "Integración perfecta con tu stack existente"
+      "framework": "Compatible con Frameworks",
+      "frameworkDesc": "Funciona con cualquier framework de JavaScript o entorno de ejecución"
     },
 
     "audience": {
@@ -327,6 +335,9 @@
     },
 
     "pricing": {
+      "badge": "Precios",
+      "title": "Precios Simples y Transparentes",
+      "subtitle": "Elige el plan que mejor se adapte a ti",
       "hobby": {
         "title": "Hobby",
         "price": "$0 / mes",
@@ -364,6 +375,43 @@
         "feature6": "Hasta 5 años de retención de datos",
         "feature7": "Soporte dedicado y SLA disponible",
         "cta": "Contáctanos"
+      }
+    },
+
+    "about": {
+      "badge": "Sobre Nosotros",
+      "title": "LLMonitor",
+      "subtitle": "Observabilidad de LLM independiente del modelo y análisis de costos",
+      "description1": "LLMonitor ofrece a los desarrolladores de IA una única interfaz para ver cómo se comporta cada prompt, cuánto cuesta y cuándo falla, en cualquier proveedor de modelos (OpenAI, Anthropic, Google, etc.).",
+      "description2": "Reemplaza los registros caseros, dashboards dispersos y depuración a ciegas con una capa de análisis accionable y amigable para desarrolladores que se paga sola al reducir el gasto en tokens y el tiempo de inactividad.",
+      "mission": {
+        "title": "Nuestra Misión",
+        "description": "Estamos construyendo la capa esencial de observabilidad para aplicaciones de IA, ayudando a los desarrolladores a crear sistemas de IA más confiables, rentables y eficientes."
+      },
+      "features": {
+        "title": "Características Principales",
+        "dashboard": {
+          "title": "Panel Centralizado",
+          "description": "Análisis de prompts y respuestas en todos los proveedores en un solo lugar."
+        },
+        "cost": {
+          "title": "Análisis de Costos",
+          "description": "Seguimiento de gastos en tiempo real con cálculo automático de costos."
+        },
+        "providers": {
+          "title": "Soporte Multi-proveedor",
+          "description": "OpenAI, Anthropic, Google, Cohere y proveedores personalizados."
+        },
+        "developer": {
+          "title": "Amigable para Desarrolladores",
+          "description": "Integración en una línea con soporte para TypeScript."
+        }
+      },
+      "getStarted": {
+        "title": "Comenzar",
+        "description": "Únete a miles de desarrolladores que están construyendo mejores aplicaciones de IA con LLMonitor.",
+        "cta1": "Comenzar Gratis",
+        "cta2": "Leer Documentación"
       }
     }
   },

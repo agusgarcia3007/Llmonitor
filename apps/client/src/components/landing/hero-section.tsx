@@ -1,11 +1,12 @@
-import { HeroHeader } from "./header";
-import { Waitlist } from "./waitlist";
-import { Sparkle } from "lucide-react";
+import { formatCompactNumber } from "@/lib/utils";
+import { useGlobalStatsQuery } from "@/services/analytics/query";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { Sparkle } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useGlobalStatsQuery } from "@/services/analytics/query";
-import { formatCompactNumber } from "@/lib/utils";
+import HeroVideoDialog from "../magicui/hero-video-dialog";
+import { HeroHeader } from "./header";
+import { ShineBorder } from "../magicui/shine-border";
 
 export function HeroSection() {
   const { t } = useTranslation();
@@ -81,34 +82,31 @@ export function HeroSection() {
                     </div>
                   </motion.div>
                 ) : null}
-
-                <motion.div
-                  className="flex flex-col items-center gap-3 justify-center"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.4 }}
-                >
-                  <div className="w-full max-w-xs">
-                    <Waitlist />
-                  </div>
-                </motion.div>
               </motion.div>
             </div>
             <div className="relative">
               <div className="relative z-10 mx-auto max-w-5xl px-6">
                 <motion.div
-                  className="mt-12 md:mt-16"
+                  className="mt-12 md:mt-16 relative rounded-lg"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.6 }}
                 >
-                  <div className="bg-background rounded-(--radius) relative mx-auto overflow-hidden border border-transparent shadow-lg shadow-black/10 ring-1 ring-black/10">
-                    <img
-                      src="/dashboard.png"
-                      alt="LLMonitor Dashboard"
-                      className="w-full h-auto"
-                    />
-                  </div>
+                  <ShineBorder shineColor={"var(--color-primary)"} />
+                  <HeroVideoDialog
+                    className="block dark:hidden rounded-xl"
+                    animationStyle="from-center"
+                    videoSrc="https://www.youtube.com/embed/qh3NGpYRG3I?si=4rb-zSdDkVK9qxxb"
+                    thumbnailSrc="https://startup-template-sage.vercel.app/hero-light.png"
+                    thumbnailAlt="Hero Video"
+                  />
+                  <HeroVideoDialog
+                    className="hidden dark:block"
+                    animationStyle="from-center"
+                    videoSrc="https://www.youtube.com/embed/qh3NGpYRG3I?si=4rb-zSdDkVK9qxxb"
+                    thumbnailSrc="https://startup-template-sage.vercel.app/hero-dark.png"
+                    thumbnailAlt="Hero Video"
+                  />
                 </motion.div>
               </div>
             </div>
