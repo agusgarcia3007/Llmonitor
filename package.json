@@ -16,12 +16,15 @@
     "build:server": "pnpm --filter server build",
     "build:docs": "pnpm --filter docs build",
     "check-translations": "node scripts/check-translations.js",
-    "prepare": "husky"
+    "prepare": "npx husky"
   },
   "workspaces": [
     "client",
     "server",
     "sdk",
     "docs"
-  ]
+  ],
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
 }
