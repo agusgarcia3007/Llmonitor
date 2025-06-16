@@ -82,10 +82,11 @@ export function VideoText({
   textAnchor = "middle",
   dominantBaseline = "middle",
   fontFamily = "sans-serif",
-  as: Component = "div",
+  as,
 }: VideoTextProps) {
   const [svgMask, setSvgMask] = useState("");
   const content = React.Children.toArray(children).join("");
+  const Component = as || "div";
 
   useEffect(() => {
     const updateSvgMask = () => {
@@ -105,7 +106,7 @@ export function VideoText({
   )}")`;
 
   return (
-    <Component className={cn(`relative size-full`, className)}>
+    <Component className={cn("relative size-full", className)}>
       {/* Create a container that masks the video to only show within text */}
       <div
         className="absolute inset-0 flex items-center justify-center"
