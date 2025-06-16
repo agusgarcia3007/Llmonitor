@@ -2,7 +2,6 @@ import { Context } from "hono";
 import { LogLlmEventSchema } from "../schemas/llm-events";
 import { db } from "@/db";
 import { llm_event, type LLMEventMetadata } from "@/db/schema";
-import { apikey, member } from "@/db/schema";
 import {
   parseQueryParams,
   createSortHelpers,
@@ -12,6 +11,7 @@ import {
 import { desc, asc, eq, count, and, sql } from "drizzle-orm";
 import { SORT_ORDER } from "@/lib/endpoint-builder";
 import { calculateCost } from "@/lib/cost-calculator";
+import { resolveOrganizationId } from "@/lib/resolve-organization";
 import { getActiveOrganization } from "@/lib/utils";
 
 const SORTABLE_FIELDS = [
@@ -35,46 +35,37 @@ export const logEvent = async (c: Context) => {
   const data = LogLlmEventSchema.parse(body);
   const apiKey = c.req.header("x-api-key");
 
-  let organizationId =
-    body.projectId || body.organizationId || session?.organizationId;
-
-  if (!organizationId && apiKey) {
-    const keyRecord = await db
-      .select()
-      .from(apikey)
-      .where(eq(apikey.key, apiKey))
-      .limit(1);
-
-    if (keyRecord.length) {
-      const userId = keyRecord[0].userId;
-
-      const org = await getActiveOrganization(userId);
-      organizationId = org?.id;
-    }
-  }
+  const organizationId = await resolveOrganizationId(
+    { projectId: body.projectId, organizationId: body.organizationId },
+    session,
+    getActiveOrganization
+  );
 
   if (!organizationId) {
+    console.warn(
+      "[logEvent] Missing projectId and unable to resolve default organization"
+    );
     return c.json(
       {
         success: false,
-        message: "No organization found for this user",
+        message: "projectId (organizationId) is required",
       },
-      400
+      200
     );
   }
 
-  if (session && session.userId && organizationId) {
-    const memberRow = await db
+  if (session && session.userId) {
+    const member = await db
       .select()
-      .from(member)
+      .from(require("@/db/schema").member)
       .where(
         and(
-          eq(member.userId, session.userId),
-          eq(member.organizationId, organizationId)
+          eq(require("@/db/schema").member.userId, session.userId),
+          eq(require("@/db/schema").member.organizationId, organizationId)
         )
       );
 
-    if (!memberRow.length) {
+    if (!member.length) {
       return c.json(
         {
           success: false,
