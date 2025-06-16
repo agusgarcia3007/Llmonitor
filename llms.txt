@@ -1,0 +1,95 @@
+# LLMonitor - LLM Observability & Cost Intelligence
+
+## Overview
+LLMonitor is an observability and cost analysis platform for applications using Large Language Models (LLMs). It provides a centralized dashboard to monitor performance, cost, and behavior of LLM interactions across different providers such as OpenAI, Anthropic, Google, Cohere, and DeepSeek.
+
+## Architecture
+- **Monorepo** with apps and packages structure
+- **SDK** for client application integration
+- **Server** for data processing and storage
+- **Web client** for data visualization
+- **Documentation** to guide users
+
+## Supported LLM Providers
+- OpenAI (GPT-3.5, GPT-4, GPT-4o, etc.)
+- Anthropic (Claude)
+- Google (Gemini)
+- Cohere
+- DeepSeek
+
+## Key Features
+
+### LLM Event Logging
+- Capture of complete metadata for each LLM interaction
+- Storage of prompts, completions, token usage, and costs
+- Tracking of latency and response status
+
+### Cost Calculation
+- Automatic cost estimation based on models and tokens
+- Support for different pricing structures by provider
+- Real-time expense visibility
+
+### Performance Analysis
+- Latency and token usage metrics
+- Success and error rates
+- Anomaly detection and alerts
+
+### A/B Testing
+- Version tagging to compare prompt variants
+- Comparative analysis of performance and costs
+
+### Simple Integration
+- Wrappers for existing LLM API clients
+- Middleware for Express
+- Minimal configuration required
+
+## Technical Integration
+
+### SDK
+The SDK provides wrappers for API clients from different LLM providers:
+
+```typescript
+// Example of OpenAI integration
+import OpenAI from "openai";
+import { LLMonitor } from "@llmonitor/sdk";
+
+const openai = new OpenAI({ apiKey: "your-openai-key" });
+const monitor = new LLMonitor({ apiKey: "your-llmonitor-key" });
+const monitoredOpenAI = monitor.openai(openai);
+
+// Use exactly like the normal OpenAI client
+const response = await monitoredOpenAI.chat.completions.create({
+  model: "gpt-4",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+```
+
+### Data Structure
+Each LLM event records:
+- Provider and model used
+- Configuration (temperature, max_tokens, etc.)
+- Complete prompt and completion
+- Token count (prompt and completion)
+- Latency in milliseconds
+- Response status
+- Estimated cost in USD
+- Additional customizable metadata
+
+### Data Flow
+1. The client application makes a call to an LLM through the SDK wrapper
+2. The wrapper intercepts the call, processes it normally, and captures all metadata
+3. Data is sent to the LLMonitor server
+4. The server processes, enriches, and stores the data
+5. Data can be visualized in the web dashboard
+
+## Security and Privacy
+- API key-based authentication
+- Support for organizations and roles (RBAC)
+- Data encryption in transit (TLS) and at rest
+
+## Use Cases
+- LLM cost optimization
+- Performance issue detection
+- Comparison of different models and providers
+- Experimentation with different prompting strategies
+- Usage and budget monitoring 

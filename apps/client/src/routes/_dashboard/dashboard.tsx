@@ -7,7 +7,6 @@ import {
   IconAlertTriangle,
 } from "@tabler/icons-react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Area, AreaChart, XAxis, CartesianGrid } from "recharts";
 
@@ -41,6 +40,11 @@ import { formatCompactNumber } from "@/lib/utils";
 
 export const Route = createFileRoute("/_dashboard/dashboard")({
   component: Dashboard,
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      period: search.period ? String(search.period) : "1",
+    };
+  },
 });
 
 const chartConfig = {
@@ -52,7 +56,10 @@ const chartConfig = {
 
 export function Dashboard() {
   const { t } = useTranslation();
-  const [days, setDays] = useState(1);
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+
+  const days = parseInt(search.period);
   const { data: stats, isLoading } = useDashboardStatsQuery(days);
 
   const overview = stats?.overview || {
@@ -60,6 +67,14 @@ export function Dashboard() {
     totalCost: 0,
     avgLatency: 0,
     errorRate: 0,
+  };
+
+  const handlePeriodChange = (value: string) => {
+    navigate({
+      search: {
+        period: value,
+      },
+    });
   };
 
   const getSelectLabel = (value: number) => {
@@ -102,10 +117,7 @@ export function Dashboard() {
     <div className="space-y-6 py-4 px-4 lg:px-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">{t("landing.dashboard.title")}</h1>
-        <Select
-          value={days.toString()}
-          onValueChange={(value) => setDays(parseInt(value))}
-        >
+        <Select value={search.period} onValueChange={handlePeriodChange}>
           <SelectTrigger className="w-40">
             <SelectValue />
           </SelectTrigger>
