@@ -48,7 +48,7 @@ function Login({ className, ...props }: React.ComponentProps<"form">) {
     setGithubLoading(true);
     await authClient.signIn.social({
       provider: "github",
-      callbackURL: "/dashboard",
+      callbackURL: "https://llmonitor.io/dashboard",
     });
     setGithubLoading(false);
   }
