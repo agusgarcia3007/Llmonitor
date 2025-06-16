@@ -9,10 +9,12 @@ import {
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-import { PeriodSwitch } from "./period-switch";
+import { PeriodSwitch, type BillingPeriod } from "./period-switch";
+import { useState } from "react";
 
 export function Pricing() {
   const { t } = useTranslation();
+  const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
 
   const hobbyFeatures = [
     t("landing.pricing.hobby.feature1"),
@@ -42,9 +44,19 @@ export function Pricing() {
     t("landing.pricing.enterprise.feature7"),
   ];
 
+  const formatPrice = (price: string) => {
+    if (price.includes("$")) {
+      const numericPart = parseFloat(price.replace("$", ""));
+      if (!isNaN(numericPart) && billingPeriod === "yearly") {
+        return `$${numericPart * 10} / year`;
+      }
+    }
+    return billingPeriod === "yearly" ? price.replace("/ mo", "/ year") : price;
+  };
+
   return (
     <div className="flex flex-col gap-y-2">
-      <PeriodSwitch />
+      <PeriodSwitch onPeriodChange={setBillingPeriod} />
       <div className="mt-8 grid gap-6 md:mt-20 md:grid-cols-3 container mx-auto">
         <Card>
           <CardHeader>
@@ -53,7 +65,7 @@ export function Pricing() {
             </CardTitle>
 
             <span className="my-3 block text-2xl font-semibold">
-              {t("landing.pricing.hobby.price")}
+              {formatPrice(t("landing.pricing.hobby.price"))}
             </span>
 
             <CardDescription className="text-sm">
@@ -89,7 +101,7 @@ export function Pricing() {
             </CardTitle>
 
             <span className="my-3 block text-2xl font-semibold">
-              {t("landing.pricing.pro.price")}
+              {formatPrice(t("landing.pricing.pro.price"))}
             </span>
 
             <CardDescription className="text-sm">
@@ -122,7 +134,7 @@ export function Pricing() {
             </CardTitle>
 
             <span className="my-3 block text-2xl font-semibold">
-              {t("landing.pricing.enterprise.price")}
+              {formatPrice(t("landing.pricing.enterprise.price"))}
             </span>
 
             <CardDescription className="text-sm">
