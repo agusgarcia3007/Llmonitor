@@ -7,10 +7,12 @@ import HeroVideoDialog from "../magicui/hero-video-dialog";
 import { NumberTicker } from "../magicui/number-ticker";
 import { ShineBorder } from "../magicui/shine-border";
 import { HeroHeader } from "./header";
+import { useTheme } from "../layout/theme-provider";
 
 export function HeroSection() {
   const { t } = useTranslation();
   const { data: globalStats } = useGlobalStatsQuery();
+  const { theme } = useTheme();
 
   return (
     <>
@@ -98,17 +100,14 @@ export function HeroSection() {
                 >
                   <ShineBorder shineColor={"var(--color-primary)"} />
                   <HeroVideoDialog
-                    className="block dark:hidden rounded-xl"
-                    animationStyle="from-center"
-                    videoSrc="https://www.youtube.com/embed/qh3NGpYRG3I?si=4rb-zSdDkVK9qxxb"
-                    thumbnailSrc="https://startup-template-sage.vercel.app/hero-light.png"
-                    thumbnailAlt="Hero Video"
-                  />
-                  <HeroVideoDialog
-                    className="hidden dark:block"
-                    animationStyle="from-center"
-                    videoSrc="https://www.youtube.com/embed/qh3NGpYRG3I?si=4rb-zSdDkVK9qxxb"
-                    thumbnailSrc="https://startup-template-sage.vercel.app/hero-dark.png"
+                    className="block rounded-xl"
+                    animationStyle="from-bottom"
+                    videoSrc="https://www.youtube.com/embed/HdWpsnDOpKk?si=4rb-zSdDkVK9qxxb"
+                    thumbnailSrc={
+                      theme === "dark"
+                        ? "/dashboard-dark.png"
+                        : "/dashboard-light.png"
+                    }
                     thumbnailAlt="Hero Video"
                   />
                 </motion.div>
