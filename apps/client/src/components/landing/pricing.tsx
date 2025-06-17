@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { PeriodSwitch, type BillingPeriod } from "./period-switch";
 import { useState } from "react";
+import { NumberTicker } from "../magicui/number-ticker";
 
 export function Pricing() {
   const { t } = useTranslation();
@@ -44,15 +45,12 @@ export function Pricing() {
     t("landing.pricing.enterprise.feature7"),
   ];
 
-  const formatPrice = (price: string) => {
-    if (price.includes("$")) {
-      const numericPart = parseFloat(price.replace("$", ""));
-      if (!isNaN(numericPart) && billingPeriod === "yearly") {
-        return `$${numericPart * 10} / year`;
-      }
-    }
-    return billingPeriod === "yearly" ? price.replace("/ mo", "/ year") : price;
-  };
+  // Obtener los valores numéricos de los precios
+  const hobbyPrice = 0;
+  const proPrice = 20;
+
+  // Calcular los precios según el período de facturación
+  const currentProPrice = billingPeriod === "yearly" ? proPrice * 10 : proPrice;
 
   return (
     <div className="flex flex-col gap-y-2">
@@ -65,7 +63,7 @@ export function Pricing() {
             </CardTitle>
 
             <span className="my-3 block text-2xl font-semibold">
-              {formatPrice(t("landing.pricing.hobby.price"))}
+              ${hobbyPrice} / {billingPeriod === "yearly" ? "year" : "mo"}
             </span>
 
             <CardDescription className="text-sm">
@@ -91,7 +89,7 @@ export function Pricing() {
         </Card>
 
         <Card className="relative">
-          <span className="bg-linear-to-br/increasing absolute inset-x-0 -top-3 mx-auto flex h-6 w-fit items-center rounded-full from-purple-400 to-amber-300 px-3 py-1 text-xs font-medium text-amber-950 ring-1 ring-inset ring-white/20 ring-offset-1 ring-offset-gray-950/5">
+          <span className="bg-primary absolute inset-x-0 -top-3 mx-auto flex h-6 w-fit items-center rounded-full px-3 py-1 text-xs font-medium text-white ring-1 ring-inset ring-white/20 ring-offset-1 ring-offset-gray-950/5">
             {t("landing.pricing.pro.popular")}
           </span>
 
@@ -101,7 +99,13 @@ export function Pricing() {
             </CardTitle>
 
             <span className="my-3 block text-2xl font-semibold">
-              {formatPrice(t("landing.pricing.pro.price"))}
+              $
+              <NumberTicker
+                value={currentProPrice}
+                startValue={currentProPrice / 2}
+                className="text-2xl font-semibold"
+              />{" "}
+              / {billingPeriod === "yearly" ? "year" : "mo"}
             </span>
 
             <CardDescription className="text-sm">
@@ -134,7 +138,7 @@ export function Pricing() {
             </CardTitle>
 
             <span className="my-3 block text-2xl font-semibold">
-              {formatPrice(t("landing.pricing.enterprise.price"))}
+              {t("landing.pricing.enterprise.price")}
             </span>
 
             <CardDescription className="text-sm">

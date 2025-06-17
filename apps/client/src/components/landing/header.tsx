@@ -139,6 +139,7 @@ export const HeroHeader = () => {
                         <span>{t("landing.header.getStarted")}</span>
                       </Link>
                     </Button>
+                    <ThemeSwitch />
                   </>
                 )}
               </div>

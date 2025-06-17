@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 
@@ -12,6 +12,13 @@ export function PeriodSwitch({ onPeriodChange }: PeriodSwitchProps) {
   const id = useId();
   const [selectedValue, setSelectedValue] = useState("off");
   const { t } = useTranslation();
+
+  useEffect(() => {
+    // Llamar al callback con el valor inicial
+    if (onPeriodChange) {
+      onPeriodChange("monthly");
+    }
+  }, [onPeriodChange]);
 
   const handleValueChange = (value: string) => {
     setSelectedValue(value);
