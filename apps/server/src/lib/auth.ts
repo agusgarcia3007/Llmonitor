@@ -50,6 +50,20 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
     },
   },
+  callbacks: {
+    async redirect({ url, baseUrl }) {
+      // If URL is relative, use the frontend URL as base
+      if (url.startsWith("/")) {
+        return `${siteData.url}${url}`;
+      }
+      // If URL is absolute and belongs to our domain, allow it
+      if (url.startsWith(baseUrl) || url.startsWith(siteData.url)) {
+        return url;
+      }
+      // Default to frontend URL
+      return siteData.url;
+    },
+  },
   trustedOrigins: TRUSTED_ORIGINS,
   rateLimit: {
     window: 10, // time window in seconds

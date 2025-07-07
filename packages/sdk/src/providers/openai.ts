@@ -30,17 +30,6 @@ export class OpenAIWrapper {
           params: ChatCompletionParams,
           options?: ProviderOptions
         ): Promise<any> => {
-          // Debug logging for model validation
-          console.log("[LLMonitor] Debug - Model received:", {
-            model: params.model,
-            modelType: typeof params.model,
-            modelLength:
-              typeof params.model === "string" ? params.model.length : 0,
-            modelTrimmed:
-              typeof params.model === "string" ? params.model.trim() : null,
-            stream: params.stream,
-          });
-
           // Validate model parameter
           if (
             !params.model ||
@@ -54,6 +43,14 @@ export class OpenAIWrapper {
             throw new Error(
               `LLMonitor: Invalid model parameter. Received: ${params.model}`
             );
+          }
+
+          // Debug log when model needs cleaning
+          if (params.model !== params.model.trim()) {
+            console.log("[LLMonitor] Debug - Cleaning model with whitespace:", {
+              original: JSON.stringify(params.model),
+              cleaned: JSON.stringify(params.model.trim()),
+            });
           }
 
           // Clean model parameter
@@ -274,16 +271,6 @@ export class OpenAIWrapper {
         params: EmbeddingCreateParams,
         options?: ProviderOptions
       ): Promise<CreateEmbeddingResponse> => {
-        // Debug logging for model validation
-        console.log("[LLMonitor] Debug - Embedding model received:", {
-          model: params.model,
-          modelType: typeof params.model,
-          modelLength:
-            typeof params.model === "string" ? params.model.length : 0,
-          modelTrimmed:
-            typeof params.model === "string" ? params.model.trim() : null,
-        });
-
         // Validate model parameter
         if (
           !params.model ||
