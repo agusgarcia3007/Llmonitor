@@ -91,11 +91,18 @@ export function LogsPage() {
       ["200", "400", "401", "403", "404", "429", "500", "502", "503"],
       "status"
     ),
+    createSelectFilter(
+      "event_type",
+      "Event Type",
+      ["chat", "embedding"],
+      "eventType"
+    ),
     CommonFilters.dateRange("Date", "date"),
     CommonFilters.latency(30000, 100),
     CommonFilters.cost(100, 0.01),
     createNumberFilter("prompt_tokens", "Prompt Tokens"),
     createNumberFilter("completion_tokens", "Completion Tokens"),
+    createNumberFilter("input_tokens", "Input Tokens"),
   ];
 
   const tableData = data?.data || [];
@@ -145,6 +152,27 @@ export function LogsPage() {
             {row.getValue("id")}
           </div>
         ),
+      },
+      {
+        id: "type",
+        header: t("logsTable.type"),
+        cell: ({ row }) => {
+          const event = row.original;
+          const isEmbedding = event.input !== undefined;
+
+          return (
+            <Badge
+              variant="outline"
+              className={
+                isEmbedding
+                  ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300"
+                  : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+              }
+            >
+              {isEmbedding ? "Embedding" : "Chat"}
+            </Badge>
+          );
+        },
       },
       {
         accessorKey: "model",
@@ -228,41 +256,84 @@ export function LogsPage() {
         },
       },
       {
-        accessorKey: "prompt",
-        header: t("logsTable.prompt"),
-        cell: ({ row }) => (
-          <TableExpandableCell
-            value={row.getValue("prompt")}
-            type="text"
-            modalTitle={t("logsTable.prompt")}
-          />
-        ),
-      },
-      {
-        accessorKey: "completion",
-        header: t("logsTable.completion"),
-        cell: ({ row }) => (
-          <TableExpandableCell
-            value={row.getValue("completion")}
-            type="text"
-            modalTitle={t("logsTable.completion")}
-          />
-        ),
-      },
-      {
-        accessorKey: "prompt_tokens",
-        header: t("logsTable.promptTokens"),
+        id: "input_content",
+        header: t("logsTable.inputContent"),
         cell: ({ row }) => {
-          const tokens = row.getValue("prompt_tokens") as number;
-          return tokens ? tokens.toLocaleString() : "-";
+          const event = row.original;
+          const isEmbedding = event.input !== undefined;
+          const content = isEmbedding ? event.input : event.prompt;
+          const title = isEmbedding
+            ? t("logsTable.input")
+            : t("logsTable.prompt");
+
+          return (
+            <TableExpandableCell
+              value={content}
+              type="text"
+              modalTitle={title}
+            />
+          );
         },
       },
       {
-        accessorKey: "completion_tokens",
-        header: t("logsTable.completionTokens"),
+        id: "output_content",
+        header: t("logsTable.outputContent"),
         cell: ({ row }) => {
-          const tokens = row.getValue("completion_tokens") as number;
-          return tokens ? tokens.toLocaleString() : "-";
+          const event = row.original;
+          const isEmbedding = event.input !== undefined;
+
+          if (isEmbedding) {
+            const dimensions = event.embedding_dimensions;
+            return dimensions ? (
+              <div className="text-sm text-muted-foreground">
+                {dimensions}D vector
+              </div>
+            ) : (
+              <span>-</span>
+            );
+          } else {
+            return (
+              <TableExpandableCell
+                value={event.completion}
+                type="text"
+                modalTitle={t("logsTable.completion")}
+              />
+            );
+          }
+        },
+      },
+      {
+        id: "tokens",
+        header: t("logsTable.tokens"),
+        cell: ({ row }) => {
+          const event = row.original;
+          const isEmbedding = event.input !== undefined;
+
+          if (isEmbedding) {
+            const inputTokens = event.input_tokens;
+            return inputTokens ? (
+              <div className="text-sm">
+                <div>{inputTokens.toLocaleString()}</div>
+                <div className="text-xs text-muted-foreground">input</div>
+              </div>
+            ) : (
+              <span>-</span>
+            );
+          } else {
+            const promptTokens = event.prompt_tokens;
+            const completionTokens = event.completion_tokens;
+            return (
+              <div className="text-sm">
+                {promptTokens ? (
+                  <div>{promptTokens.toLocaleString()} in</div>
+                ) : null}
+                {completionTokens ? (
+                  <div>{completionTokens.toLocaleString()} out</div>
+                ) : null}
+                {!promptTokens && !completionTokens ? <span>-</span> : null}
+              </div>
+            );
+          }
         },
       },
       {
