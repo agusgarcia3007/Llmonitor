@@ -17,7 +17,6 @@ function Signup({ className, ...props }: React.ComponentProps<"form">) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [githubLoading, setGithubLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,24 +42,6 @@ function Signup({ className, ...props }: React.ComponentProps<"form">) {
     setLoading(false);
   }
 
-  async function handleGithubSignup() {
-    setGithubLoading(true);
-    await authClient.signIn.social(
-      {
-        provider: "github",
-        callbackURL: "/dashboard",
-      },
-      {
-        onRequest: () => {
-          setGithubLoading(true);
-        },
-        onSuccess: () => {
-          navigate({ to: "/dashboard", search: { period: "1" } });
-        },
-      }
-    );
-    setGithubLoading(false);
-  }
 
   return (
     <form
@@ -124,26 +105,6 @@ function Signup({ className, ...props }: React.ComponentProps<"form">) {
         </div>
         <Button type="submit" className="w-full" isLoading={loading}>
           {t("auth.signup.submit", "Sign up")}
-        </Button>
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              {t("auth.signup.or", "Or")}
-            </span>
-          </div>
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full flex items-center justify-center gap-2"
-          onClick={handleGithubSignup}
-          isLoading={githubLoading}
-        >
-          <IconBrandGithub className="size-4" />
-          {t("auth.signup.github", "Sign up with GitHub")}
         </Button>
       </div>
       <div className="text-center text-sm">
