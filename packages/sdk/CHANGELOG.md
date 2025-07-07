@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.15](https://github.com/agusgarcia3007/LLMonitor/compare/v0.1.14...v0.1.15) (2025-07-07)
+
+
+### Features
+
+* enhance logs table with new columns and event type filtering ([1095911](https://github.com/agusgarcia3007/LLMonitor/commit/1095911d9ab72348af9d95682fa63baf37922331))
+
 ### [0.1.14](https://github.com/agusgarcia3007/LLMonitor/compare/v0.1.13...v0.1.14) (2025-07-07)
 
 
