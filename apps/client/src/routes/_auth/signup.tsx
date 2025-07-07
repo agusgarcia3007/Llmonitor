@@ -3,7 +3,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
-import { IconBrandGithub } from "@tabler/icons-react";
 
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -41,7 +40,6 @@ function Signup({ className, ...props }: React.ComponentProps<"form">) {
     );
     setLoading(false);
   }
-
 
   return (
     <form
