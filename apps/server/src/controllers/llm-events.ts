@@ -76,27 +76,59 @@ export const logEvent = async (c: Context) => {
     }
   }
 
+  const isEmbeddingEvent = "input" in data;
+  const isChatEvent = "prompt" in data;
+
+  let promptTokens = 0;
+  let completionTokens = 0;
+
+  if (isChatEvent) {
+    promptTokens = (data as any).prompt_tokens || 0;
+    completionTokens = (data as any).completion_tokens || 0;
+  } else if (isEmbeddingEvent) {
+    promptTokens = (data as any).input_tokens || 0;
+    completionTokens = 0;
+  }
+
   const calculatedCost =
     data.cost_usd ||
-    calculateCost(
-      data.provider,
-      data.model,
-      data.prompt_tokens || 0,
-      data.completion_tokens || 0
-    );
+    calculateCost(data.provider, data.model, promptTokens, completionTokens);
 
   const metadata: LLMEventMetadata = {
     ...(data.metadata || {}),
     apiKey,
+    eventType: isEmbeddingEvent ? "embedding" : "chat",
   };
 
-  const insert = await db.insert(llm_event).values({
+  const eventData: any = {
     id: crypto.randomUUID(),
-    ...data,
+    provider: data.provider,
+    model: data.model,
+    temperature: data.temperature,
+    max_tokens: data.max_tokens,
+    latency_ms: data.latency_ms,
+    status: data.status,
     cost_usd: calculatedCost,
+    score: data.score,
+    version_tag: data.version_tag,
+    session_id: data.session_id,
+    request_id: data.request_id,
     organization_id: organizationId,
     metadata,
-  });
+  };
+
+  if (isChatEvent) {
+    eventData.prompt = (data as any).prompt;
+    eventData.prompt_tokens = (data as any).prompt_tokens;
+    eventData.completion = (data as any).completion;
+    eventData.completion_tokens = (data as any).completion_tokens;
+  } else if (isEmbeddingEvent) {
+    eventData.input = (data as any).input;
+    eventData.input_tokens = (data as any).input_tokens;
+    eventData.embedding_dimensions = (data as any).embedding_dimensions;
+  }
+
+  const insert = await db.insert(llm_event).values(eventData);
 
   return c.json({
     success: true,

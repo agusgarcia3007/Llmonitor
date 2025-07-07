@@ -18,6 +18,22 @@ export interface LLMEvent {
   projectId?: string;
 }
 
+export interface EmbeddingEvent {
+  provider: string;
+  model: string;
+  input: string;
+  input_tokens?: number;
+  embedding_dimensions?: number;
+  latency_ms?: number;
+  status: number;
+  cost_usd?: number;
+  version_tag?: string;
+  session_id?: string;
+  request_id?: string;
+  metadata?: any;
+  projectId?: string;
+}
+
 export interface LLMonitorConfig {
   apiKey: string;
   baseURL?: string;
