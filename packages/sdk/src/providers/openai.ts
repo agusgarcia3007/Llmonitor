@@ -30,20 +30,52 @@ export class OpenAIWrapper {
           params: ChatCompletionParams,
           options?: ProviderOptions
         ): Promise<any> => {
+          // Debug logging for model validation
+          console.log("[LLMonitor] Debug - Model received:", {
+            model: params.model,
+            modelType: typeof params.model,
+            modelLength:
+              typeof params.model === "string" ? params.model.length : 0,
+            modelTrimmed:
+              typeof params.model === "string" ? params.model.trim() : null,
+            stream: params.stream,
+          });
+
+          // Validate model parameter
           if (
-            typeof params.model === "string" &&
-            (params.model.startsWith("deepseek-chat") ||
-              params.model.startsWith("deepseek-reasoner"))
+            !params.model ||
+            typeof params.model !== "string" ||
+            params.model.trim() === ""
+          ) {
+            console.error(
+              "[LLMonitor] Error: Invalid model parameter:",
+              params.model
+            );
+            throw new Error(
+              `LLMonitor: Invalid model parameter. Received: ${params.model}`
+            );
+          }
+
+          // Clean model parameter
+          const cleanedParams = {
+            ...params,
+            model: params.model.trim(),
+          };
+
+          if (
+            typeof cleanedParams.model === "string" &&
+            (cleanedParams.model.startsWith("deepseek-chat") ||
+              cleanedParams.model.startsWith("deepseek-reasoner"))
           ) {
             console.warn(
               "[LLMonitor] Warning: You are using a DeepSeek model with the OpenAI wrapper. For correct analytics and cost tracking, use monitor.deepseek(...) instead of monitor.openai(...)."
             );
           }
 
-          if (params.stream === true) {
-            return this.handleStreamingCompletion(params, options);
+          if (cleanedParams.stream === true) {
+            return this.handleStreamingCompletion(cleanedParams, options);
           } else {
-            return this.handleNonStreamingCompletion(params, options);
+            return this.handleNonStreamingCompletion(cleanedParams, options);
           }
         },
       },
@@ -242,13 +274,44 @@ export class OpenAIWrapper {
         params: EmbeddingCreateParams,
         options?: ProviderOptions
       ): Promise<CreateEmbeddingResponse> => {
+        // Debug logging for model validation
+        console.log("[LLMonitor] Debug - Embedding model received:", {
+          model: params.model,
+          modelType: typeof params.model,
+          modelLength:
+            typeof params.model === "string" ? params.model.length : 0,
+          modelTrimmed:
+            typeof params.model === "string" ? params.model.trim() : null,
+        });
+
+        // Validate model parameter
+        if (
+          !params.model ||
+          typeof params.model !== "string" ||
+          params.model.trim() === ""
+        ) {
+          console.error(
+            "[LLMonitor] Error: Invalid embedding model parameter:",
+            params.model
+          );
+          throw new Error(
+            `LLMonitor: Invalid embedding model parameter. Received: ${params.model}`
+          );
+        }
+
+        // Clean model parameter
+        const cleanedParams = {
+          ...params,
+          model: params.model.trim(),
+        };
+
         const startTime = Date.now();
         let status = 200;
         let response: CreateEmbeddingResponse | undefined;
         let error: Error | null = null;
 
         try {
-          response = await this.client.embeddings.create(params);
+          response = await this.client.embeddings.create(cleanedParams);
         } catch (err) {
           error = err as Error;
           status = 500;
@@ -265,14 +328,14 @@ export class OpenAIWrapper {
 
           const event: EmbeddingEvent = {
             provider: "openai",
-            model: params.model,
+            model: cleanedParams.model,
             input,
             input_tokens: safeNumber(usage?.total_tokens),
             embedding_dimensions: embeddingDimensions,
             latency_ms: latency,
             status,
             cost_usd: this.calculateEmbeddingCost(
-              params.model,
+              cleanedParams.model,
               usage?.total_tokens
             ),
             session_id: options?.sessionId,

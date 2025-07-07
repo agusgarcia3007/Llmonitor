@@ -7,7 +7,6 @@ import {
   IconFlask,
   IconHelp,
   IconKey,
-  IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
 import * as React from "react";
@@ -83,11 +82,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
     ],
     navSecondary: [
-      {
-        title: t("navigation.settings"),
-        url: "/settings",
-        icon: IconSettings,
-      },
       {
         title: t("navigation.documentation"),
         url: "https://docs.llmonitor.io",
