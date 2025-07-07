@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.16](https://github.com/agusgarcia3007/LLMonitor/compare/v0.1.15...v0.1.16) (2025-07-07)
+
+
+### Features
+
+* improve OpenAIWrapper with model validation and logging ([829a312](https://github.com/agusgarcia3007/LLMonitor/commit/829a312dc9f78f00e6437314818b27ad5dd365ae))
+
 ### [0.1.15](https://github.com/agusgarcia3007/LLMonitor/compare/v0.1.14...v0.1.15) (2025-07-07)
 
 
