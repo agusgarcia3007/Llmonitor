@@ -45,10 +45,20 @@ function Signup({ className, ...props }: React.ComponentProps<"form">) {
 
   async function handleGithubSignup() {
     setGithubLoading(true);
-    await authClient.signIn.social({
-      provider: "github",
-      callbackURL: "/dashboard",
-    });
+    await authClient.signIn.social(
+      {
+        provider: "github",
+        callbackURL: "/dashboard",
+      },
+      {
+        onRequest: () => {
+          setGithubLoading(true);
+        },
+        onSuccess: () => {
+          navigate({ to: "/dashboard", search: { period: "1" } });
+        },
+      }
+    );
     setGithubLoading(false);
   }
 

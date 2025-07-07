@@ -46,10 +46,24 @@ function Login({ className, ...props }: React.ComponentProps<"form">) {
 
   async function handleGithubLogin() {
     setGithubLoading(true);
-    await authClient.signIn.social({
-      provider: "github",
-      callbackURL: "/dashboard",
-    });
+    await authClient.signIn.social(
+      {
+        provider: "github",
+        callbackURL: "/dashboard",
+      },
+      {
+        onRequest: () => {
+          setGithubLoading(true);
+        },
+        onSuccess: () => {
+          const expires = new Date(
+            Date.now() + 24 * 60 * 60 * 1000
+          ).toUTCString();
+          document.cookie = `isAuthenticated=true; expires=${expires}; path=/;`;
+          navigate({ to: "/dashboard", search: { period: "1" } });
+        },
+      }
+    );
     setGithubLoading(false);
   }
 
