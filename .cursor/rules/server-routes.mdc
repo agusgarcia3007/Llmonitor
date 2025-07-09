@@ -1,0 +1,6 @@
+---
+description: It explains how the api must be built and how to add new endpoints
+alwaysApply: false
+---
+
+-Always use the endpoint builder function to add new endpoints. add business logic in controllers. check the other routes for examples
