@@ -618,7 +618,14 @@
     "projectDeleted": "Proyecto eliminado exitosamente",
     "deleteConfirmTitle": "Eliminar Proyecto",
     "deleteConfirmDescription": "¿Estás seguro de que deseas eliminar este proyecto? Esta acción no se puede deshacer.",
-    "deleteProject": "Eliminar Proyecto"
+    "deleteProject": "Eliminar Proyecto",
+    "organizationDetails": "Detalles de la Organización",
+    "member": "Miembro",
+    "email": "Correo Electrónico",
+    "changeRole": "Cambiar Rol",
+    "removeMember": "Eliminar Miembro",
+    "inviteMemberDescription": "Invita a un nuevo miembro a unirse a esta organización",
+    "description": "Descripción"
   },
   "alertsNew": {
     "title": "Alertas",
