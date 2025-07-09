@@ -1,12 +1,28 @@
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
-
+import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export const Route = createFileRoute("/_auth/login")({
   component: Login,
@@ -16,15 +32,20 @@ function Login({ className, ...props }: React.ComponentProps<"form">) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  async function onSubmit(data: LoginFormData) {
     await authClient.signIn.email(
       {
-        email,
-        password,
+        email: data.email,
+        password: data.password,
         callbackURL: "/dashboard",
       },
       {
@@ -43,66 +64,70 @@ function Login({ className, ...props }: React.ComponentProps<"form">) {
     setLoading(false);
   }
 
-
   return (
-    <form
-      className={cn("flex flex-col gap-6", className)}
-      onSubmit={onSubmit}
-      {...props}
-    >
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">
-          {t("auth.signin.title", "Login to your account")}
-        </h1>
-        <p className="text-muted-foreground text-sm text-balance">
-          {t(
-            "auth.signin.description",
-            "Enter your email below to login to your account"
-          )}
-        </p>
-      </div>
-      <div className="grid gap-6">
-        <div className="grid gap-3">
-          <Label htmlFor="email">{t("auth.signin.email", "Email")}</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="m@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+    <Form {...form}>
+      <form
+        className={cn("flex flex-col gap-6", className)}
+        onSubmit={form.handleSubmit(onSubmit)}
+        {...props}
+      >
+        <div className="flex flex-col items-center gap-2 text-center">
+          <h1 className="text-2xl font-bold">
+            {t("auth.signin.title", "Login to your account")}
+          </h1>
+          <p className="text-muted-foreground text-sm text-balance">
+            {t(
+              "auth.signin.description",
+              "Enter your email below to login to your account"
+            )}
+          </p>
         </div>
-        <div className="grid gap-3">
-          <div className="flex items-center">
-            <Label htmlFor="password">
-              {t("auth.signin.password", "Password")}
-            </Label>
-            <Link
-              to="/forgot-password"
-              className="ml-auto text-sm underline-offset-4 hover:underline"
-            >
-              {t("auth.signin.forgot", "Forgot your password?")}
-            </Link>
-          </div>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
+        <div className="grid gap-6">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("auth.signin.email", "Email")}</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="m@example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center">
+                  <FormLabel>{t("auth.signin.password", "Password")}</FormLabel>
+                  <Link
+                    to="/forgot-password"
+                    className="ml-auto text-sm underline-offset-4 hover:underline"
+                  >
+                    {t("auth.signin.forgot", "Forgot your password?")}
+                  </Link>
+                </div>
+                <FormControl>
+                  <Input type="password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" className="w-full" isLoading={loading}>
+            {t("auth.signin.submit", "Login")}
+          </Button>
         </div>
-        <Button type="submit" className="w-full" isLoading={loading}>
-          {t("auth.signin.submit", "Login")}
-        </Button>
-      </div>
-      <div className="text-center text-sm">
-        {t("auth.signin.noAccount", "Don't have an account?")}{" "}
-        <Link to="/signup" className="underline underline-offset-4">
-          {t("auth.signin.signup", "Sign up")}
-        </Link>
-      </div>
-    </form>
+        <div className="text-center text-sm">
+          {t("auth.signin.noAccount", "Don't have an account?")}{" "}
+          <Link to="/signup" className="underline underline-offset-4">
+            {t("auth.signin.signup", "Sign up")}
+          </Link>
+        </div>
+      </form>
+    </Form>
   );
 }
