@@ -129,16 +129,10 @@ export const llm_event = pgTable("llm_event", {
   model: text("model").notNull(),
   temperature: real("temperature"),
   max_tokens: integer("max_tokens"),
-
-  prompt: text("prompt"),
+  prompt: text("prompt").notNull(),
   prompt_tokens: integer("prompt_tokens"),
-  completion: text("completion"),
+  completion: text("completion").notNull(),
   completion_tokens: integer("completion_tokens"),
-
-  input: text("input"),
-  input_tokens: integer("input_tokens"),
-  embedding_dimensions: integer("embedding_dimensions"),
-
   latency_ms: integer("latency_ms"),
   status: integer("status"),
   cost_usd: real("cost_usd"),

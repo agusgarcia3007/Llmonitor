@@ -64,7 +64,6 @@ export interface EventFilters {
   status?: number;
   version_tag?: string;
   session_id?: string;
-  event_type?: string;
   latencyMin?: number;
   latencyMax?: number;
   costMin?: number;
@@ -103,7 +102,6 @@ export function parseEventFilters(c: Context): EventFilters {
     status: parseNumberParam(q["status"]),
     version_tag: q["version_tag"] || undefined,
     session_id: q["session_id"] || undefined,
-    event_type: q["event_type"] || undefined,
     latencyMin: parseNumberParam(q["latencyMin"]),
     latencyMax: parseNumberParam(q["latencyMax"]),
     costMin: parseNumberParam(q["costMin"]),
@@ -154,14 +152,6 @@ export function buildEventWhereConditions({
 
   if (filters.session_id) {
     whereConditions.push(eq(llm_event.session_id, filters.session_id));
-  }
-
-  if (filters.event_type) {
-    if (filters.event_type === "embedding") {
-      whereConditions.push(sql`${llm_event.input} IS NOT NULL`);
-    } else if (filters.event_type === "chat") {
-      whereConditions.push(sql`${llm_event.prompt} IS NOT NULL`);
-    }
   }
 
   if (filters.latencyMin !== undefined) {

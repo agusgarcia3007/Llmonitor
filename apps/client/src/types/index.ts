@@ -17,16 +17,10 @@ export interface LLMEvent {
   model: string;
   temperature?: number;
   max_tokens?: number;
-
-  prompt?: string;
+  prompt: string;
   prompt_tokens?: number;
-  completion?: string;
+  completion: string;
   completion_tokens?: number;
-
-  input?: string;
-  input_tokens?: number;
-  embedding_dimensions?: number;
-
   latency_ms?: number;
   status: number;
   cost_usd?: number;
@@ -49,7 +43,6 @@ export interface GetEventsParams {
   status?: number;
   version_tag?: string;
   session_id?: string;
-  event_type?: string;
   latencyMin?: number;
   latencyMax?: number;
   costMin?: number;

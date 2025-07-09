@@ -68,14 +68,6 @@ That's it! Every request is now automatically tracked with:
 - **Context**: Sessions, versions, custom metadata
 - **Errors**: Failed requests with detailed error info
 
-## 🎯 Supported Features
-
-| Feature        | Support | Description                                  |
-| -------------- | ------- | -------------------------------------------- |
-| **Chat**       | ✅ Full | Regular and streaming chat completions       |
-| **Embeddings** | ✅ Full | Text embeddings with automatic cost tracking |
-| **Streaming**  | ✅ Full | Real-time streaming with accumulated metrics |
-
 ## 🎯 Supported Providers
 
 | Provider      | Support | Auto-Pricing | Models                           |
@@ -194,90 +186,6 @@ deepseek.chat.completions
   .then(console.log);
 ```
 
-## 🌟 Feature Examples
-
-### Embeddings Support
-
-```typescript
-import { LLMonitor } from "@llmonitor/sdk";
-import OpenAI from "openai";
-
-const monitor = new LLMonitor({ apiKey: "llm_..." });
-const openai = monitor.openai(new OpenAI());
-
-// Create embeddings - automatically tracked!
-const embeddings = await openai.embeddings.create({
-  model: "text-embedding-3-small",
-  input: "Your text to embed here",
-});
-
-console.log(embeddings.data[0].embedding);
-```
-
-### Streaming Support
-
-```typescript
-import { LLMonitor } from "@llmonitor/sdk";
-import OpenAI from "openai";
-
-const monitor = new LLMonitor({ apiKey: "llm_..." });
-const openai = monitor.openai(new OpenAI());
-
-// Stream chat completions - automatically tracked!
-const stream = await openai.chat.completions.create({
-  model: "gpt-4",
-  messages: [{ role: "user", content: "Tell me a story" }],
-  stream: true,
-});
-
-for await (const chunk of stream) {
-  const content = chunk.choices?.[0]?.delta?.content || "";
-  process.stdout.write(content);
-}
-```
-
-### Complete RAG Example
-
-```typescript
-// Your existing RAG workflow - just add monitoring!
-const monitor = new LLMonitor({
-  apiKey: "llm_...",
-  sessionId: "user-123",
-  metadata: { feature: "rag-chat" },
-});
-const openai = monitor.openai(new OpenAI());
-
-// 1. Create embeddings for user query
-const embeddingResponse = await openai.embeddings.create({
-  model: "text-embedding-3-small",
-  input: userMessage,
-});
-const queryEmbedding = embeddingResponse.data[0].embedding;
-
-// 2. Query your vector database (Pinecone, etc.)
-const results = await pineconeIndex.query({
-  vector: queryEmbedding,
-  topK: 20,
-  includeMetadata: true,
-});
-
-// 3. Stream the completion
-const completionStream = await openai.chat.completions.create({
-  model: "gpt-4",
-  messages: [
-    { role: "system", content: "You are a helpful assistant." },
-    { role: "user", content: prompt },
-  ],
-  stream: true,
-});
-
-// All requests above are automatically tracked!
-for await (const chunk of completionStream) {
-  const token = chunk.choices?.[0]?.delta?.content || "";
-  await stream.write(token);
-}
-```
-
 ## ⚙️ Configuration
 
 ```typescript
@@ -385,44 +293,19 @@ await monitor.logEvent({
 });
 ```
 
-## 🔄 Resilient & Non-Blocking
+## 🔄 Error Handling
 
-**Critical:** The SDK is designed to **NEVER** block your LLM requests, even if LLMonitor is down.
-
-### ✅ What this means:
-
-- **Fire-and-forget logging** - Events are queued and sent in background
-- **5-second timeouts** - Network calls to LLMonitor timeout quickly
-- **Graceful degradation** - If monitoring fails, your app continues normally
-- **Stream-safe** - Streaming never blocks, metrics collected asynchronously
+The SDK gracefully handles errors and never interrupts your LLM calls:
 
 ```typescript
 const monitor = new LLMonitor({
   apiKey: "llm_...",
-  debug: true, // See any monitoring errors in console
+  debug: true  // See any monitoring errors in console
 });
 
-// Even if LLMonitor is completely down, your requests work perfectly
+// Even if LLMonitor is down, your OpenAI calls continue normally
 const openai = monitor.openai(new OpenAI());
-
-// This ALWAYS works, regardless of LLMonitor status
-const response = await openai.chat.completions.create({
-  model: "gpt-4",
-  messages: [{ role: "user", content: "Hello!" }],
-}); // ✅ Never fails due to monitoring
-
-// Streaming also never blocks
-const stream = await openai.chat.completions.create({
-  model: "gpt-4",
-  messages: [{ role: "user", content: "Stream this!" }],
-  stream: true,
-}); // ✅ Streams normally even if monitoring fails
-
-// Embeddings are also fail-safe
-const embeddings = await openai.embeddings.create({
-  model: "text-embedding-3-small",
-  input: "Safe embeddings",
-}); // ✅ Always returns embeddings
+const response = await openai.chat.completions.create({...}); // Always works
 ```
 
 ## 🏗️ TypeScript Support
