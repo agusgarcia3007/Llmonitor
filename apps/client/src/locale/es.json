@@ -24,7 +24,13 @@
       "hasAccount": "¿Ya tienes una cuenta?",
       "signin": "Iniciar sesión",
       "or": "O",
-      "github": "Registrarse con GitHub"
+      "github": "Registrarse con GitHub",
+      "waitlist": {
+        "title": "Únete a Nuestra Lista de Espera",
+        "description": "Por el momento solo estamos aceptando registros a través de nuestra lista de espera. Sé el primero en acceder cuando abramos el registro completo.",
+        "cardTitle": "Lista de Espera",
+        "hasAccount": "¿Ya tienes una cuenta?"
+      }
     },
     "forgotPassword": {
       "title": "¿Olvidaste tu contraseña?",

@@ -1,5 +1,6 @@
 import { HeroSection } from "@/components/landing/hero-section";
 import { Pricing } from "@/components/landing/pricing";
+import { Waitlist } from "@/components/landing/waitlist";
 import { MagicCard } from "@/components/magicui/magic-card";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -176,6 +177,45 @@ function Index() {
           </div>
 
           <Pricing />
+        </section>
+
+        <Separator className="bg-border/50" />
+
+        <section className="flex flex-col gap-8 items-center" id="waitlist">
+          <div className="text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <Badge
+                variant="outline"
+                className="bg-orange-500/10 text-orange-600 px-3 py-1 rounded-full text-xs font-medium"
+              >
+                Lista de Espera
+              </Badge>
+              <h2 className="text-2xl md:text-3xl font-bold mt-3 mb-2">
+                Únete a la Lista de Espera
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Estamos trabajando para traerte la mejor experiencia de
+                monitoreo de LLMs. Sé el primero en acceder cuando esté listo.
+              </p>
+            </motion.div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="w-full max-w-md"
+          >
+            <Card className="p-6 bg-card/50 backdrop-blur-sm border border-border/50">
+              <Waitlist />
+            </Card>
+          </motion.div>
         </section>
       </div>
       <Footer />

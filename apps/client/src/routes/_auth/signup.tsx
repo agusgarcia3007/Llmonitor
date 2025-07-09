@@ -1,6 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Card } from "@/components/ui/card";
+import { Waitlist } from "@/components/landing/waitlist";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { InfoIcon } from "lucide-react";
 
 const signupSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -27,7 +37,7 @@ function Signup({ className, ...props }: React.ComponentProps<"form">) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  
+
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -57,6 +67,45 @@ function Signup({ className, ...props }: React.ComponentProps<"form">) {
     setLoading(false);
   }
 
+  if (import.meta.env.NODE_ENV !== "production") {
+    return (
+      <div className="flex flex-col gap-6 max-w-md mx-auto">
+        <Card className="p-8">
+          <div className="flex flex-col items-center gap-6 text-center">
+            <div className="p-4 bg-blue-500/10 text-blue-600 rounded-full">
+              <InfoIcon className="size-8" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold mb-2">
+                {t("auth.signup.waitlist.title", "Join Our Waitlist")}
+              </h1>
+              <p className="text-muted-foreground">
+                {t(
+                  "auth.signup.waitlist.description",
+                  "We're currently only accepting registrations through our waitlist. Be the first to access when we open full registration."
+                )}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        <div className="bg-card border rounded-lg p-6">
+          <h2 className="text-lg font-semibold mb-4 text-center">
+            {t("auth.signup.waitlist.cardTitle", "Waitlist")}
+          </h2>
+          <Waitlist />
+        </div>
+
+        <div className="text-center text-sm">
+          {t("auth.signup.waitlist.hasAccount", "Already have an account?")}{" "}
+          <Link to="/login" className="underline underline-offset-4">
+            {t("auth.signup.signin", "Sign in")}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Form {...form}>
       <form
@@ -83,11 +132,7 @@ function Signup({ className, ...props }: React.ComponentProps<"form">) {
               <FormItem>
                 <FormLabel>{t("auth.signup.name", "Name")}</FormLabel>
                 <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="John Doe"
-                    {...field}
-                  />
+                  <Input type="text" placeholder="John Doe" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -100,11 +145,7 @@ function Signup({ className, ...props }: React.ComponentProps<"form">) {
               <FormItem>
                 <FormLabel>{t("auth.signup.email", "Email")}</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="m@example.com"
-                    {...field}
-                  />
+                  <Input type="email" placeholder="m@example.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -115,14 +156,9 @@ function Signup({ className, ...props }: React.ComponentProps<"form">) {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  {t("auth.signup.password", "Password")}
-                </FormLabel>
+                <FormLabel>{t("auth.signup.password", "Password")}</FormLabel>
                 <FormControl>
-                  <Input
-                    type="password"
-                    {...field}
-                  />
+                  <Input type="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

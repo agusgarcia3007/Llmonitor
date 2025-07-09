@@ -24,7 +24,13 @@
       "hasAccount": "Already have an account?",
       "signin": "Sign in",
       "or": "Or",
-      "github": "Sign up with GitHub"
+      "github": "Sign up with GitHub",
+      "waitlist": {
+        "title": "Join Our Waitlist",
+        "description": "We're currently only accepting registrations through our waitlist. Be the first to access when we open full registration.",
+        "cardTitle": "Waitlist",
+        "hasAccount": "Already have an account?"
+      }
     },
     "forgotPassword": {
       "title": "Forgot your password?",
