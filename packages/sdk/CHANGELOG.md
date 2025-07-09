@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.17](https://github.com/agusgarcia3007/LLMonitor/compare/v0.1.16...v0.1.17) (2025-07-09)
+
+
+### Features
+
+* add redirect callback to auth configuration ([6c148eb](https://github.com/agusgarcia3007/LLMonitor/commit/6c148eb7ac4ef9b36c7da13325e8f929e76f36be))
+* remove GitHub OAuth buttons temporarily ([6dd1454](https://github.com/agusgarcia3007/LLMonitor/commit/6dd145419081da8df47bb3c5c016a8d740fbadaa))
+
+
+### Bug Fixes
+
+* remove unused import ([31851c1](https://github.com/agusgarcia3007/LLMonitor/commit/31851c182029084bd91f216af493133d49f5975d))
+
 ### [0.1.16](https://github.com/agusgarcia3007/LLMonitor/compare/v0.1.15...v0.1.16) (2025-07-07)
 
 
