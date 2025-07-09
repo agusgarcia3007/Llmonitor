@@ -1,22 +1,21 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IconArrowLeft,
   IconBuilding,
   IconCalendar,
-  IconCopy,
   IconCheck,
-  IconUsers,
-  IconMail,
+  IconCopy,
   IconDots,
-  IconUserPlus,
-  IconTrash,
   IconEdit,
-  IconX,
+  IconTrash,
+  IconUserPlus,
+  IconUsers,
+  IconX
 } from "@tabler/icons-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 import { EditProjectDialog } from "@/components/project/edit-project-dialog";
@@ -24,16 +23,20 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
   DialogDescription,
+  DialogHeader,
+  DialogTitle
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Form,
   FormControl,
@@ -50,20 +53,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { useGetOrganizationById } from "@/services/organizations/query";
-import {
-  useCancelInvitation,
-  useInviteMember,
-} from "@/services/organizations/mutations";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -72,6 +62,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+import {
+  useCancelInvitation,
+  useInviteMember,
+} from "@/services/organizations/mutations";
+import { useGetOrganizationById } from "@/services/organizations/query";
+import { toast } from "sonner";
 
 const inviteFormSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email address"),
