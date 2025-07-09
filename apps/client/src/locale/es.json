@@ -352,7 +352,8 @@
     "waitlist": {
       "badge": "Lista de Espera",
       "title": "Únete a la Lista de Espera",
-      "subtitle": "Regístrate para obtener acceso anticipado y novedades"
+      "subtitle": "Estamos trabajando para traerte la mejor experiencia de monitoreo de LLMs. Sé el primero en acceder cuando esté listo.",
+      "description": "Estamos trabajando para traerte la mejor experiencia de monitoreo de LLMs. Sé el primero en acceder cuando esté listo."
     },
 
     "footer": {

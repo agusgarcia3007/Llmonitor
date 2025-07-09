@@ -193,14 +193,16 @@ function Index() {
                 variant="outline"
                 className="bg-orange-500/10 text-orange-600 px-3 py-1 rounded-full text-xs font-medium"
               >
-                Lista de Espera
+                {t("landing.waitlist.badge", "Waitlist")}
               </Badge>
               <h2 className="text-2xl md:text-3xl font-bold mt-3 mb-2">
-                Únete a la Lista de Espera
+                {t("landing.waitlist.title", "Join the Waitlist")}
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Estamos trabajando para traerte la mejor experiencia de
-                monitoreo de LLMs. Sé el primero en acceder cuando esté listo.
+                {t(
+                  "landing.waitlist.description",
+                  "We're working to bring you the best LLM monitoring experience. Be the first to access when ready."
+                )}
               </p>
             </motion.div>
           </div>

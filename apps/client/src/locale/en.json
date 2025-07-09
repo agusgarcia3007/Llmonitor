@@ -352,7 +352,8 @@
     "waitlist": {
       "badge": "Waitlist",
       "title": "Join the Waitlist",
-      "subtitle": "Sign up to get early access and updates"
+      "subtitle": "We're working to bring you the best LLM monitoring experience. Be the first to access when ready.",
+      "description": "We're working to bring you the best LLM monitoring experience. Be the first to access when ready."
     },
 
     "footer": {
