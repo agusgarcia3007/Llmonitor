@@ -581,7 +581,14 @@
     "projectDeleted": "Project deleted successfully",
     "deleteConfirmTitle": "Delete Project",
     "deleteConfirmDescription": "Are you sure you want to delete this project? This action cannot be undone.",
-    "deleteProject": "Delete Project"
+    "deleteProject": "Delete Project",
+    "organizationDetails": "Organization Details",
+    "member": "Member",
+    "email": "Email",
+    "changeRole": "Change Role",
+    "removeMember": "Remove Member",
+    "inviteMemberDescription": "Invite a new member to join this organization",
+    "description": "Description"
   },
   "costAnalysis": {
     "title": "Cost Analysis",

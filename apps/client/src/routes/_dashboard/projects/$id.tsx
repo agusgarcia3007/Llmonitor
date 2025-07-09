@@ -1,16 +1,15 @@
 import {
   IconArrowLeft,
-  IconBriefcase,
-  IconCalendarTime,
-  IconEdit,
-  IconMail,
-  IconSettings,
-  IconTrash,
-  IconUsers,
-  IconWorld,
+  IconBuilding,
+  IconCalendar,
   IconCopy,
   IconCheck,
+  IconUsers,
+  IconMail,
+  IconDots,
   IconUserPlus,
+  IconTrash,
+  IconEdit,
   IconX,
 } from "@tabler/icons-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -33,6 +32,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -50,6 +50,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useGetOrganizationById } from "@/services/organizations/query";
@@ -58,10 +65,13 @@ import {
   useInviteMember,
 } from "@/services/organizations/mutations";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const inviteFormSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email address"),
@@ -118,30 +128,12 @@ function ProjectDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto max-w-7xl p-6 space-y-8">
-        <div className="flex items-center justify-between">
-          <div className="space-y-3">
-            <Skeleton className="h-10 w-80" />
-            <Skeleton className="h-5 w-96" />
-            <Skeleton className="h-4 w-64" />
-          </div>
-          <div className="flex gap-3">
-            <Skeleton className="h-10 w-24" />
-            <Skeleton className="h-10 w-24" />
-          </div>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="h-48">
-              <CardHeader>
-                <Skeleton className="h-6 w-32" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-20 w-full" />
-              </CardContent>
-            </Card>
-          ))}
+      <div className="container mx-auto max-w-7xl p-6 space-y-6">
+        <Skeleton className="h-8 w-48" />
+        <div className="grid gap-6">
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-64 w-full" />
+          <Skeleton className="h-48 w-full" />
         </div>
       </div>
     );
@@ -149,16 +141,12 @@ function ProjectDetailsPage() {
 
   if (!organization) {
     return (
-      <div className="container mx-auto max-w-7xl min-h-[60vh] flex flex-col items-center justify-center gap-6 p-6">
-        <div className="rounded-full bg-muted p-6">
-          <IconBriefcase className="h-12 w-12 text-muted-foreground" />
-        </div>
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold">{t("projects.notFound")}</h1>
-          <p className="text-lg text-muted-foreground max-w-md">
-            {t("projects.notFoundDescription")}
-          </p>
-        </div>
+      <div className="container mx-auto max-w-7xl min-h-[60vh] flex flex-col items-center justify-center gap-4 p-6">
+        <IconBuilding className="h-12 w-12 text-muted-foreground" />
+        <h1 className="text-2xl font-semibold">{t("projects.notFound")}</h1>
+        <p className="text-muted-foreground">
+          {t("projects.notFoundDescription")}
+        </p>
         <Link
           to="/projects"
           className={cn(buttonVariants({ variant: "default" }))}
@@ -182,504 +170,336 @@ function ProjectDetailsPage() {
   const formatDate = (date: string | Date) => {
     return new Intl.DateTimeFormat("en-US", {
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
     }).format(new Date(date));
   };
 
+  const getRoleBadgeVariant = (role: string) => {
+    switch (role) {
+      case "owner":
+        return "default";
+      case "admin":
+        return "secondary";
+      default:
+        return "outline";
+    }
+  };
+
   return (
-    <div className="container mx-auto max-w-7xl p-6 space-y-8">
-      {/* Header Section */}
-      <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl" />
-        <div className="relative p-8 space-y-6">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start gap-6">
-              <Link
-                to="/projects"
-                className={cn(
-                  buttonVariants({ variant: "ghost", size: "icon" }),
-                  "rounded-full"
-                )}
-              >
-                <IconArrowLeft className="h-5 w-5" />
-              </Link>
-
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <IconBriefcase className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h1 className="text-4xl font-bold tracking-tight">
-                        {organization.name}
-                      </h1>
-                      {organization.slug && (
-                        <p className="text-lg text-muted-foreground font-mono">
-                          @{organization.slug}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  {organization.metadata?.description && (
-                    <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
-                      {organization.metadata.description}
-                    </p>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  {organization.createdAt && (
-                    <div className="flex items-center gap-2">
-                      <IconCalendarTime className="h-4 w-4" />
-                      <span>
-                        {t("projects.created")}{" "}
-                        {formatDate(organization.createdAt)}
-                      </span>
-                    </div>
-                  )}
-                  {organization.members && (
-                    <div className="flex items-center gap-2">
-                      <IconUsers className="h-4 w-4" />
-                      <span>
-                        {organization.members.length}{" "}
-                        {t("projects.membersCount")}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => setEditDialogOpen(true)}
-                className="gap-2"
-              >
-                <IconEdit className="h-4 w-4" />
-                {t("common.edit")}
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="gap-2 text-destructive hover:text-destructive"
-              >
-                <IconTrash className="h-4 w-4" />
-                {t("common.delete")}
-              </Button>
+    <div className="container mx-auto max-w-7xl p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link
+            to="/projects"
+            className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
+          >
+            <IconArrowLeft className="h-4 w-4" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-semibold">{organization.name}</h1>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+              <IconCalendar className="h-3.5 w-3.5" />
+              <span>{formatDate(organization.createdAt)}</span>
+              <span className="text-muted-foreground">•</span>
+              <span>
+                {organization.members?.length || 0} {t("projects.membersCount")}
+              </span>
             </div>
           </div>
         </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon">
+              <IconDots className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
+              <IconEdit className="h-4 w-4 mr-2" />
+              {t("common.edit")}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-destructive">
+              <IconTrash className="h-4 w-4 mr-2" />
+              {t("common.delete")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Left Column - Main Info */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Members Card */}
-          <Card className="overflow-hidden">
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                    <IconUsers className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  {t("projects.members")}
-                  {organization.members && (
-                    <Badge variant="secondary">
-                      {organization.members.length}
-                    </Badge>
-                  )}
-                </CardTitle>
+      {/* Organization Details */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base font-medium">
+            {t("projects.organizationDetails")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <dt className="text-sm font-medium text-muted-foreground">
+                {t("organization.name")}
+              </dt>
+              <dd className="mt-1 text-sm">{organization.name}</dd>
+            </div>
+            <div>
+              <dt className="text-sm font-medium text-muted-foreground">
+                {t("projects.slug")}
+              </dt>
+              <dd className="mt-1 text-sm font-mono">{organization.slug}</dd>
+            </div>
+            <div>
+              <dt className="text-sm font-medium text-muted-foreground">
+                {t("projects.organizationId")}
+              </dt>
+              <dd className="mt-1 flex items-center gap-2">
+                <code className="text-xs bg-muted px-2 py-1 rounded font-mono">
+                  {organization.id}
+                </code>
                 <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  onClick={() => setInviteDialogOpen(true)}
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={() => copyToClipboard(organization.id)}
                 >
-                  <IconUserPlus className="h-4 w-4" />
-                  {t("projects.inviteMember")}
+                  {copiedId ? (
+                    <IconCheck className="h-3 w-3" />
+                  ) : (
+                    <IconCopy className="h-3 w-3" />
+                  )}
                 </Button>
+              </dd>
+            </div>
+            {organization.metadata?.description && (
+              <div className="sm:col-span-2">
+                <dt className="text-sm font-medium text-muted-foreground">
+                  {t("projects.description")}
+                </dt>
+                <dd className="mt-1 text-sm">
+                  {organization.metadata.description}
+                </dd>
               </div>
-            </CardHeader>
-            <CardContent>
-              {organization.members && organization.members.length > 0 ? (
-                <div className="space-y-4">
-                  <div className="grid gap-3">
-                    {organization.members.slice(0, 6).map((member, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-3 p-3 rounded-lg bg-muted"
-                      >
-                        <Avatar className="h-10 w-10">
-                          <AvatarFallback className="bg-primary/10 text-primary font-medium">
+            )}
+          </dl>
+        </CardContent>
+      </Card>
+
+      {/* Members */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-base font-medium">
+            {t("projects.members")}
+          </CardTitle>
+          <Button size="sm" onClick={() => setInviteDialogOpen(true)}>
+            <IconUserPlus className="h-4 w-4 mr-2" />
+            {t("projects.inviteMember")}
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {organization.members && organization.members.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("projects.member")}</TableHead>
+                  <TableHead>{t("projects.email")}</TableHead>
+                  <TableHead>{t("projects.role")}</TableHead>
+                  <TableHead className="w-12"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {organization.members.map((member, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback className="text-xs">
                             {member.user?.name
                               ? getInitials(member.user.name)
                               : "?"}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="flex-1">
-                          <p className="font-medium">
-                            {member.user?.name || t("projects.unknownUser")}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {member.user?.email}
-                          </p>
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {member.role || t("projects.roles.member")}
-                        </Badge>
+                        <span className="font-medium">
+                          {member.user?.name || t("projects.unknownUser")}
+                        </span>
                       </div>
-                    ))}
-                  </div>
-                  {organization.members.length > 6 && (
-                    <div className="pt-3 border-t">
-                      <p className="text-sm text-muted-foreground text-center">
-                        {t("projects.andMoreMembers", {
-                          count: organization.members.length - 6,
-                        })}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <IconUsers className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-muted-foreground">
-                    {t("projects.noMembers")}
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Invitation Management */}
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-lg bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
-                  <IconMail className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                </div>
-                {t("projects.invitationManagement")}
-                {organization.invitations &&
-                  organization.invitations.length > 0 && (
-                    <Badge variant="secondary" className="ml-auto">
-                      {organization.invitations.length} {t("projects.pending")}
-                    </Badge>
-                  )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <h4 className="font-medium">
-                      {t("projects.sendNewInvitation")}
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {t("projects.inviteNewMembersDescription")}
-                    </p>
-                  </div>
-                  <Dialog
-                    open={inviteDialogOpen}
-                    onOpenChange={setInviteDialogOpen}
-                  >
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="gap-2">
-                        <IconUserPlus className="h-4 w-4" />
-                        {t("projects.inviteMember")}
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>{t("projects.inviteMember")}</DialogTitle>
-                      </DialogHeader>
-                      <Form {...inviteForm}>
-                        <form
-                          onSubmit={inviteForm.handleSubmit(handleInviteMember)}
-                          className="space-y-4 pt-4"
-                        >
-                          <div className="flex items-center w-full">
-                            <FormField
-                              control={inviteForm.control}
-                              name="email"
-                              render={({ field }) => (
-                                <FormItem className="w-full">
-                                  <FormLabel>
-                                    {t("projects.emailAddress")}
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      type="email"
-                                      className="rounded-r-none"
-                                      placeholder={t(
-                                        "projects.emailPlaceholder"
-                                      )}
-                                      {...field}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={inviteForm.control}
-                              name="role"
-                              render={({ field }) => (
-                                <FormItem className="mt-[22px]">
-                                  <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                  >
-                                    <FormControl>
-                                      <SelectTrigger className="rounded-l-none border-l-0 m-0 bg-primary/10">
-                                        <SelectValue
-                                          placeholder={t("projects.selectRole")}
-                                        />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="member">
-                                        {t("projects.roles.member")}
-                                      </SelectItem>
-                                      <SelectItem value="admin">
-                                        {t("projects.roles.admin")}
-                                      </SelectItem>
-                                      <SelectItem value="owner">
-                                        {t("projects.roles.owner")}
-                                      </SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                          <Button type="submit" isLoading={isInvitingMember}>
-                            {t("projects.sendInvitation")}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {member.user?.email}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={getRoleBadgeVariant(member.role)}>
+                        {member.role || t("projects.roles.member")}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <IconDots className="h-4 w-4" />
                           </Button>
-                        </form>
-                      </Form>
-                    </DialogContent>
-                  </Dialog>
-                </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem>
+                            {t("projects.changeRole")}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="text-destructive">
+                            {t("projects.removeMember")}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="text-center py-6">
+              <IconUsers className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">
+                {t("projects.noMembers")}
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-                {organization.invitations &&
-                organization.invitations.length > 0 ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium">
-                        {t("projects.pendingInvitations")}
-                      </h4>
-                      <p className="text-sm text-muted-foreground">
-                        {organization.invitations.length}{" "}
-                        {t("projects.invitations")}
-                      </p>
-                    </div>
-                    <div className="space-y-3">
-                      {organization.invitations.map((invitation, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center gap-3 p-4 rounded-lg border bg-card"
+      {/* Pending Invitations */}
+      {organization.invitations && organization.invitations.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base font-medium">
+              {t("projects.pendingInvitations")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("projects.email")}</TableHead>
+                  <TableHead>{t("projects.role")}</TableHead>
+                  <TableHead>{t("projects.status")}</TableHead>
+                  <TableHead>{t("projects.expires")}</TableHead>
+                  <TableHead className="w-12"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {organization.invitations
+                  .filter((inv) => inv.status === "pending")
+                  .map((invitation) => (
+                    <TableRow key={invitation.id}>
+                      <TableCell>{invitation.email}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{invitation.role}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{invitation.status}</Badge>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {formatDate(invitation.expiresAt)}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          disabled={isCancellingInvitation}
+                          onClick={async () => {
+                            await cancelInvitation(invitation.id);
+                            toast.success(t("projects.invitationCanceled"));
+                          }}
                         >
-                          <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
-                            <IconMail className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                          </div>
-                          <div className="flex-1 space-y-1">
-                            <p className="font-medium">{invitation.email}</p>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                              <span>
-                                {t("projects.role")}: {invitation.role}
-                              </span>
-                              <span>•</span>
-                              <span>
-                                {t("projects.expires")}{" "}
-                                {formatDate(invitation.expiresAt)}
-                              </span>
-                              <span>•</span>
-                              <span className="capitalize">
-                                {invitation.status}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge
-                              variant={
-                                invitation.status === "canceled"
-                                  ? "destructive"
-                                  : invitation.status === "accepted"
-                                  ? "default"
-                                  : "secondary"
-                              }
-                              className="text-xs"
-                            >
-                              {invitation.status}
-                            </Badge>
-                            {invitation.status === "pending" && (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="text-destructive hover:text-destructive"
-                                    disabled={isCancellingInvitation}
-                                    onClick={async () => {
-                                      await cancelInvitation(invitation.id);
-                                      toast.success(
-                                        t("projects.invitationCanceled")
-                                      );
-                                    }}
-                                  >
-                                    <IconX className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  {t("projects.cancelInvitation")}
-                                </TooltipContent>
-                              </Tooltip>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8 border rounded-lg">
-                    <IconMail className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">
-                      {t("projects.noPendingInvitations")}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {t("projects.sendInvitationsDescription")}
-                    </p>
-                  </div>
+                          <IconX className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Invite Member Dialog */}
+      <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("projects.inviteMember")}</DialogTitle>
+            <DialogDescription>
+              {t("projects.inviteMemberDescription")}
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...inviteForm}>
+            <form
+              onSubmit={inviteForm.handleSubmit(handleInviteMember)}
+              className="space-y-4"
+            >
+              <FormField
+                control={inviteForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("projects.emailAddress")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder={t("projects.emailPlaceholder")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
+              />
+              <FormField
+                control={inviteForm.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("projects.role")}</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("projects.selectRole")} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="member">
+                          {t("projects.roles.member")}
+                        </SelectItem>
+                        <SelectItem value="admin">
+                          {t("projects.roles.admin")}
+                        </SelectItem>
+                        <SelectItem value="owner">
+                          {t("projects.roles.owner")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setInviteDialogOpen(false)}
+                >
+                  {t("common.cancel")}
+                </Button>
+                <Button type="submit" isLoading={isInvitingMember}>
+                  {t("projects.sendInvitation")}
+                </Button>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Right Column - Details */}
-        <div className="space-y-6">
-          {/* Project Info */}
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center">
-                  <IconBriefcase className="h-4 w-4 text-green-600 dark:text-green-400" />
-                </div>
-                {t("projects.basicInfo")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-1">
-                    {t("organization.name")}
-                  </p>
-                  <p className="font-medium">{organization.name}</p>
-                </div>
-                <Separator />
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-1">
-                    {t("projects.slug")}
-                  </p>
-                  <p className="font-mono text-sm bg-muted px-2 py-1 rounded">
-                    {organization.slug}
-                  </p>
-                </div>
-                <Separator />
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-1">
-                    {t("projects.status")}
-                  </p>
-                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                    {t("projects.active")}
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* API Information */}
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-                  <IconWorld className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                </div>
-                {t("projects.apiInformation")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2">
-                  {t("projects.organizationId")}
-                </p>
-                <div className="flex items-center gap-2">
-                  <code className="flex-1 text-xs bg-muted p-3 rounded-lg font-mono break-all">
-                    {organization.id}
-                  </code>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => copyToClipboard(organization.id)}
-                    className="shrink-0"
-                  >
-                    {copiedId ? (
-                      <IconCheck className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <IconCopy className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Settings */}
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                  <IconSettings className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-                </div>
-                {t("projects.settings")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {organization.metadata && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-2">
-                    {t("projects.metadata")}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {Object.keys(organization.metadata).length}{" "}
-                    {t("projects.properties")}
-                  </p>
-                </div>
-              )}
-              {organization.logo && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-2">
-                    {t("projects.logo")}
-                  </p>
-                  <div className="h-16 w-16 rounded-lg bg-muted flex items-center justify-center overflow-hidden">
-                    <img
-                      src={organization.logo}
-                      alt={t("projects.organizationLogo")}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
 
       <EditProjectDialog
         open={editDialogOpen}
