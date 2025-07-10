@@ -102,53 +102,52 @@ export const auth = betterAuth({
         maxRequests: 100, // 100 solicitudes por ventana de tiempo
       },
     }),
-    openAPI(),
     stripe({
       stripeClient,
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
       createCustomerOnSignUp: true,
+
       subscription: {
         enabled: true,
         plans: [
           {
-            name: "hobby",
-            priceId: "price_1RX56PBvY3hUsoTtYzJRGtCf",
+            name: "pro-lite", // 20 USD / mes
+            priceId: "price_1RjTB9BvY3hUsoTtT4DlTvTe",
+            annualDiscountPriceId: "price_1RjTJQBvY3hUsoTtwQVcwkRL",
             limits: {
-              events: 50000,
+              events: 50_000,
               dataRetentionDays: 30,
-              users: 2,
-              projects: 1,
+              users: -1, // ilimitado
+              projects: -1,
             },
+            freeTrial: { days: 14 },
           },
           {
-            name: "pro",
-            priceId: "price_1RX591BvY3hUsoTttQmcLIdK",
+            name: "pro-growth", // 45 USD / mes
+            priceId: "price_1RjTFjBvY3hUsoTtrKjcQ0vG",
+            annualDiscountPriceId: "price_1RjTL3BvY3hUsoTtPTlTqpUu",
             limits: {
-              events: 2000000,
+              events: 250_000,
               dataRetentionDays: 90,
               users: -1,
               projects: -1,
             },
+            freeTrial: { days: 14 },
           },
+          {
+            name: "pro-scale", // 90 USD / mes
+            priceId: "price_1RjTI9BvY3hUsoTt9CYVtn63",
+            annualDiscountPriceId: "price_1RjTMFBvY3hUsoTtGL2nxGSq",
+            limits: {
+              events: 1_000_000,
+              dataRetentionDays: 365,
+              users: -1,
+              projects: -1,
+            },
+            freeTrial: { days: 14 },
+          },
+          // Enterprise → contact sales (no priceId aquí)
         ],
-        authorizeReference: async ({ user, referenceId, action }) => {
-          if (referenceId === user.id) {
-            return true;
-          }
-
-          const member = await db
-            .select()
-            .from(schema.member)
-            .where(
-              eq(schema.member.userId, user.id) &&
-                eq(schema.member.organizationId, referenceId)
-            );
-
-          return (
-            member.length > 0 &&
-            (member[0].role === "owner" || member[0].role === "admin")
-          );
-        },
       },
     }),
   ],

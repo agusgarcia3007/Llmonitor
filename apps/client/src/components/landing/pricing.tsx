@@ -11,158 +11,197 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { PeriodSwitch, type BillingPeriod } from "./period-switch";
 import { useState } from "react";
-import { NumberTicker } from "../magicui/number-ticker";
 
 export function Pricing() {
   const { t } = useTranslation();
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
 
-  const hobbyFeatures = [
-    t("landing.pricing.hobby.feature1"),
-    t("landing.pricing.hobby.feature2"),
-    t("landing.pricing.hobby.feature3"),
-    t("landing.pricing.hobby.feature4"),
-    t("landing.pricing.hobby.feature5"),
+  // Define plan data
+  type Variant = "default" | "outline";
+
+  interface Plan {
+    name: string;
+    monthlyPrice: number | null;
+    events: string;
+    retention: string;
+    extra: string;
+    note: string;
+    isPopular: boolean;
+    ctaKey: string;
+    variant: Variant;
+  }
+
+  const plans: Plan[] = [
+    {
+      name: "Pro Lite",
+      monthlyPrice: 20,
+      events: "50,000",
+      retention: "30",
+      extra: "0.00002 USD",
+      note: "Perfect for launching your MVP",
+      isPopular: false,
+      ctaKey: "landing.pricing.hobby.cta",
+      variant: "outline",
+    },
+    {
+      name: "Pro Growth",
+      monthlyPrice: 45,
+      events: "250,000",
+      retention: "90",
+      extra: "0.00002 USD",
+      note: "Scale without user limits",
+      isPopular: true,
+      ctaKey: "landing.pricing.pro.cta",
+      variant: "default",
+    },
+    {
+      name: "Pro Scale",
+      monthlyPrice: 90,
+      events: "1,000,000",
+      retention: "365",
+      extra: "0.00002 USD",
+      note: "1 M requests coverage",
+      isPopular: false,
+      ctaKey: "landing.pricing.pro.cta",
+      variant: "default",
+    },
+    {
+      name: "Enterprise",
+      monthlyPrice: null,
+      events: ">1,000,000",
+      retention: "1-5 years",
+      extra: "Negotiated",
+      note: "BYOK, RBAC, EU/US residency",
+      isPopular: false,
+      ctaKey: "landing.pricing.enterprise.cta",
+      variant: "outline",
+    },
   ];
-
-  const proFeatures = [
-    t("landing.pricing.pro.feature1"),
-    t("landing.pricing.pro.feature2"),
-    t("landing.pricing.pro.feature3"),
-    t("landing.pricing.pro.feature4"),
-    t("landing.pricing.pro.feature5"),
-    t("landing.pricing.pro.feature6"),
-    t("landing.pricing.pro.feature7"),
-  ];
-
-  const enterpriseFeatures = [
-    t("landing.pricing.enterprise.feature1"),
-    t("landing.pricing.enterprise.feature2"),
-    t("landing.pricing.enterprise.feature3"),
-    t("landing.pricing.enterprise.feature4"),
-    t("landing.pricing.enterprise.feature5"),
-    t("landing.pricing.enterprise.feature6"),
-    t("landing.pricing.enterprise.feature7"),
-  ];
-
-  // Obtener los valores numéricos de los precios
-  const hobbyPrice = 0;
-  const proPrice = 20;
-
-  // Calcular los precios según el período de facturación
-  const currentProPrice = billingPeriod === "yearly" ? proPrice * 10 : proPrice;
 
   return (
-    <div className="flex flex-col gap-y-2">
+    <div className="flex flex-col gap-y-4 px-4 sm:px-6 lg:px-8">
       <PeriodSwitch onPeriodChange={setBillingPeriod} />
-      <div className="mt-8 grid gap-6 md:mt-20 md:grid-cols-3 container mx-auto">
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-medium">
-              {t("landing.pricing.hobby.title")}
-            </CardTitle>
+      <div className="mt-8 grid gap-6 md:mt-20 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 container mx-auto">
+        {plans.slice(0, 3).map((plan, index) => {
+          const currentPrice =
+            plan.monthlyPrice !== null
+              ? billingPeriod === "yearly"
+                ? plan.monthlyPrice * 10
+                : plan.monthlyPrice
+              : "Custom";
 
-            <span className="my-3 block text-2xl font-semibold">
-              ${hobbyPrice} / {billingPeriod === "yearly" ? "year" : "mo"}
-            </span>
+          const periodText =
+            plan.monthlyPrice !== null
+              ? `/ ${billingPeriod === "yearly" ? "year" : "mo"}`
+              : "";
 
-            <CardDescription className="text-sm">
-              {t("landing.pricing.hobby.description")}
-            </CardDescription>
-            <Button asChild variant="outline" className="mt-4 w-full">
-              <Link to="/signup">{t("landing.pricing.hobby.cta")}</Link>
-            </Button>
-          </CardHeader>
+          const features = [
+            `${plan.events} included events / month`,
+            `${plan.retention} days retention`,
+            `Extra events at ${plan.extra}`,
+          ];
 
-          <CardContent className="space-y-4">
-            <hr className="border-dashed" />
+          return (
+            <Card
+              key={index}
+              className={`relative flex flex-col min-h-[420px] ${
+                plan.isPopular ? "ring-2 ring-primary shadow-lg" : ""
+              }`}
+            >
+              {plan.isPopular && (
+                <span className="bg-primary absolute inset-x-0 -top-3 mx-auto flex h-6 w-fit items-center rounded-full px-3 py-1 text-xs font-medium text-white ring-1 ring-inset ring-white/20 ring-offset-1 ring-offset-gray-950/5">
+                  {t("landing.pricing.pro.popular")}
+                </span>
+              )}
+              <CardHeader className="pb-4">
+                <CardTitle className="font-medium text-lg">
+                  {plan.name}
+                </CardTitle>
 
-            <ul className="list-outside space-y-3 text-sm">
-              {hobbyFeatures.map((item: string, index: number) => (
-                <li key={index} className="flex items-center gap-2">
-                  <Check className="size-3" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+                <span className="my-3 block text-3xl font-semibold">
+                  ${currentPrice} {periodText}
+                </span>
 
-        <Card className="relative">
-          <span className="bg-primary absolute inset-x-0 -top-3 mx-auto flex h-6 w-fit items-center rounded-full px-3 py-1 text-xs font-medium text-white ring-1 ring-inset ring-white/20 ring-offset-1 ring-offset-gray-950/5">
-            {t("landing.pricing.pro.popular")}
-          </span>
+                <CardDescription className="text-sm text-muted-foreground">
+                  {plan.note}
+                </CardDescription>
+              </CardHeader>
 
-          <CardHeader>
-            <CardTitle className="font-medium">
-              {t("landing.pricing.pro.title")}
-            </CardTitle>
+              <CardContent className="space-y-4 flex-1">
+                <hr className="border-dashed" />
 
-            <span className="my-3 block text-2xl font-semibold">
-              $
-              <NumberTicker
-                value={currentProPrice}
-                startValue={currentProPrice / 2}
-                className="text-2xl font-semibold"
-              />{" "}
-              / {billingPeriod === "yearly" ? "year" : "mo"}
-            </span>
+                <ul className="list-outside space-y-3 text-sm">
+                  {features.map((item, fIndex) => (
+                    <li key={fIndex} className="flex items-center gap-2">
+                      <Check className="size-4 text-green-500 flex-shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
 
-            <CardDescription className="text-sm">
-              {t("landing.pricing.pro.description")}
-            </CardDescription>
-
-            <Button asChild className="mt-4 w-full">
-              <Link to="/signup">{t("landing.pricing.pro.cta")}</Link>
-            </Button>
-          </CardHeader>
-
-          <CardContent className="space-y-4">
-            <hr className="border-dashed" />
-
-            <ul className="list-outside space-y-3 text-sm">
-              {proFeatures.map((item: string, index: number) => (
-                <li key={index} className="flex items-center gap-2">
-                  <Check className="size-3" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card className="flex flex-col">
-          <CardHeader>
-            <CardTitle className="font-medium">
-              {t("landing.pricing.enterprise.title")}
-            </CardTitle>
-
-            <span className="my-3 block text-2xl font-semibold">
-              {t("landing.pricing.enterprise.price")}
-            </span>
-
-            <CardDescription className="text-sm">
-              {t("landing.pricing.enterprise.description")}
-            </CardDescription>
-
-            <Button asChild variant="outline" className="mt-4 w-full">
-              <Link to="/signup">{t("landing.pricing.enterprise.cta")}</Link>
-            </Button>
-          </CardHeader>
-
-          <CardContent className="space-y-4">
-            <hr className="border-dashed" />
-
-            <ul className="list-outside space-y-3 text-sm">
-              {enterpriseFeatures.map((item: string, index: number) => (
-                <li key={index} className="flex items-center gap-2">
-                  <Check className="size-3" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+              <div className="p-6 pt-0">
+                <Button asChild variant={plan.variant} className="w-full">
+                  <Link to="/signup">Start free trial</Link>
+                </Button>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+      <div className="mt-6 container mx-auto">
+        {(() => {
+          const plan = plans[3];
+          const currentPrice =
+            plan.monthlyPrice !== null
+              ? billingPeriod === "yearly"
+                ? plan.monthlyPrice * 10
+                : plan.monthlyPrice
+              : "Custom";
+          const periodText =
+            plan.monthlyPrice !== null
+              ? `/ ${billingPeriod === "yearly" ? "year" : "mo"}`
+              : "";
+          const features = [
+            `${plan.events} included events / month`,
+            `${plan.retention} retention`,
+            `Extra events at ${plan.extra}`,
+          ];
+          return (
+            <Card className="p-6">
+              <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+                <div className="flex-1 lg:max-w-md">
+                  <CardTitle className="text-xl font-medium mb-2">
+                    {plan.name}
+                  </CardTitle>
+                  <span className="block text-3xl font-semibold mb-3">
+                    ${currentPrice} {periodText}
+                  </span>
+                  <CardDescription className="text-sm mb-4">
+                    {plan.note}
+                  </CardDescription>
+                  <Button
+                    asChild
+                    variant={plan.variant}
+                    className="w-full sm:w-auto"
+                  >
+                    <Link to="/signup">Contact us</Link>
+                  </Button>
+                </div>
+                <div className="flex-1 lg:pl-8">
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 text-sm">
+                    {features.map((item, fIndex) => (
+                      <li key={fIndex} className="flex items-center gap-2">
+                        <Check className="size-4 text-green-500 flex-shrink-0" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </Card>
+          );
+        })()}
       </div>
     </div>
   );
