@@ -1,0 +1,48 @@
+import type { Plan } from "@/types";
+
+export const PLANS: Plan[] = [
+  {
+    name: "Pro Lite",
+    monthlyPrice: 20,
+    events: "50,000",
+    retention: "30",
+    extra: "0.00002 USD",
+    note: "Perfect for launching your MVP",
+    isPopular: false,
+    ctaKey: "landing.pricing.hobby.cta",
+    variant: "outline",
+  },
+  {
+    name: "Pro Growth",
+    monthlyPrice: 45,
+    events: "250,000",
+    retention: "90",
+    extra: "0.00002 USD",
+    note: "Scale without user limits",
+    isPopular: true,
+    ctaKey: "landing.pricing.pro.cta",
+    variant: "default",
+  },
+  {
+    name: "Pro Scale",
+    monthlyPrice: 90,
+    events: "1,000,000",
+    retention: "365",
+    extra: "0.00002 USD",
+    note: "1 M requests coverage",
+    isPopular: false,
+    ctaKey: "landing.pricing.pro.cta",
+    variant: "default",
+  },
+  {
+    name: "Enterprise",
+    monthlyPrice: null,
+    events: ">1,000,000",
+    retention: "1-5 years",
+    extra: "Negotiated",
+    note: "BYOK, RBAC, EU/US residency",
+    isPopular: false,
+    ctaKey: "landing.pricing.enterprise.cta",
+    variant: "outline",
+  },
+];

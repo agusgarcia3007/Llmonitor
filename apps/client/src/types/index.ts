@@ -53,5 +53,19 @@ export interface GetEventsParams {
 
 export type Locale = "en" | "es";
 
+type Variant = "default" | "outline";
+
+export interface Plan {
+  name: string;
+  monthlyPrice: number | null;
+  events: string;
+  retention: string;
+  extra: string;
+  note: string;
+  isPopular: boolean;
+  ctaKey: string;
+  variant: Variant;
+}
+
 export * from "./alerts";
 export * from "./analytics";

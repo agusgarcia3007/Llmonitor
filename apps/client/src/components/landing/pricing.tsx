@@ -11,78 +11,17 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { PeriodSwitch, type BillingPeriod } from "./period-switch";
 import { useState } from "react";
+import { PLANS } from "@/lib/constants";
 
 export function Pricing() {
   const { t } = useTranslation();
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
 
-  // Define plan data
-  type Variant = "default" | "outline";
-
-  interface Plan {
-    name: string;
-    monthlyPrice: number | null;
-    events: string;
-    retention: string;
-    extra: string;
-    note: string;
-    isPopular: boolean;
-    ctaKey: string;
-    variant: Variant;
-  }
-
-  const plans: Plan[] = [
-    {
-      name: "Pro Lite",
-      monthlyPrice: 20,
-      events: "50,000",
-      retention: "30",
-      extra: "0.00002 USD",
-      note: "Perfect for launching your MVP",
-      isPopular: false,
-      ctaKey: "landing.pricing.hobby.cta",
-      variant: "outline",
-    },
-    {
-      name: "Pro Growth",
-      monthlyPrice: 45,
-      events: "250,000",
-      retention: "90",
-      extra: "0.00002 USD",
-      note: "Scale without user limits",
-      isPopular: true,
-      ctaKey: "landing.pricing.pro.cta",
-      variant: "default",
-    },
-    {
-      name: "Pro Scale",
-      monthlyPrice: 90,
-      events: "1,000,000",
-      retention: "365",
-      extra: "0.00002 USD",
-      note: "1 M requests coverage",
-      isPopular: false,
-      ctaKey: "landing.pricing.pro.cta",
-      variant: "default",
-    },
-    {
-      name: "Enterprise",
-      monthlyPrice: null,
-      events: ">1,000,000",
-      retention: "1-5 years",
-      extra: "Negotiated",
-      note: "BYOK, RBAC, EU/US residency",
-      isPopular: false,
-      ctaKey: "landing.pricing.enterprise.cta",
-      variant: "outline",
-    },
-  ];
-
   return (
     <div className="flex flex-col gap-y-4 px-4 sm:px-6 lg:px-8">
       <PeriodSwitch onPeriodChange={setBillingPeriod} />
       <div className="mt-8 grid gap-6 md:mt-20 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 container mx-auto">
-        {plans.slice(0, 3).map((plan, index) => {
+        {PLANS.slice(0, 3).map((plan, index) => {
           const currentPrice =
             plan.monthlyPrice !== null
               ? billingPeriod === "yearly"
@@ -151,7 +90,7 @@ export function Pricing() {
       </div>
       <div className="mt-6 container mx-auto">
         {(() => {
-          const plan = plans[3];
+          const plan = PLANS[3];
           const currentPrice =
             plan.monthlyPrice !== null
               ? billingPeriod === "yearly"
