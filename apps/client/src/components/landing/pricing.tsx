@@ -1,17 +1,18 @@
-import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
 } from "@/components/ui/card";
+import { PLANS } from "@/lib/constants";
 import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
+import { Check } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PeriodSwitch, type BillingPeriod } from "./period-switch";
-import { useState } from "react";
-import { PLANS } from "@/lib/constants";
+import { StartTrialButton } from "./start-trial-button";
 
 export function Pricing() {
   const { t } = useTranslation();
@@ -72,7 +73,7 @@ export function Pricing() {
                 <ul className="list-outside space-y-3 text-sm">
                   {features.map((item, fIndex) => (
                     <li key={fIndex} className="flex items-center gap-2">
-                      <Check className="size-4 text-green-500 flex-shrink-0" />
+                      <Check className="size-4 text-primary flex-shrink-0" />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -80,9 +81,12 @@ export function Pricing() {
               </CardContent>
 
               <div className="p-6 pt-0">
-                <Button asChild variant={plan.variant} className="w-full">
-                  <Link to="/signup">Start free trial</Link>
-                </Button>
+                <StartTrialButton
+                  planSlug={plan.slug}
+                  billingPeriod={billingPeriod}
+                  variant={plan.variant}
+                  className="w-full"
+                />
               </div>
             </Card>
           );

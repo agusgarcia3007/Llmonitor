@@ -2,6 +2,7 @@ import type { Plan } from "@/types";
 
 export const PLANS: Plan[] = [
   {
+    slug: "pro-lite",
     name: "Pro Lite",
     monthlyPrice: 20,
     events: "50,000",
@@ -13,6 +14,7 @@ export const PLANS: Plan[] = [
     variant: "outline",
   },
   {
+    slug: "pro-growth",
     name: "Pro Growth",
     monthlyPrice: 45,
     events: "250,000",
@@ -24,6 +26,7 @@ export const PLANS: Plan[] = [
     variant: "default",
   },
   {
+    slug: "pro-scale",
     name: "Pro Scale",
     monthlyPrice: 90,
     events: "1,000,000",
@@ -35,6 +38,7 @@ export const PLANS: Plan[] = [
     variant: "default",
   },
   {
+    slug: "enterprise",
     name: "Enterprise",
     monthlyPrice: null,
     events: ">1,000,000",

@@ -56,6 +56,7 @@ export type Locale = "en" | "es";
 type Variant = "default" | "outline";
 
 export interface Plan {
+  slug: string;
   name: string;
   monthlyPrice: number | null;
   events: string;
