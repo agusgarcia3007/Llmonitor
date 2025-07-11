@@ -39,8 +39,8 @@ export function StartTrialButton({
         await authClient.subscription.upgrade({
           plan: planSlug,
           annual: billingPeriod === "yearly",
-          successUrl: `${window.location.origin}/billing/success`,
-          cancelUrl: `${window.location.origin}/pricing`,
+          successUrl: `${window.location.origin}/dashboard`,
+          cancelUrl: `${window.location.origin}/#pricing`,
         });
       } catch (err) {
         toast.error("Checkout failed, please try again.");

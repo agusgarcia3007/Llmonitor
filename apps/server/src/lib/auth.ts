@@ -109,23 +109,24 @@ export const auth = betterAuth({
 
       subscription: {
         enabled: true,
+
         plans: [
           {
-            name: "pro-lite", // 20 USD / mes
-            priceId: "price_1RjTB9BvY3hUsoTtT4DlTvTe",
-            annualDiscountPriceId: "price_1RjTJQBvY3hUsoTtwQVcwkRL",
+            name: "pro-lite",
+            priceId: "price_1RjkqhBvY3hUsoTthaIpZEbu", // 20 USD monthly (licensed)
+            annualDiscountPriceId: "price_1RjkrgBvY3hUsoTt5MJwEcGz", // 200 USD yearly
             limits: {
               events: 50_000,
               dataRetentionDays: 30,
-              users: -1, // ilimitado
+              users: -1,
               projects: -1,
             },
             freeTrial: { days: 14 },
           },
           {
-            name: "pro-growth", // 45 USD / mes
-            priceId: "price_1RjTFjBvY3hUsoTtrKjcQ0vG",
-            annualDiscountPriceId: "price_1RjTL3BvY3hUsoTtPTlTqpUu",
+            name: "pro-growth",
+            priceId: "price_1RjkqwBvY3hUsoTtT1Y7OnrU", // 45 USD monthly
+            annualDiscountPriceId: "price_1RjkrxBvY3hUsoTtbYBBa518",
             limits: {
               events: 250_000,
               dataRetentionDays: 90,
@@ -135,9 +136,9 @@ export const auth = betterAuth({
             freeTrial: { days: 14 },
           },
           {
-            name: "pro-scale", // 90 USD / mes
-            priceId: "price_1RjTI9BvY3hUsoTt9CYVtn63",
-            annualDiscountPriceId: "price_1RjTMFBvY3hUsoTtGL2nxGSq",
+            name: "pro-scale",
+            priceId: "price_1RjkrMBvY3hUsoTtdWkfgoQ4", // 90 USD monthly
+            annualDiscountPriceId: "price_1RjksHBvY3hUsoTtpl9JCEaW",
             limits: {
               events: 1_000_000,
               dataRetentionDays: 365,
@@ -146,8 +147,16 @@ export const auth = betterAuth({
             },
             freeTrial: { days: 14 },
           },
-          // Enterprise → contact sales (no priceId aquí)
+          // Enterprise is “contact-sales”, so no priceId here
         ],
+
+        onSubscriptionComplete: async ({ stripeSubscription }) => {
+          await stripeClient.subscriptionItems.create({
+            subscription: stripeSubscription.id,
+            price: "price_1Rjl2dBvY3hUsoTtgGFrUViN", // add-on metered (0.00002 USD/event)
+            quantity: 0, // evita enviar “quantity: 1”
+          });
+        },
       },
     }),
   ],
