@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PeriodSwitch, type BillingPeriod } from "./period-switch";
 import { StartTrialButton } from "./start-trial-button";
+import type { PlanSlug } from "@/types";
 
 export function Pricing() {
   const { t } = useTranslation();
@@ -82,7 +83,7 @@ export function Pricing() {
 
               <div className="p-6 pt-0">
                 <StartTrialButton
-                  planSlug={plan.slug}
+                  planSlug={plan.slug as PlanSlug}
                   billingPeriod={billingPeriod}
                   variant={plan.variant}
                   className="w-full"
@@ -128,7 +129,12 @@ export function Pricing() {
                     variant={plan.variant}
                     className="w-full sm:w-auto"
                   >
-                    <Link to="/signup">Contact us</Link>
+                    <Link
+                      to="/signup"
+                      search={{ plan: undefined, period: undefined }}
+                    >
+                      Contact us
+                    </Link>
                   </Button>
                 </div>
                 <div className="flex-1 lg:pl-8">

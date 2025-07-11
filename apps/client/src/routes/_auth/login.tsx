@@ -123,7 +123,11 @@ function Login({ className, ...props }: React.ComponentProps<"form">) {
         </div>
         <div className="text-center text-sm">
           {t("auth.signin.noAccount", "Don't have an account?")}{" "}
-          <Link to="/signup" className="underline underline-offset-4">
+          <Link
+            to="/signup"
+            search={{ plan: undefined, period: undefined }}
+            className="underline underline-offset-4"
+          >
             {t("auth.signin.signup", "Sign up")}
           </Link>
         </div>

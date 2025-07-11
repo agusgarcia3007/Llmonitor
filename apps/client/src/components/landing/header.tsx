@@ -126,7 +126,10 @@ export const HeroHeader = () => {
                       size="sm"
                       className={cn(isScrolled && "lg:hidden")}
                     >
-                      <Link to="/signup">
+                      <Link
+                        to="/signup"
+                        search={{ plan: undefined, period: undefined }}
+                      >
                         <span>{t("landing.header.signUp")}</span>
                       </Link>
                     </Button>
@@ -135,7 +138,10 @@ export const HeroHeader = () => {
                       size="sm"
                       className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
                     >
-                      <Link to="/signup">
+                      <Link
+                        to="/signup"
+                        search={{ plan: undefined, period: undefined }}
+                      >
                         <span>{t("landing.header.getStarted")}</span>
                       </Link>
                     </Button>
