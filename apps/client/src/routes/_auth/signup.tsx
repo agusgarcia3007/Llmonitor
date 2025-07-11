@@ -20,6 +20,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { InfoIcon } from "lucide-react";
+import type { PlanSlug, BillingPeriod } from "@/types";
 
 const signupSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -31,9 +32,14 @@ type SignupFormData = z.infer<typeof signupSchema>;
 
 export const Route = createFileRoute("/_auth/signup")({
   component: Signup,
+  validateSearch: (search: Record<string, unknown>) => ({
+    plan: search.plan as PlanSlug | undefined,
+    period: search.period as BillingPeriod | undefined,
+  }),
 });
 
 function Signup({ className, ...props }: React.ComponentProps<"form">) {
+  const { plan, period } = Route.useSearch();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -53,13 +59,24 @@ function Signup({ className, ...props }: React.ComponentProps<"form">) {
         email: data.email,
         password: data.password,
         name: data.name,
-        callbackURL: "https://llmonitor.io/dashboard",
+        callbackURL: window.location.origin + "/dashboard",
       },
       {
-        onRequest: () => {
-          setLoading(true);
-        },
-        onSuccess: () => {
+        onRequest: () => setLoading(true),
+        onSuccess: async () => {
+          if (plan && period) {
+            try {
+              await authClient.subscription.upgrade({
+                plan,
+                annual: period === "yearly",
+                successUrl: `${window.location.origin}/dashboard`,
+                cancelUrl: `${window.location.origin}/pricing`,
+              });
+              return; // checkout redirection happens
+            } catch (err) {
+              console.error(err);
+            }
+          }
           navigate({ to: "/dashboard", search: { period: "1" } });
         },
       }

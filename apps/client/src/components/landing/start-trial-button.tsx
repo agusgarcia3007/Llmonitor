@@ -6,10 +6,11 @@ import { useNavigate } from "@tanstack/react-router";
 import { useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import type { PlanSlug, BillingPeriod } from "@/types";
 
 type Props = {
-  planSlug: string;
-  billingPeriod: "monthly" | "yearly";
+  planSlug: PlanSlug;
+  billingPeriod: BillingPeriod;
   variant?: "default" | "secondary" | "outline";
   className?: string;
 };
@@ -30,7 +31,10 @@ export function StartTrialButton({
       if (!isLoggedIn) {
         navigate({
           to: "/signup",
-          search: { plan: planSlug, period: billingPeriod },
+          search: {
+            plan: planSlug,
+            period: billingPeriod,
+          },
         });
         return;
       }

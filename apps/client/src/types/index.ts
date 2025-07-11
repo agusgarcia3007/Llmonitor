@@ -53,6 +53,10 @@ export interface GetEventsParams {
 
 export type Locale = "en" | "es";
 
+export type PlanSlug = "pro-lite" | "pro-growth" | "pro-scale";
+
+export type BillingPeriod = "monthly" | "yearly";
+
 type Variant = "default" | "outline";
 
 export interface Plan {
