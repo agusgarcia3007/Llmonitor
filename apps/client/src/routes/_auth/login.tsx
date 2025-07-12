@@ -61,7 +61,6 @@ function Login({ className, ...props }: React.ComponentProps<"form">) {
             (sub) => sub.status === "active" || sub.status === "trialing"
           );
 
-          console.log({ activeSubscription });
           navigate({
             to: activeSubscription ? "/dashboard" : "/pricing",
             search: activeSubscription ? { period: "1" } : undefined,
