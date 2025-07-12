@@ -13,6 +13,7 @@ import { Route as LandingRouteRouteImport } from './routes/_landing/route'
 import { Route as DashboardRouteRouteImport } from './routes/_dashboard/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LandingPricingRouteImport } from './routes/_landing/pricing'
 import { Route as LandingAboutRouteImport } from './routes/_landing/about'
 import { Route as DashboardUsersRouteImport } from './routes/_dashboard/users'
 import { Route as DashboardProjectsRouteImport } from './routes/_dashboard/projects'
@@ -46,6 +47,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const LandingPricingRoute = LandingPricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => LandingRouteRoute,
 } as any)
 const LandingAboutRoute = LandingAboutRouteImport.update({
   id: '/about',
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof DashboardProjectsRouteWithChildren
   '/users': typeof DashboardUsersRoute
   '/about': typeof LandingAboutRoute
+  '/pricing': typeof LandingPricingRoute
   '/projects/$id': typeof DashboardProjectsIdRoute
   '/projects/': typeof DashboardProjectsIndexRoute
 }
@@ -162,6 +169,7 @@ export interface FileRoutesByTo {
   '/logs': typeof DashboardLogsRoute
   '/users': typeof DashboardUsersRoute
   '/about': typeof LandingAboutRoute
+  '/pricing': typeof LandingPricingRoute
   '/projects/$id': typeof DashboardProjectsIdRoute
   '/projects': typeof DashboardProjectsIndexRoute
 }
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/_dashboard/projects': typeof DashboardProjectsRouteWithChildren
   '/_dashboard/users': typeof DashboardUsersRoute
   '/_landing/about': typeof LandingAboutRoute
+  '/_landing/pricing': typeof LandingPricingRoute
   '/_dashboard/projects/$id': typeof DashboardProjectsIdRoute
   '/_dashboard/projects/': typeof DashboardProjectsIndexRoute
 }
@@ -206,6 +215,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/users'
     | '/about'
+    | '/pricing'
     | '/projects/$id'
     | '/projects/'
   fileRoutesByTo: FileRoutesByTo
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/logs'
     | '/users'
     | '/about'
+    | '/pricing'
     | '/projects/$id'
     | '/projects'
   id:
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/_dashboard/projects'
     | '/_dashboard/users'
     | '/_landing/about'
+    | '/_landing/pricing'
     | '/_dashboard/projects/$id'
     | '/_dashboard/projects/'
   fileRoutesById: FileRoutesById
@@ -286,6 +298,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_landing/pricing': {
+      id: '/_landing/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof LandingPricingRouteImport
+      parentRoute: typeof LandingRouteRoute
     }
     '/_landing/about': {
       id: '/_landing/about'
@@ -463,10 +482,12 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
 
 interface LandingRouteRouteChildren {
   LandingAboutRoute: typeof LandingAboutRoute
+  LandingPricingRoute: typeof LandingPricingRoute
 }
 
 const LandingRouteRouteChildren: LandingRouteRouteChildren = {
   LandingAboutRoute: LandingAboutRoute,
+  LandingPricingRoute: LandingPricingRoute,
 }
 
 const LandingRouteRouteWithChildren = LandingRouteRoute._addFileChildren(

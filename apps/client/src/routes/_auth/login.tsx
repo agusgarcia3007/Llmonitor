@@ -52,12 +52,20 @@ function Login({ className, ...props }: React.ComponentProps<"form">) {
         onRequest: () => {
           setLoading(true);
         },
-        onSuccess: () => {
+        onSuccess: async () => {
           const expires = new Date(
             Date.now() + 24 * 60 * 60 * 1000
           ).toUTCString();
           document.cookie = `isAuthenticated=true; expires=${expires}; path=/;`;
-          navigate({ to: "/dashboard", search: { period: "1" } });
+          const { data } = await authClient.getSession();
+          const hasPlan =
+            !!data?.session?.subscriptionPlan &&
+            data?.session?.subscriptionStatus === "active";
+
+          navigate({
+            to: hasPlan ? "/dashboard" : "/pricing",
+            search: hasPlan ? { period: "1" } : undefined,
+          });
         },
       }
     );

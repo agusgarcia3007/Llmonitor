@@ -361,6 +361,8 @@
     },
 
     "pricing": {
+      "pageTitle": "Precios simples y transparentes",
+      "pageDescription": "Elige el plan que mejor se adapte a tus necesidades. Comienza gratis, mejora cuando necesites más.",
       "hobby": {
         "title": "Hobby",
         "price": "$0 / mes",

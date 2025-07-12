@@ -59,7 +59,7 @@ function Signup({ className, ...props }: React.ComponentProps<"form">) {
         email: data.email,
         password: data.password,
         name: data.name,
-        callbackURL: window.location.origin + "/dashboard",
+        callbackURL: `${window.location.origin}/dashboard?period=1`,
       },
       {
         onRequest: () => setLoading(true),
@@ -77,7 +77,7 @@ function Signup({ className, ...props }: React.ComponentProps<"form">) {
               console.error(err);
             }
           }
-          navigate({ to: "/dashboard", search: { period: "1" } });
+          navigate({ to: "/pricing" });
         },
       }
     );

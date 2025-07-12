@@ -72,5 +72,22 @@ export interface Plan {
   variant: Variant;
 }
 
+export type SubscriptionInfo = {
+  plan: PlanSlug;
+  status: "active" | "trialing";
+  periodEnd: string | null; // ISO 8601
+};
+
+export type SessionExtra = {
+  activeOrganizationId: string | null;
+  subscription: SubscriptionInfo | null;
+};
+
+export interface FrontAuthForTypes {
+  options: {
+    session: SessionExtra;
+  };
+}
+
 export * from "./alerts";
 export * from "./analytics";
