@@ -46,7 +46,6 @@ function Login({ className, ...props }: React.ComponentProps<"form">) {
       {
         email: data.email,
         password: data.password,
-        callbackURL: "/dashboard",
       },
       {
         onRequest: () => {
