@@ -1,11 +1,12 @@
-import { createAuthClient } from "better-auth/react";
+import { stripeClient } from "@better-auth/stripe/client";
 import {
   adminClient,
-  organizationClient,
   apiKeyClient,
+  inferAdditionalFields,
+  organizationClient,
 } from "better-auth/client/plugins";
+import { createAuthClient } from "better-auth/react";
 import { toast } from "sonner";
-import { stripeClient } from "@better-auth/stripe/client";
 
 export const authClient = createAuthClient({
   baseURL: import.meta.env.VITE_API_URL,
@@ -15,6 +16,11 @@ export const authClient = createAuthClient({
     apiKeyClient(),
     stripeClient({
       subscription: true,
+    }),
+    inferAdditionalFields({
+      session: {
+        activeOrganizationId: { type: "string", required: false },
+      },
     }),
   ],
   fetchOptions: {

@@ -361,9 +361,8 @@
     },
 
     "pricing": {
-      "badge": "Precios",
-      "title": "Precios Simples y Transparentes",
-      "subtitle": "Elige el plan que mejor se adapte a ti",
+      "pageTitle": "Precios simples y transparentes",
+      "pageDescription": "Elige el plan que mejor se adapte a tus necesidades. Comienza gratis, mejora cuando necesites más.",
       "hobby": {
         "title": "Hobby",
         "price": "$0 / mes",
@@ -401,7 +400,11 @@
         "feature6": "Hasta 5 años de retención de datos",
         "feature7": "Soporte dedicado y SLA disponible",
         "cta": "Contáctanos"
-      }
+      },
+      "badge": "Precios",
+      "title": "Precios Simples y Transparentes",
+      "subtitle": "Elige el plan que mejor se adapte a ti",
+      "startFreeTrial": "Iniciar prueba gratuita"
     },
 
     "about": {

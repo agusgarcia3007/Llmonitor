@@ -1,22 +1,21 @@
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { stripe } from "@better-auth/stripe";
-import { betterAuth } from "better-auth";
+import { betterAuth, BetterAuthOptions } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, apiKey, openAPI, organization } from "better-auth/plugins";
+import { admin, apiKey, organization } from "better-auth/plugins";
 import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
 import Stripe from "stripe";
 import { siteData, TRUSTED_ORIGINS } from "./constants";
-import { getActiveOrganization } from "./utils";
 import { EmailService } from "./email-service";
+import { getActiveOrganization, getActiveSubscription } from "./utils";
 
 const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-05-28.basil",
+  apiVersion: "2025-06-30.basil",
 });
 
-const emailService = new EmailService();
-export const auth = betterAuth({
+const options = {
   database: drizzleAdapter(db, {
     provider: "pg", // or "mysql", "sqlite"
     schema,
@@ -102,52 +101,60 @@ export const auth = betterAuth({
         maxRequests: 100, // 100 solicitudes por ventana de tiempo
       },
     }),
-    openAPI(),
     stripe({
       stripeClient,
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
       createCustomerOnSignUp: true,
+
       subscription: {
         enabled: true,
+
         plans: [
           {
-            name: "hobby",
-            priceId: "price_1RX56PBvY3hUsoTtYzJRGtCf",
+            name: "pro-lite",
+            priceId: "price_1RjkqhBvY3hUsoTthaIpZEbu", // 20 USD monthly (licensed)
+            annualDiscountPriceId: "price_1RjkrgBvY3hUsoTt5MJwEcGz", // 200 USD yearly
             limits: {
-              events: 50000,
+              events: 50_000,
               dataRetentionDays: 30,
-              users: 2,
-              projects: 1,
+              users: -1,
+              projects: -1,
             },
+            freeTrial: { days: 14 },
           },
           {
-            name: "pro",
-            priceId: "price_1RX591BvY3hUsoTttQmcLIdK",
+            name: "pro-growth",
+            priceId: "price_1RjkqwBvY3hUsoTtT1Y7OnrU", // 45 USD monthly
+            annualDiscountPriceId: "price_1RjkrxBvY3hUsoTtbYBBa518",
             limits: {
-              events: 2000000,
+              events: 250_000,
               dataRetentionDays: 90,
               users: -1,
               projects: -1,
             },
+            freeTrial: { days: 14 },
           },
+          {
+            name: "pro-scale",
+            priceId: "price_1RjkrMBvY3hUsoTtdWkfgoQ4", // 90 USD monthly
+            annualDiscountPriceId: "price_1RjksHBvY3hUsoTtpl9JCEaW",
+            limits: {
+              events: 1_000_000,
+              dataRetentionDays: 365,
+              users: -1,
+              projects: -1,
+            },
+            freeTrial: { days: 14 },
+          },
+          // Enterprise is “contact-sales”, so no priceId here
         ],
-        authorizeReference: async ({ user, referenceId, action }) => {
-          if (referenceId === user.id) {
-            return true;
-          }
 
-          const member = await db
-            .select()
-            .from(schema.member)
-            .where(
-              eq(schema.member.userId, user.id) &&
-                eq(schema.member.organizationId, referenceId)
-            );
-
-          return (
-            member.length > 0 &&
-            (member[0].role === "owner" || member[0].role === "admin")
-          );
+        onSubscriptionComplete: async ({ stripeSubscription }) => {
+          await stripeClient.subscriptionItems.create({
+            subscription: stripeSubscription.id,
+            price: "price_1Rjl2dBvY3hUsoTtgGFrUViN", // add-on metered (0.00002 USD/event)
+            quantity: 0, // evita enviar “quantity: 1”
+          });
         },
       },
     }),
@@ -157,7 +164,10 @@ export const auth = betterAuth({
     session: {
       create: {
         before: async (session) => {
-          const organization = await getActiveOrganization(session.userId);
+          const [organization] = await Promise.all([
+            getActiveOrganization(session.userId),
+          ]);
+
           return {
             data: {
               ...session,
@@ -205,4 +215,9 @@ export const auth = betterAuth({
       },
     },
   },
+} satisfies BetterAuthOptions;
+
+const emailService = new EmailService();
+export const auth = betterAuth({
+  ...options,
 });

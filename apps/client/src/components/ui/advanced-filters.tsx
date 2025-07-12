@@ -25,6 +25,30 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 
+const isTextValue = (value: unknown): value is string =>
+  typeof value === "string";
+
+const isNumberValue = (value: unknown): value is number =>
+  typeof value === "number";
+
+const isSelectValue = (value: unknown): value is Option[] =>
+  Array.isArray(value) &&
+  value.every(
+    (item) =>
+      typeof item === "object" &&
+      item !== null &&
+      "value" in item &&
+      "label" in item
+  );
+
+const isDateRangeValue = (value: unknown): value is DateRange =>
+  typeof value === "object" &&
+  value !== null &&
+  ("from" in value || "to" in value);
+
+const isSliderValue = (value: unknown): value is number[] =>
+  Array.isArray(value) && value.every((item) => typeof item === "number");
+
 export interface AdvancedFilterField {
   id: string;
   label: string;
@@ -337,6 +361,7 @@ export function AdvancedFilters({
                       }
                     )}
                     {...formField}
+                    value={isTextValue(formField.value) ? formField.value : ""}
                     onChange={(e) => {
                       formField.onChange(e);
                       handleDebouncedChange(field.id, e.target.value);
@@ -372,6 +397,11 @@ export function AdvancedFilters({
                       }
                     )}
                     {...formField}
+                    value={
+                      isNumberValue(formField.value)
+                        ? String(formField.value)
+                        : ""
+                    }
                     onChange={(e) => {
                       const value = e.target.value
                         ? Number(e.target.value)
@@ -407,7 +437,9 @@ export function AdvancedFilters({
                 </FormLabel>
                 <FormControl>
                   <MultipleSelector
-                    value={formField.value || []}
+                    value={
+                      isSelectValue(formField.value) ? formField.value : []
+                    }
                     onChange={(selected) => {
                       formField.onChange(selected);
                       handleInternalChange({
@@ -460,7 +492,8 @@ export function AdvancedFilters({
                         className="w-full justify-start text-left font-normal h-8 text-sm"
                       >
                         <CalendarIcon className="w-3 h-3 mr-2" />
-                        {formField.value?.from ? (
+                        {isDateRangeValue(formField.value) &&
+                        formField.value?.from ? (
                           formField.value.to ? (
                             <>
                               {formField.value.from.toLocaleDateString()} -{" "}
@@ -483,8 +516,16 @@ export function AdvancedFilters({
                     <Calendar
                       initialFocus
                       mode="range"
-                      defaultMonth={formField.value?.from}
-                      selected={formField.value}
+                      defaultMonth={
+                        isDateRangeValue(formField.value)
+                          ? formField.value?.from
+                          : undefined
+                      }
+                      selected={
+                        isDateRangeValue(formField.value)
+                          ? formField.value
+                          : undefined
+                      }
                       onSelect={(date) => {
                         formField.onChange(date);
                         handleInternalChange({
@@ -515,7 +556,10 @@ export function AdvancedFilters({
             render={({ field: formField }) => (
               <FormItem className="space-y-1">
                 <FormLabel className="text-xs font-medium">
-                  {field.label}: {formField.value?.[0]} - {formField.value?.[1]}
+                  {field.label}:{" "}
+                  {isSliderValue(formField.value)
+                    ? `${formField.value[0]} - ${formField.value[1]}`
+                    : `${field.min ?? 0} - ${field.max ?? 100}`}
                 </FormLabel>
                 <FormControl>
                   <Slider
@@ -523,7 +567,9 @@ export function AdvancedFilters({
                     max={field.max ?? 100}
                     step={field.step ?? 1}
                     value={
-                      formField.value || [field.min ?? 0, field.max ?? 100]
+                      isSliderValue(formField.value)
+                        ? formField.value
+                        : [field.min ?? 0, field.max ?? 100]
                     }
                     onValueChange={(value) => {
                       formField.onChange(value);

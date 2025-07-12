@@ -1,5 +1,3 @@
-"use client";
-
 import {
   IconCreditCard,
   IconDotsVertical,
@@ -28,9 +26,27 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth-client";
 import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+
+export function NavUserSkeleton() {
+  return (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <SidebarMenuButton size="lg" disabled>
+          <Skeleton className="h-8 w-8 rounded-lg" />
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-3 w-32 mt-1" />
+          </div>
+          <Skeleton className="h-4 w-4 ml-auto" />
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  );
+}
 
 export function NavUser({
   user,

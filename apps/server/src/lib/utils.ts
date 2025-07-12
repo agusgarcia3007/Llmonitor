@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import * as schema from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, inArray, and } from "drizzle-orm";
 
 export async function getActiveOrganization(userId: string) {
   // Busca la organización activa persistida en el usuario
@@ -31,4 +31,23 @@ export async function getActiveOrganization(userId: string) {
     .where(eq(schema.organization.id, memberRow[0].organizationId))
     .limit(1);
   return org[0] ?? null;
+}
+
+export async function getActiveSubscription(userId: string) {
+  const [sub] = await db
+    .select({
+      plan: schema.subscription.plan,
+      status: schema.subscription.status,
+      periodEnd: schema.subscription.periodEnd,
+    })
+    .from(schema.subscription)
+    .where(
+      and(
+        eq(schema.subscription.referenceId, userId),
+        inArray(schema.subscription.status, ["active", "trialing"])
+      )
+    )
+    .limit(1);
+
+  return sub;
 }

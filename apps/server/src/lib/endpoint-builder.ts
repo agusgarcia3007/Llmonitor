@@ -1,4 +1,4 @@
-import { authMiddleware } from "@/middleware/auth";
+import { authMiddleware, subscriptionMiddleware } from "@/middleware/auth";
 import { HonoApp } from "@/types";
 import { Context, Hono, MiddlewareHandler } from "hono";
 import { ContentfulStatusCode } from "hono/utils/http-status";
@@ -11,6 +11,12 @@ export enum HttpMethod {
   PATCH = "PATCH",
 }
 
+// Generic middleware type that can handle different error codes
+type GenericMiddleware = (
+  c: Context,
+  next: () => Promise<void>
+) => Promise<void | Response>;
+
 export enum SORT_ORDER {
   ASC = "asc",
   DESC = "desc",
@@ -21,6 +27,7 @@ interface EndpointBuilderParams {
   method: HttpMethod;
   body: (c: Context) => Promise<Response>;
   isPrivate: boolean;
+  requiresSubscription?: boolean; // Subscription required (includes trial)
   roles?: string[];
   errorMessage?: string;
   errorStatus?: number;
@@ -32,6 +39,7 @@ export const endpointBuilder = ({
   method,
   body,
   isPrivate,
+  requiresSubscription = false,
   roles,
   errorMessage = "Internal server error",
   errorStatus = 500,
@@ -53,8 +61,18 @@ export const endpointBuilder = ({
     const methodLower = method.toLowerCase() as Lowercase<HttpMethod>;
 
     if (isPrivate) {
-      // Add auth middleware by default for private endpoints
-      const allMiddlewares = [authMiddleware, ...middlewares];
+      // Build middleware chain for private endpoints
+      const authMiddlewares: GenericMiddleware[] = [
+        authMiddleware as GenericMiddleware,
+      ];
+
+      // Add subscription middleware if required
+      if (requiresSubscription) {
+        authMiddlewares.push(subscriptionMiddleware as GenericMiddleware);
+      }
+
+      // Add any additional middlewares
+      const allMiddlewares = [...authMiddlewares, ...middlewares];
       (app as any)[methodLower](path, ...allMiddlewares, handler);
     } else if (middlewares.length > 0) {
       // Only add specified middlewares for public endpoints

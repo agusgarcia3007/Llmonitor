@@ -361,6 +361,8 @@
     },
 
     "pricing": {
+      "pageTitle": "Simple, transparent pricing",
+      "pageDescription": "Choose the plan that's right for your needs. Start free, upgrade when you need more.",
       "hobby": {
         "title": "Hobby",
         "price": "$0 / mo",
@@ -401,7 +403,8 @@
       },
       "badge": "Pricing",
       "title": "Simple, Transparent Pricing",
-      "subtitle": "Choose the plan that's right for you"
+      "subtitle": "Choose the plan that's right for you",
+      "startFreeTrial": "Start free trial"
     },
     "about": {
       "badge": "About Us",

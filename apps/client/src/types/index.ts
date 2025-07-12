@@ -53,5 +53,41 @@ export interface GetEventsParams {
 
 export type Locale = "en" | "es";
 
+export type PlanSlug = "pro-lite" | "pro-growth" | "pro-scale" | "enterprise";
+
+export type BillingPeriod = "monthly" | "yearly";
+
+type Variant = "default" | "outline";
+
+export interface Plan {
+  slug: string;
+  name: string;
+  monthlyPrice: number | null;
+  events: string;
+  retention: string;
+  extra: string;
+  note: string;
+  isPopular: boolean;
+  ctaKey: string;
+  variant: Variant;
+}
+
+export type SubscriptionInfo = {
+  plan: PlanSlug;
+  status: "active" | "trialing";
+  periodEnd: string | null; // ISO 8601
+};
+
+export type SessionExtra = {
+  activeOrganizationId: string | null;
+  subscription: SubscriptionInfo | null;
+};
+
+export interface FrontAuthForTypes {
+  options: {
+    session: SessionExtra;
+  };
+}
+
 export * from "./alerts";
 export * from "./analytics";

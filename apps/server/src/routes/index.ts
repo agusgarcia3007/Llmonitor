@@ -1,8 +1,8 @@
 import { HonoApp } from "@/types";
 import { Hono } from "hono";
-import { llmEventsRouter } from "./llm-events";
-import { analyticsRouter } from "./analytics";
 import { alertsRouter } from "./alerts";
+import { analyticsRouter } from "./analytics";
+import { llmEventsRouter } from "./llm-events";
 
 interface RouteObject {
   path: string;

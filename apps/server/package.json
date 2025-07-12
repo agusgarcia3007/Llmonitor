@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev": "bun run src/index.ts",
+    "dev": "bun run --watch src/index.ts",
     "start": "bun run src/index.ts",
     "build": "bun build ./src/index.ts --compile --outfile server",
     "db:generate": "drizzle-kit generate",
@@ -12,9 +12,9 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
-    "@better-auth/stripe": "^1.2.8",
+    "@better-auth/stripe": "^1.2.12",
     "@neondatabase/serverless": "^1.0.0",
-    "better-auth": "^1.2.8",
+    "better-auth": "^1.2.12",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.43.1",
     "hono": "^4.7.10",

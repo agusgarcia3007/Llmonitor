@@ -46,18 +46,26 @@ function Login({ className, ...props }: React.ComponentProps<"form">) {
       {
         email: data.email,
         password: data.password,
-        callbackURL: "/dashboard",
       },
       {
         onRequest: () => {
           setLoading(true);
         },
-        onSuccess: () => {
+        onSuccess: async () => {
           const expires = new Date(
             Date.now() + 24 * 60 * 60 * 1000
           ).toUTCString();
           document.cookie = `isAuthenticated=true; expires=${expires}; path=/;`;
-          navigate({ to: "/dashboard", search: { period: "1" } });
+          const { data: subscriptions } = await authClient.subscription.list();
+          const activeSubscription = subscriptions?.find(
+            (sub) => sub.status === "active" || sub.status === "trialing"
+          );
+
+          console.log({ activeSubscription });
+          navigate({
+            to: activeSubscription ? "/dashboard" : "/pricing",
+            search: activeSubscription ? { period: "1" } : undefined,
+          });
         },
       }
     );
@@ -123,7 +131,11 @@ function Login({ className, ...props }: React.ComponentProps<"form">) {
         </div>
         <div className="text-center text-sm">
           {t("auth.signin.noAccount", "Don't have an account?")}{" "}
-          <Link to="/signup" className="underline underline-offset-4">
+          <Link
+            to="/signup"
+            search={{ plan: undefined, period: undefined }}
+            className="underline underline-offset-4"
+          >
             {t("auth.signin.signup", "Sign up")}
           </Link>
         </div>
