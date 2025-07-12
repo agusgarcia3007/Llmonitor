@@ -25,6 +25,7 @@
     "docs"
   ],
   "devDependencies": {
+    "@playwright/test": "^1.54.1",
     "husky": "^9.1.7"
   }
 }
