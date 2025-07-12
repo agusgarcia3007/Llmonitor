@@ -20,9 +20,6 @@ export const authClient = createAuthClient({
     inferAdditionalFields({
       session: {
         activeOrganizationId: { type: "string", required: false },
-        subscriptionPlan: { type: "string", required: false },
-        subscriptionStatus: { type: "string", required: false },
-        subscriptionPeriodEnd: { type: "string", required: false },
       },
     }),
   ],

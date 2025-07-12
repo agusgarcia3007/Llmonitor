@@ -34,7 +34,7 @@ export async function getActiveOrganization(userId: string) {
 }
 
 export async function getActiveSubscription(userId: string) {
-  const sub = await db
+  const [sub] = await db
     .select({
       plan: schema.subscription.plan,
       status: schema.subscription.status,
@@ -47,8 +47,7 @@ export async function getActiveSubscription(userId: string) {
         inArray(schema.subscription.status, ["active", "trialing"])
       )
     )
-    .limit(1)
-    .then((r) => r[0]);
+    .limit(1);
 
   return sub;
 }

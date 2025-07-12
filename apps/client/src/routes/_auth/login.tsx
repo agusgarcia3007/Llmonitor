@@ -57,14 +57,15 @@ function Login({ className, ...props }: React.ComponentProps<"form">) {
             Date.now() + 24 * 60 * 60 * 1000
           ).toUTCString();
           document.cookie = `isAuthenticated=true; expires=${expires}; path=/;`;
-          const { data } = await authClient.getSession();
-          const hasPlan =
-            !!data?.session?.subscriptionPlan &&
-            data?.session?.subscriptionStatus === "active";
+          const { data: subscriptions } = await authClient.subscription.list();
+          const activeSubscription = subscriptions?.find(
+            (sub) => sub.status === "active" || sub.status === "trialing"
+          );
 
+          console.log({ activeSubscription });
           navigate({
-            to: hasPlan ? "/dashboard" : "/pricing",
-            search: hasPlan ? { period: "1" } : undefined,
+            to: activeSubscription ? "/dashboard" : "/pricing",
+            search: activeSubscription ? { period: "1" } : undefined,
           });
         },
       }

@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { getActiveOrganization, getActiveSubscription } from "@/lib/utils";
 import { Context, Next } from "hono";
 
 export const sessionMiddleware = async (c: Context, next: Next) => {
@@ -10,8 +11,23 @@ export const sessionMiddleware = async (c: Context, next: Next) => {
     return next();
   }
 
+  // Enrich session with subscription data
+  const [organization, sub] = await Promise.all([
+    getActiveOrganization(session.user.id),
+    getActiveSubscription(session.user.id),
+  ]);
+
+  const enrichedSession = {
+    ...session.session,
+    activeOrganizationId:
+      organization?.id ?? session.session.activeOrganizationId,
+    subscriptionPlan: sub?.plan ?? null,
+    subscriptionStatus: sub?.status ?? null,
+    subscriptionPeriodEnd: sub?.periodEnd ? sub.periodEnd.toISOString() : null,
+  };
+
   c.set("user", session.user);
-  c.set("session", session.session);
+  c.set("session", enrichedSession);
   return next();
 };
 
