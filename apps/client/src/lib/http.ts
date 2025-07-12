@@ -19,6 +19,9 @@ http.interceptors.response.use(
         "isAuthenticated=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       window.location.href = "/login";
     }
+    if (error.response?.status === 402) {
+      window.location.href = "/pricing";
+    }
     // 402 = Payment Required -> subscription issue, don't logout
     // Let the component handle the subscription error appropriately
     return Promise.reject(error);
